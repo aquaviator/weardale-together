@@ -127,3 +127,12 @@
     height: 6px;
     background-color: var(--color-strand-shoots);
 }
+
+/* Strand Layout Grid Responsive styling */
+@media (max-width: 768px) {
+    .strand-layout-grid {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+}
+

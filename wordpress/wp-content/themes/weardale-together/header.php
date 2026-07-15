@@ -4,6 +4,7 @@
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="profile" href="https://gmpg.org/xfn/11">
+    <script>document.documentElement.className += ' js';</script>
     <?php wp_head(); ?>
 </head>
 
@@ -39,8 +40,8 @@
         <!-- Accessible Navigation -->
         <nav id="site-navigation" class="main-navigation" role="navigation" aria-label="<?php esc_attr_e( 'Primary Menu', 'weardale-together' ); ?>">
             <button id="menu-toggle" class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
-                <span class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Menu</span>
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="display: inline-block; vertical-align: middle; margin-right: 6px;"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                <span class="menu-toggle-text" style="font-weight: 700; font-family: var(--font-body); font-size: 1rem; vertical-align: middle;">Menu</span>
             </button>
             <?php
             wp_nav_menu( array(

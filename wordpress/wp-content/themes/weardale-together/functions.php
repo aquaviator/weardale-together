@@ -106,3 +106,42 @@ function weardale_together_get_theme_option( $name, $fallback = '' ) {
     $val = get_theme_mod( $name );
     return ! empty( $val ) ? $val : $fallback;
 }
+
+/**
+ * 5. Get Current Strand Helper
+ * Identifies if the current page is associated with one of the four principal
+ * community program strands based on its slug or taxonomy term.
+ */
+function weardale_together_get_current_strand() {
+    global $post;
+    if ( ! $post ) {
+        return false;
+    }
+    
+    $slug = $post->post_name;
+    
+    // 1. Check page slug direct matches
+    if ( in_array( $slug, array( 'root-branch-cafe', 'cafe' ) ) ) {
+        return 'cafe';
+    } elseif ( in_array( $slug, array( 'young-people', 'youth', 'forest-school' ) ) ) {
+        return 'youth';
+    } elseif ( in_array( $slug, array( 'creative-arts', 'creative-roots' ) ) ) {
+        return 'creative';
+    } elseif ( in_array( $slug, array( 'roots-shoots' ) ) ) {
+        return 'shoots';
+    }
+    
+    // 2. Check terms of the custom "strand" taxonomy if applied
+    if ( has_term( 'cafe', 'strand', $post->ID ) ) {
+        return 'cafe';
+    } elseif ( has_term( 'youth', 'strand', $post->ID ) ) {
+        return 'youth';
+    } elseif ( has_term( 'creative', 'strand', $post->ID ) ) {
+        return 'creative';
+    } elseif ( has_term( 'roots-shoots', 'strand', $post->ID ) ) {
+        return 'shoots';
+    }
+    
+    return false;
+}
+
