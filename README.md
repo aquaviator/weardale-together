@@ -40,7 +40,8 @@ weardale-together/
 │           └── weardale-platform/          # Custom Core Post Types & Taxonomy Plugins
 ├── docs/
 │   ├── xampp-guide.md                      # Comprehensive Local XAMPP Setup & Portability Guide
-│   └── editor-guide.md                     # Training manual for content editors & administrators
+│   ├── editor-guide.md                     # Training manual for content editors & administrators
+│   └── PROJECT-STATUS.md                   # Primary living engineering status & handover document
 ├── scripts/
 │   └── seed-db.sql                         # Database seed queries (safe for weardale_together_v2)
 ├── src/                                    # Workbench prototyping React source files
