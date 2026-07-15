@@ -45,24 +45,36 @@ function weardale_platform_parse_legacy_time( $time_str ) {
         $parts = explode( ' to ', $time_str );
     }
     
+    $tz = function_exists( 'wp_timezone' ) ? wp_timezone() : new DateTimeZone( get_option( 'timezone_string' ) ?: 'UTC' );
+    
     if ( ! empty( $parts[0] ) ) {
         $st = trim( $parts[0] );
-        $st_ts = strtotime( $st );
-        if ( $st_ts !== false ) {
-            $start_time = date( 'H:i:s', $st_ts );
+        try {
+            $dt = new DateTime( $st, $tz );
+            $start_time = $dt->format( 'H:i:s' );
+        } catch ( Exception $e ) {
+            $st_ts = strtotime( $st );
+            if ( $st_ts !== false ) {
+                $start_time = date( 'H:i:s', $st_ts );
+            }
         }
     }
     
     if ( ! empty( $parts[1] ) ) {
         $et = trim( $parts[1] );
-        $et_ts = strtotime( $et );
-        if ( $et_ts !== false ) {
-            $end_time = date( 'H:i:s', $et_ts );
-        } else {
-            // Default to 2 hours after start
-            $st_ts = strtotime( $start_time );
-            if ( $st_ts !== false ) {
-                $end_time = date( 'H:i:s', $st_ts + 7200 );
+        try {
+            $dt = new DateTime( $et, $tz );
+            $end_time = $dt->format( 'H:i:s' );
+        } catch ( Exception $e ) {
+            $et_ts = strtotime( $et );
+            if ( $et_ts !== false ) {
+                $end_time = date( 'H:i:s', $et_ts );
+            } else {
+                // Default to 2 hours after start
+                $st_ts = strtotime( $start_time );
+                if ( $st_ts !== false ) {
+                    $end_time = date( 'H:i:s', $st_ts + 7200 );
+                }
             }
         }
     } else {
@@ -107,7 +119,7 @@ function weardale_platform_render_event_tools_page() {
                 $start_date = get_post_meta( $event_id, '_event_date', true );
                 
                 // Check if they already have occurrences
-                $count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_occ WHERE event_id = %d", $event_id ) );
+                $count = intval( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_occ WHERE event_id = %d", $event_id ) ) );
                 
                 if ( $count > 0 ) {
                     $skipped[] = array(
@@ -192,7 +204,7 @@ function weardale_platform_render_event_tools_page() {
             $start_time = get_post_meta( $event_id, '_event_time', true );
         }
         
-        $count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_occ WHERE event_id = %d", $event_id ) );
+        $count = intval( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_occ WHERE event_id = %d", $event_id ) ) );
         
         // Find next occurrence
         $now_utc = current_time( 'mysql', 1 );
@@ -204,16 +216,19 @@ function weardale_platform_render_event_tools_page() {
             $now_utc
         ) );
 
-        $status = 'Ready';
         $has_valid_date = ( ! empty( $start_date ) && strtotime( $start_date ) !== false );
 
-        if ( ! $has_valid_date ) {
-            $status = 'Invalid date';
-            $invalid_or_missing_dates++;
-        } elseif ( $count === 0 ) {
-            $status = 'Missing occurrence';
-            $missing_occurrences++;
-            $eligible_for_migration++;
+        if ( $count > 0 ) {
+            $status = 'Ready';
+        } else {
+            if ( $has_valid_date ) {
+                $status = 'Missing occurrence';
+                $missing_occurrences++;
+                $eligible_for_migration++;
+            } else {
+                $status = 'Invalid date';
+                $invalid_or_missing_dates++;
+            }
         }
 
         $diagnostics[] = array(
