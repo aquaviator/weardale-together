@@ -1,6 +1,6 @@
 # Weardale Together CIC — Local XAMPP Setup & Portability Guide
 
-This guide describes how to run and test the Weardale Together WordPress theme and plugin locally using a standard **XAMPP** environment (Apache, MariaDB, PHP).
+This guide describes how to run and test the Weardale Together WordPress theme and plugin locally using a standard **XAMPP** environment (Apache, MariaDB, PHP) in an isolated, safe manner.
 
 ---
 
@@ -21,22 +21,24 @@ Ensure you have the following installed on your local machine:
 ---
 
 ## 📂 3. Directory Installation & File Mappings
-To set up your file system without contaminating WordPress core or committing configuration secrets:
+To set up your files correctly within your local XAMPP environment:
 
-1. Create a new directory under your XAMPP installation:
+1. **Clone the Repository**: Clone this Git repository directly into your XAMPP public directory:
    `C:\xampp\htdocs\weardale-together\`
-2. Download and extract the standard WordPress core files into this new directory.
-3. Replace or map the default `wp-content/` folders with the custom assets from this repository:
-   * The contents of `/wordpress/wp-content/themes/weardale-together/` in this repository should reside at:
-     `C:\xampp\htdocs\weardale-together\wp-content\themes\weardale-together\`
-   * The contents of `/wordpress/wp-content/plugins/weardale-platform/` in this repository should reside at:
-     `C:\xampp\htdocs\weardale-together\wp-content\plugins\weardale-platform\`
+   
+   This step establishes the following layout immediately:
+   * **Workspace Root**: `C:\xampp\htdocs\weardale-together\`
+   * **Theme Folder**: `C:\xampp\htdocs\weardale-together\wordpress\wp-content\themes\weardale-together\`
+   * **Plugin Folder**: `C:\xampp\htdocs\weardale-together\wordpress\wp-content\plugins\weardale-platform\`
 
-*Tip: For smooth local development, you can use a directory symbolic link (symlink) to map the files directly from your Git workspace into your XAMPP installation folder so you don't have to copy files back and forth.*
+2. **Install WordPress Core**: Extract the standard WordPress core files directly into the subfolder:
+   `C:\xampp\htdocs\weardale-together\wordpress\`
+   
+   *Note: Ensure you extract the core files in a way that merges them with the existing `wp-content/` folder without overwriting, modifying, or deleting our custom theme and plugin files.*
 
 ---
 
-## 🗄️ 4. Isolated Database Setup (`weardale_together_v2`)
+## 🗄️ 4. Isolated Database Creation (`weardale_together_v2`)
 To initialize your local database securely:
 
 1. Launch **XAMPP Control Panel** and start both the **Apache** and **MySQL/MariaDB** services.
@@ -44,18 +46,14 @@ To initialize your local database securely:
 3. Click on the **Databases** tab in the main navigation.
 4. Input the new, isolated database name: `weardale_together_v2`.
 5. Select the collation: `utf8mb4_unicode_ci` and click **Create**.
-6. **Seeding the Database**:
-   * Select your newly created `weardale_together_v2` database.
-   * Click on the **Import** tab.
-   * Choose the file located at `scripts/seed-db.sql` in this repository.
-   * Click **Go** to execute the seeding. This will populate your isolated database with the pages, event custom post types, metadata, and taxonomy terms representing our current information architecture without touching legacy records.
+6. **MANDATORY SAFETY**: Do not run database imports or scripts before completing the WordPress core installation wizard. Seeding must happen as a post-installation step to prevent table and option conflicts.
 
 ---
 
 ## 📝 5. Secure Local Configuration (`wp-config.php`)
 To ensure security credentials are kept local and never committed to version control:
 
-1. Inside `C:\xampp\htdocs\weardale-together\`, locate `wp-config-sample.php` and rename a copy of it to `wp-config.php`.
+1. Inside `C:\xampp\htdocs\weardale-together\wordpress\`, locate `wp-config-sample.php` and rename a copy of it to `wp-config.php`.
 2. Open `wp-config.php` in your editor and configure your database parameters:
 
 ```php
@@ -99,35 +97,46 @@ define( 'WP_DEBUG_DISPLAY', false ); // Keeps layout clean from raw warning outp
 
 ---
 
-## 🚀 6. Web Installer & Component Activation
-1. Navigate to `http://localhost/weardale-together/` in your web browser.
-2. Select your language and complete the basic WordPress installation wizard (define your site title, admin username, password, and email).
-3. Log in to the administrative dashboard at `http://localhost/weardale-together/wp-admin/`
-4. **Activate Theme**: Navigate to **Appearance > Themes**, find **Weardale Together**, and click **Activate**.
-5. **Activate Plugin**: Navigate to **Plugins > Installed Plugins**, locate **Weardale Platform**, and click **Activate**.
+## 🚀 6. Web Installer & Component Activation (Verified Sequence)
+
+Follow this exact sequential workflow to configure your local runtime:
+
+1. **Complete WordPress Web Installer**:
+   * Navigate to `http://localhost/weardale-together/wordpress/` in your browser.
+   * Select your language and complete the basic installation wizard (define your site title, admin username, password, and email).
+2. **Log into Dashboard**:
+   * Log into the administrative dashboard at `http://localhost/weardale-together/wordpress/wp-admin/`.
+3. **Activate Plugin**:
+   * Navigate to **Plugins > Installed Plugins**, find **Weardale Platform**, and click **Activate**.
+4. **Activate Theme**:
+   * Navigate to **Appearance > Themes**, locate **Weardale Together**, and click **Activate**.
+5. **Configure Permalinks**:
+   * Navigate to **Settings > Permalinks** in your WordPress sidebar.
+   * Select the **Post name** option.
+   * Click **Save Changes**. This forces WordPress to generate the local `.htaccess` rewrite rules file inside the `C:\xampp\htdocs\weardale-together\wordpress\` directory.
+6. **Import Optional Seed Data**:
+   * Open phpMyAdmin (`http://localhost/phpmyadmin/`).
+   * Select the newly created and populated `weardale_together_v2` database.
+   * Click on the **Import** tab.
+   * Choose the file located at `C:\xampp\htdocs\weardale-together\scripts\seed-db.sql`.
+   * Click **Go** to execute the import.
+   * *Important Notice*: This database seed is optional and intended solely for a fresh, standard installation using the default `wp_` table prefix. It contains mock demonstration content for pages, events, and taxonomy relations, and must not be treated as final client content or imported repeatedly over an active setup.
+7. **Verify Setup**:
+   * Open `http://localhost/weardale-together/wordpress/` and confirm that the pages, custom event listings, and responsive hub-and-spoke homepage function perfectly.
 
 ---
 
-## 🔗 7. Permalink Configuration (Apache URL Rewriting)
-To ensure clean, search-engine friendly URLs and custom post-type routing function without throwing 404 errors:
-1. Navigate to **Settings > Permalinks** in your WordPress sidebar.
-2. Select the **Post name** option.
-3. Click **Save Changes**. This forces WordPress to automatically write the `.htaccess` rewrites into the `C:\xampp\htdocs\weardale-together\` directory.
-
----
-
-## 🔍 8. Production Portability & Audit Notes
+## 🔗 7. Production Portability & Audit Notes
 Our core custom PHP theme and plugin codebase has been thoroughly audited for machine-specific dependencies and hardcoded routes:
 * **Relative Assets**: The theme strictly avoids hardcoding URLs like `localhost/WT`. It resolves asset and file references dynamically using `get_template_directory_uri()` and `get_stylesheet_uri()`.
 * **Platform Constants**: The `weardale-platform` plugin dynamically resolves its root folder and web URLs using native `plugin_dir_path( __FILE__ )` and `plugin_dir_url( __FILE__ )` APIs, ensuring complete server and folder portability.
-* **Sanitized Seeding**: The `seed-db.sql` database script is completely system-agnostic, using relative identifiers and database hooks instead of hardcoded domain options (like `siteurl` or `home`), avoiding contamination of host configurations.
 
 ---
 
-## 🛠️ 9. Troubleshooting Common Local Issues
+## 🛠️ 8. Troubleshooting Common Local Issues
 * **Error: Port 80 in Use (Apache crashes on startup)**:
   * *Cause*: Skype, IIS, or other local processes are occupying port 80.
-  * *Fix*: In the XAMPP Control Panel, click **Config > Apache (httpd.conf)**. Search for `Listen 80` and change it to `Listen 8080`. Then access your local environment via `http://localhost:8080/weardale-together/`.
+  * *Fix*: In the XAMPP Control Panel, click **Config > Apache (httpd.conf)**. Search for `Listen 80` and change it to `Listen 8080`. Then access your local environment via `http://localhost:8080/weardale-together/wordpress/`.
 * **Error: 404 on Event Post Types**:
   * *Cause*: WordPress rewrite rules haven't been updated since registering the `weardale_event` post-type.
   * *Fix*: Simply navigate to **Settings > Permalinks** and click **Save Changes** to refresh the rewrite buffer.
@@ -137,7 +146,7 @@ Our core custom PHP theme and plugin codebase has been thoroughly audited for ma
 
 ---
 
-## ✅ 10. Local Installation & Isolation Validation Checklist
+## ✅ 9. Local Installation & Isolation Validation Checklist
 Run this checklist after finishing your local setup to guarantee your environment is completely validated, functional, and fully isolated:
 
 - [ ] **Check 1: Directory Isolation**
@@ -145,7 +154,7 @@ Run this checklist after finishing your local setup to guarantee your environmen
 - [ ] **Check 2: Database Isolation**
   Open phpMyAdmin and verify that the database in use is `weardale_together_v2`. Ensure `weardale_together` is untouched.
 - [ ] **Check 3: Clean Theme Loading**
-  Visit `http://localhost/weardale-together/` and confirm the homepage renders without any CSS broken paths or PHP warnings.
+  Visit `http://localhost/weardale-together/wordpress/` and confirm the homepage renders without any CSS broken paths or PHP warnings.
 - [ ] **Check 4: Accessible Homepage Hub**
   Confirm the interactive hub-and-spoke diagram displays correctly. Shrink your browser window and check that it folds gracefully into a clean mobile layout.
 - [ ] **Check 5: Dynamic Strand Branding**

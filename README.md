@@ -1,6 +1,6 @@
 # Weardale Together CIC — WordPress Platform Rebuild
 
-This repository contains the complete, production-ready WordPress classic PHP theme and core custom plugin for **Weardale Together CIC**, a grassroots Community Interest Company serving remote rural populations in the North Pennines.
+This repository contains the reconstructed WordPress theme, platform plugin, AI Studio development preview, local setup documentation and optional starter content for the Weardale Together website.
 
 ---
 
@@ -13,8 +13,8 @@ This repository uses a modern **dual-layer architecture** designed to bridge agi
 * **Execution**: Run `npm run dev` to boot the interactive preview server (runs on port 3000).
 * **Isolation Note**: This layer is purely for local and sandbox visual verification. It is never deployed to the live WordPress server and has zero runtime dependencies on PHP, Apache, or MySQL.
 
-### Layer 2: The Production CMS Engine (WordPress / PHP / MySQL)
-* **Purpose**: The actual production-ready deliverable containing our custom, accessible classic PHP theme and core system plugin.
+### Layer 2: The WordPress CMS Engine (WordPress / PHP / MySQL)
+* **Purpose**: Custom classic PHP theme and core system plugin designed for the live WordPress site.
 * **Location**: Located inside the `/wordpress/` directory.
   * **Theme (`weardale-together`)**: `/wordpress/wp-content/themes/weardale-together/`
   * **Plugin (`weardale-platform`)**: `/wordpress/wp-content/plugins/weardale-platform/`
@@ -30,45 +30,37 @@ Weardale Together operates under a strict isolation mandate:
 ---
 
 ## 📂 Project Structure
-```
-weardale-together/
-├── wordpress/
-│   └── wp-content/
-│       ├── themes/
-│       │   └── weardale-together/          # Production WordPress Classic PHP Theme
-│       └── plugins/
-│           └── weardale-platform/          # Custom Core Post Types & Taxonomy Plugins
-├── docs/
-│   ├── xampp-guide.md                      # Comprehensive Local XAMPP Setup & Portability Guide
-│   ├── editor-guide.md                     # Training manual for content editors & administrators
-│   └── PROJECT-STATUS.md                   # Primary living engineering status & handover document
-├── scripts/
-│   └── seed-db.sql                         # Database seed queries (safe for weardale_together_v2)
-├── src/                                    # Workbench prototyping React source files
-├── index.html                              # Workbench entry point
-├── package.json                            # Workbench dependencies & scripts
-└── README.md                               # This file
-```
+Every folder serves a specific role in our dual-environment model:
+
+* **`src/`**: Standalone React/TypeScript prototyping workbench source files. This represents the development-only visual preview sandbox used in AI Studio.
+* **`wordpress/`**: The core directory housing our custom WordPress deliverables.
+  * **`wordpress/wp-content/themes/weardale-together/`**: Custom classic PHP theme implementing our accessible design system and strand branding logic.
+  * **`wordpress/wp-content/plugins/weardale-platform/`**: Core system plugin registering custom post types (`weardale_event`), taxonomic strands, and administrative panels.
+* **`docs/`**: Operational, local setup, editorial, and status documentation.
+* **`scripts/`**: Hand-crafted SQL scripts and development utility sequences.
+* **`seed/`** *(Not present in repository root)*: Reference target for raw database SQL exports. This is kept out of active tracking to prevent bloating the Git repository.
+* **`release/`** *(Not present in repository root)*: Destination for generated production ZIP distribution archives (e.g., theme and plugin zip files), excluded from version control to maintain repository hygiene.
 
 ---
 
 ## ⚡ Local Setup & Testing Quickstart
-To get this site running locally, follow these simple steps (see `/docs/xampp-guide.md` for the full step-by-step instructions):
+To run the WordPress implementation locally under standard Apache/MySQL environments, follow this verified, sequential setup (see `/docs/xampp-guide.md` for the complete guide):
 
-1. **Prerequisites**: Download and install **XAMPP** (PHP 8.0+) and a fresh copy of **WordPress core**.
-2. **Directory Mapping**: Create a directory at `C:\xampp\htdocs\weardale-together\` and extract WordPress core files.
-3. **Custom Assets Copy**: Copy the theme and plugin from `/wordpress/wp-content/` in this repo to:
-   * `C:\xampp\htdocs\weardale-together\wp-content\themes\weardale-together\`
-   * `C:\xampp\htdocs\weardale-together\wp-content\plugins\weardale-platform\`
-4. **Isolated Database Creation**: In phpMyAdmin, create a database named `weardale_together_v2` with `utf8mb4_unicode_ci` collation.
-5. **Seeding**: Import the `/scripts/seed-db.sql` file into your `weardale_together_v2` database.
-6. **Local Config**: Set up a local, untracked `wp-config.php` file pointing to `weardale_together_v2`, generate fresh salts, and enable debugging.
-7. **Installer wizard**: Access `http://localhost/weardale-together/` in your browser to run the WordPress web installation.
-8. **Activation**:
-   * Go to **Plugins > Installed Plugins** and activate the **Weardale Platform** plugin.
-   * Go to **Appearance > Themes** and activate the **Weardale Together** theme.
-9. **Permalinks**: Go to **Settings > Permalinks**, choose the **Post Name** option, and click **Save Changes** (generates `.htaccess`).
-10. **Validation**: Check your local setup against the **Local Validation Checklist** inside `/docs/xampp-guide.md`!
+1. **Clone Repository**: Clone this repository directly into your local XAMPP public folder:
+   `C:\xampp\htdocs\weardale-together`
+2. **Create Database**: Open phpMyAdmin (`http://localhost/phpmyadmin/`) and create a new, empty database named `weardale_together_v2` with `utf8mb4_unicode_ci` collation.
+3. **Install WordPress Core**: Download WordPress core files (version 6.0+) and extract them inside:
+   `C:\xampp\htdocs\weardale-together\wordpress\`
+   *(Make sure you do not overwrite or delete our custom theme and plugin located inside the `/wordpress/wp-content/` directory).*
+4. **Configure Local Environment**: Rename `wp-config-sample.php` inside the `wordpress/` directory to `wp-config.php`. Edit it to set `DB_NAME` to `weardale_together_v2`, `DB_USER` to `root`, `DB_PASSWORD` to `''`, generate fresh keys/salts, and set `WP_DEBUG` to `true`.
+5. **Run Web Installer**: Access `http://localhost/weardale-together/wordpress/` in your web browser and complete the classic WordPress installation wizard.
+6. **Log into Admin**: Access the dashboard at `http://localhost/weardale-together/wordpress/wp-admin/`.
+7. **Activate Plugin**: Navigate to **Plugins > Installed Plugins** and activate the **Weardale Platform** plugin.
+8. **Activate Theme**: Navigate to **Appearance > Themes** and activate the **Weardale Together** theme.
+9. **Configure Permalinks**: Navigate to **Settings > Permalinks**, select **Post name**, and click **Save Changes**. This is a mandatory step that creates the local rewrite engine and `.htaccess` file.
+10. **Import Seed Data (Optional)**: Select the `weardale_together_v2` database in phpMyAdmin, navigate to the **Import** tab, and run `/scripts/seed-db.sql`.
+    * *Note: This is an optional local development seed intended only for a fresh WordPress installation using the standard `wp_` table prefix. It contains demonstration content and should not be treated as real, final client content, nor should it be imported repeatedly.*
+11. **Verify Setup**: Open `http://localhost/weardale-together/wordpress/` in your browser and verify the homepage, pages, and custom event listings render correctly.
 
 ---
 

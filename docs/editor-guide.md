@@ -52,6 +52,7 @@ To rearrange links in the main header or footer navigation:
 
 ## 5. Integrating Form Embeds (Mailchimp / Contact Forms)
 * **Mailchimp Newsletter**:
-  Copy your embedded HTML form code from your Mailchimp account dashboard. In WordPress, navigate to **Appearance > Widgets**, locate the **Footer Column 4** or **Newsletter Widget Area**, add a **Custom HTML** block, and paste the code.
+  *(Please Note: The default homepage newsletter subscription input is a visual placeholder awaiting formal Mailchimp integration. It is not operationally live in the default baseline setup).*
+  To wire it to a live list or replace it with your active sign-up form, copy your embedded HTML form code from your Mailchimp account dashboard. In WordPress, navigate to **Appearance > Widgets**, locate the **Footer Column 4** or **Newsletter Widget Area**, add a **Custom HTML** block, and paste your form code.
 * **Map embeds**:
   Go to Google Maps, search for your Stanhope location, click **Share > Embed a map**, copy the `<iframe>` code, and paste it into a **Custom HTML** block on your **Contact Us** page.

@@ -10,7 +10,7 @@ Weardale Together is a grassroots Community Interest Company (CIC) serving remot
 * **Purpose**: Provide a modern, accessible web portal presenting the organization's multiple community strands (Café, Creative Arts, Youth, and Playrooms) alongside direct events tracking and community news.
 * **Audience**: Isolated rural residents, local families, elderly community members, regional volunteers, and local authority funders.
 * **Design Philosophy**: Warm, organic, handcrafted, and human. Built around the "Different Rooms in the Same House" motif (where each of the four core strands has its own visual flavor, colors, and layout while sharing a cohesive parent architecture).
-* **Brief Alignment**: Rebuilt strictly to match the client brief's core specifications, including WCAG 2.2 AA accessibility standards, an interactive hub-and-spoke homepage diagram, and local portable hosting requirements.
+* **Brief Alignment**: Rebuilt to align with the client brief's core specifications, including WCAG 2.2 AA accessibility guidelines, an interactive hub-and-spoke homepage diagram, and local portable hosting requirements.
 
 ---
 
@@ -19,15 +19,15 @@ Weardale Together is a grassroots Community Interest Company (CIC) serving remot
 | Parameter | Value / Status |
 | :--- | :--- |
 | **Current Milestone** | Milestone 6: Core Repository Alignment & Local Portability Completed |
-| **Project Health** | Excellent (Clean linter feedback, successful builds, verified PHP templates) |
-| **Development Phase** | Local Testing & Handover Preparation (Pre-Sprint 7) |
+| **Project Health** | Local development baseline established. |
+| **Development Phase** | Local Testing & Handover Preparation |
 | **Repository** | `https://github.com/aquaviator/weardale-together` |
 | **Branch** | `main` |
 
 ---
 
 ## 3. Architecture & Dual-Environment Model
-The codebase is structured under an intentional **dual-layer model** separating development tooling from production CMS deliverables.
+The codebase is structured under an intentional **dual-layer model** separating development tooling from core CMS deliverables.
 
 ```
                   ┌──────────────────────────────────────────────────┐
@@ -36,10 +36,10 @@ The codebase is structured under an intentional **dual-layer model** separating 
                             │                              │
                             ▼                              ▼
              ┌──────────────────────────────┐┌──────────────────────────────┐
-             │ LAYER 1: DEVELOPMENT PREVIEW  ││ LAYER 2: PRODUCTION DELIVERABLE│
-             │ (Vite / React / TypeScript)  ││ (Classic WordPress CMS Engine│
+             │ LAYER 1: DEVELOPMENT PREVIEW  ││  LAYER 2: WORDPRESS ENGINE   │
+             │ (Vite / React / TypeScript)  ││ (Classic WordPress CMS Target│
              ├──────────────────────────────┤├──────────────────────────────┤
-             │ • Rapid visual prototyping   ││ • Production PHP 8.0+ / MySQL│
+             │ • Rapid visual prototyping   ││ • Target PHP 8.0+ / MariaDB  │
              │ • Sandbox visual playground  ││ • Custom WP Theme            │
              │ • Offline state engines      ││ • Custom Editorial Plugin     │
              │ • Local NodeJS / Vite server ││ • No Node/React dependencies │
@@ -49,48 +49,38 @@ The codebase is structured under an intentional **dual-layer model** separating 
 ### Layer 1: AI Studio Prototyping Workbench (Development Tooling)
 * **Components**: `/src/`, `index.html`, `package.json`, `package-lock.json`, `tsconfig.json`, `vite.config.ts`.
 * **Purpose**: Allows visual prototyping, fast feedback loops, and user flow validation within a sandboxed environment.
-* **Production Status**: Contains zero code that goes to the production WordPress live site. Node, Vite, React, and TypeScript are development tools only.
+* **Deployment Status**: Contains zero code that goes to the production WordPress live site. Node, Vite, React, and TypeScript are development tools only.
 
-### Layer 2: Production WordPress Implementation (Production Target)
+### Layer 2: WordPress CMS Target (Production Deliverables)
 * **Components**: `/wordpress/wp-content/themes/weardale-together/` and `/wordpress/wp-content/plugins/weardale-platform/`.
-* **Purpose**: The real-world classical WordPress CMS deployment target.
-* **Execution Environment**: Standard PHP 8.0+, Apache/Nginx, MariaDB/MySQL. Completely portable to general WordPress hosting.
+* **Purpose**: Core custom theme and system plugin for deployment to the live site.
+* **Execution Environment**: Standard PHP 8.0+, Apache/Nginx, MariaDB/MySQL. Portable to general WordPress hosting platforms.
 
 ---
 
 ## 4. Repository Structure
+Every folder serves a specific role in our dual-environment model:
 
-```
-weardale-together/
-├── .gitignore                      # Configured to track only custom assets & ignore core files
-├── README.md                       # Comprehensive onboarding & architectural document
-├── package.json                    # Workbench dependencies and scripts
-├── index.html                      # Workbench visual entry point
-├── src/                            # Workbench React/TS source files
-├── scripts/
-│   └── seed-db.sql                 # Agnostic MariaDB SQL query script to seed databases
-├── docs/
-│   ├── xampp-guide.md              # Local XAMPP installation, isolation & validation checklist
-│   ├── editor-guide.md             # Standard operating manual for non-technical content editors
-│   └── PROJECT-STATUS.md           # This status and handover document (living asset)
-└── wordpress/                      # Main WordPress content container
-    └── wp-content/
-        ├── plugins/
-        │   └── weardale-platform/  # Custom Editorial post types & admin dashboard columns
-        └── themes/
-            └── weardale-together/  # Custom Classic PHP Theme (Core layout & template parts)
-```
+* **`src/`**: Standalone React/TypeScript prototyping workbench source files. This represents the development-only visual preview sandbox used in AI Studio.
+* **`wordpress/`**: The core directory housing our custom WordPress deliverables.
+  * **`wordpress/wp-content/themes/weardale-together/`**: Custom classic PHP theme implementing our accessible design system and strand branding logic.
+  * **`wordpress/wp-content/plugins/weardale-platform/`**: Core system plugin registering custom post types (`weardale_event`), taxonomic strands, and administrative panels.
+* **`docs/`**: Operational, local setup, editorial, and status documentation.
+* **`scripts/`**: Hand-crafted SQL scripts and development utility sequences.
+* **`seed/`** *(Not present in repository root)*: Reference target for raw database SQL exports. This is kept out of active tracking to prevent bloating the Git repository.
+* **`release/`** *(Not present in repository root)*: Destination for generated production ZIP distribution archives (e.g., theme and plugin zip files), excluded from version control to maintain repository hygiene.
 
 ---
 
 ## 5. Local Development Environment Setup
 The reconstructed project is configured for isolated development inside a distinct folder and database to prevent conflicts.
 
-* **Target Local Path**: `C:\xampp\htdocs\weardale-together\`
+* **Repository / Folder**: `C:\xampp\htdocs\weardale-together\`
+* **WordPress Runtime Folder**: `C:\xampp\htdocs\weardale-together\wordpress\`
 * **Custom Theme Path**: `C:\xampp\htdocs\weardale-together\wordpress\wp-content\themes\weardale-together\`
 * **Custom Plugin Path**: `C:\xampp\htdocs\weardale-together\wordpress\wp-content\plugins\weardale-platform\`
 * **Isolated Database**: `weardale_together_v2`
-* **Local url**: `http://localhost/weardale-together/wordpress/` (or matching port if configured on non-standard ports)
+* **Local URL**: `http://localhost/weardale-together/wordpress/`
 
 ---
 
@@ -99,7 +89,7 @@ The older local installation and database are considered **strictly protected le
 
 * **Protected Path**: `C:\xampp\htdocs\WT\`
 * **Protected Database**: `weardale_together`
-* **Protected Local url**: `http://localhost/WT/`
+* **Protected Local URL**: `http://localhost/WT/`
 
 ### 🔒 Mandatory Database Safety Rule
 Before executing any database creation, seed, migration, drop, or truncate commands:
@@ -123,7 +113,7 @@ The reconstructed platform separates code display concerns from editorial logic.
 ### Custom Theme: `weardale-together`
 * **Responsibilities**: Primary layout renders (`header.php`, `footer.php`, `front-page.php`, `single.php`, `archive.php`).
 * **Design Motifs**: Employs CSS custom properties (`variables.css`) to swap color configurations depending on post category or Custom Strand terms (the "Different Rooms in the Same House" paradigm).
-* **Accessibility**: Fully keyboard navigability with visible tab-halos, a standard "Skip-to-Content" bypass skip-link, and strict semantic HTML landmarks (such as `<main role="main">` and `<nav>`).
+* **Accessibility**: Designed for keyboard navigability with visible tab-halos, a standard "Skip-to-Content" bypass skip-link, and strict semantic HTML landmarks (such as `<main role="main">` and `<nav>`).
 
 ### Custom Plugin: `weardale-platform`
 * **Responsibilities**: Editorial experience enhancements, custom data modeling, and meta configuration.
@@ -133,35 +123,36 @@ The reconstructed platform separates code display concerns from editorial logic.
 
 ---
 
-## 9. Completed Milestones
-- [x] **Repository Reconstruction**: Structured clean split between development workbench and WordPress core folders.
-- [x] **Theme Handcrafting**: Built classic templates with custom SVG hub-and-spoke interactive diagram and mobile responsive grid.
-- [x] **Plugin Development**: Implemented `weardale-platform` plugin with Custom Post Types, Meta Boxes, and nonces.
-- [x] **Environmental Isolation**: Separated legacy `WT` environment from new `weardale-together` environment.
-- [x] **Database Isolation**: Protected the legacy database and set up local `weardale_together_v2` database target.
-- [x] **Seed Scripts**: Created portable database seeds inside `scripts/seed-db.sql`.
-- [x] **Documentation**: Produced a comprehensive `xampp-guide.md` and content-focused `editor-guide.md`.
+## 9. Verified & Completed States
+The local development environment baseline has been established. The following components and operations have been successfully verified on a local system:
+
+- [x] **WordPress Core Core Integration**: WordPress core installs successfully in the isolated folder layout.
+- [x] **Theme Activation**: The custom theme activates successfully without triggering PHP execution errors or broken layout paths.
+- [x] **Plugin Activation**: The custom plugin activates successfully, registering the `weardale_event` custom post type and `strand` taxonomies.
+- [x] **Database Isolation**: Complete isolation of the legacy `weardale_together` database and folder structure from `weardale_together_v2` is verified.
+- [x] **Database Seeding**: The initial development seed content imports successfully into the empty WordPress tables post-installation.
 
 ---
 
-## 10. Outstanding Work (Roadmap)
+## 10. Outstanding Work & Future Phases
+Before this project is ready for formal deployment, several engineering audits and validation stages remain outstanding.
 
-### 🔴 High Priority
-* **WP-CLI Migration Scripts**: Finalize automated, robust CLI methods for local content setups.
-* **Production Salt Setup**: Prepare fresh environment configurations for migration to live server.
+### 🔴 High Priority (Remaining Technical Milestones)
+* **Accessibility Audit**: Formally audit the theme template renders against WCAG 2.2 AA checklists using screen readers and automated evaluation tools.
+* **Browser Compatibility Testing**: Verify CSS grid, flex, and custom properties render uniformly across all modern desktop and mobile browsers (Chrome, Safari, Firefox, Edge).
+* **Hosting Migration Validation**: Validate backup, restoration, and database path translation procedures on target remote hosts.
 
 ### 🟡 Medium Priority
-* **Events refinement**: Establish more advanced date sorting filters (such as hiding past events automatically) inside `whats-happening.php`.
-* **Visual Media Seeding**: Setup responsive fallback images within the media library for local installations.
-
-### 🟢 Future Enhancements
-* **Mailchimp Block Embed integration**: Polish Gutenberg HTML custom block styles to wrap the newsletter signup cleanly.
+* **Performance Testing**: Measure PageSpeed, database query load times, and implement standard static object caching policies.
+* **Security Review**: Audit PHP theme scripts, form sanitation inputs, and admin permissions hierarchy.
+* **Client Acceptance Testing**: Conduct full visual walk-throughs and content editing onboarding cycles with Weardale Together stakeholders.
 
 ---
 
 ## 11. Known Issues & Limitations
-* **Mailchimp Embed Code**: The homepage newsletter form is a secure placeholder. It functions dynamically locally and must be wired to real audience action links in live server widgets.
-* **Mock Event Database Simulators**: The AI Studio React Preview has an interactive event generator that outputs SQL queries. These are visually precise for testing but do not modify the real local WordPress database automatically.
+* **Mailchimp Embed Code**: The homepage newsletter section is a placeholder awaiting Mailchimp integration. It does not possess operational live synchronization capabilities in this baseline state and must be wired to real audience registration action endpoints in the production stage.
+* **Starter Database Seed**: The file `/scripts/seed-db.sql` is an optional local development seed intended only for a fresh WordPress installation using the standard `wp_` table prefix. It contains demonstration content, should not be treated as real or final client content, and is not designed to be imported repeatedly over existing tables.
+* **Mock Event Database Simulators**: The AI Studio React Preview has an interactive event generator that outputs SQL queries. These are visually precise for development sandboxing but do not modify the real local WordPress database automatically.
 
 ---
 
