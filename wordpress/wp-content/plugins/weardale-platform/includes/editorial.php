@@ -28,6 +28,8 @@ $modules = array(
     'directory-meta.php',
     'directory-queries.php',
     'directory-seed.php',
+    'news-meta.php',
+    'news-seed.php',
     'site-setup.php',
 );
 

@@ -1,8 +1,6 @@
 <?php
 /**
- * The template for displaying archive pages.
- *
- * Updated to match the gorgeous, high-end editorial news & community storytelling style.
+ * The template for displaying search results pages.
  *
  * @package WordPress
  * @subpackage Weardale_Together
@@ -18,18 +16,21 @@ get_header();
 
 <main id="primary-content" class="site-main" role="main" style="background-color: var(--bg-primary);">
     
-    <!-- Editorial Archive Header -->
+    <!-- Editorial Search Header -->
     <header class="journal-header" style="background-color: var(--color-cream); border-bottom: 1px solid var(--color-tan); padding: 5rem 0 4rem 0;">
         <div class="container" style="text-align: center;">
             <span class="badge badge-creative" style="margin-bottom: 1rem; padding: 0.4rem 1.25rem; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.05em; border-radius: var(--border-radius-pill);">
-                <?php esc_html_e( 'Journal Archive', 'weardale-together' ); ?>
+                <?php esc_html_e( 'Search Results', 'weardale-together' ); ?>
             </span>
-            
-            <?php
-            the_archive_title( '<h1 class="font-display" style="font-size: 3.25rem; color: var(--color-forest); margin-top: 0; margin-bottom: 1rem; line-height: 1.1; font-weight: normal;">', '</h1>' );
-            the_archive_description( '<div class="archive-description" style="font-family: var(--font-body); font-size: 1.2rem; color: var(--text-light); max-width: 600px; margin: 0 auto;">', '</div>' );
-            ?>
-            
+            <h1 class="font-display" style="font-size: 3rem; color: var(--color-forest); margin-top: 0; margin-bottom: 1rem; line-height: 1.1; font-weight: normal;">
+                <?php
+                /* translators: %s: search query. */
+                printf( esc_html__( 'Results for: %s', 'weardale-together' ), '<span style="font-style: italic; color: var(--text-primary);">' . esc_html( get_search_query() ) . '</span>' );
+                ?>
+            </h1>
+            <p style="font-family: var(--font-body); font-size: 1.2rem; color: var(--text-light); max-width: 600px; margin: 0 auto;">
+                <?php esc_html_e( 'Discover articles, projects, and activities connecting residents throughout the North Pennines.', 'weardale-together' ); ?>
+            </p>
             <div style="width: 80px; height: 3px; background-color: var(--color-tan); margin: 2rem auto 0 auto;"></div>
         </div>
     </header>
@@ -41,11 +42,7 @@ get_header();
                 
                 <!-- Category Filter Pills -->
                 <div class="category-pills-container" style="display: flex; gap: 0.5rem; flex-wrap: wrap; flex-grow: 1;" aria-label="<?php esc_attr_e( 'Filter stories by category', 'weardale-together' ); ?>">
-                    <?php
-                    $is_main_journal = is_home() && ! is_category();
-                    $all_stories_style = $is_main_journal ? 'background-color: var(--color-forest); color: var(--color-cream); border-color: var(--color-forest);' : 'background-color: var(--color-cream); color: var(--text-primary); border-color: var(--color-tan);';
-                    ?>
-                    <a href="<?php echo esc_url( home_url( '/news-blog/' ) ); ?>" class="badge" style="padding: 0.5rem 1rem; text-decoration: none; font-size: 0.9rem; border-radius: var(--border-radius-pill); font-weight: 500; <?php echo esc_attr( $all_stories_style ); ?> border: 1px solid var(--color-tan);">
+                    <a href="<?php echo esc_url( home_url( '/news-blog/' ) ); ?>" class="badge" style="padding: 0.5rem 1rem; text-decoration: none; font-size: 0.9rem; border-radius: var(--border-radius-pill); font-weight: 500; background-color: var(--color-cream); color: var(--text-primary); border: 1px solid var(--color-tan);">
                         <?php esc_html_e( 'All Stories', 'weardale-together' ); ?>
                     </a>
                     <?php
@@ -55,9 +52,7 @@ get_header();
                     ) );
                     if ( ! empty( $cats ) ) {
                         foreach ( $cats as $c ) {
-                            $is_active = is_category( $c->term_id );
-                            $pill_style = $is_active ? 'background-color: var(--color-forest); color: var(--color-cream); border-color: var(--color-forest);' : 'background-color: var(--color-cream); color: var(--text-primary); border-color: var(--color-tan);';
-                            echo '<a href="' . esc_url( get_category_link( $c->term_id ) ) . '" class="badge" style="padding: 0.5rem 1rem; text-decoration: none; font-size: 0.9rem; border-radius: var(--border-radius-pill); font-weight: 500; ' . esc_attr( $pill_style ) . ' border: 1px solid var(--color-tan); transition: all 0.2s ease;">' . esc_html( $c->name ) . '</a>';
+                            echo '<a href="' . esc_url( get_category_link( $c->term_id ) ) . '" class="badge" style="padding: 0.5rem 1rem; text-decoration: none; font-size: 0.9rem; border-radius: var(--border-radius-pill); font-weight: 500; background-color: var(--color-cream); color: var(--text-primary); border: 1px solid var(--color-tan); transition: all 0.2s ease;">' . esc_html( $c->name ) . '</a>';
                         }
                     }
                     ?>
@@ -110,7 +105,7 @@ get_header();
                                         <?php echo get_the_date(); ?>
                                     </span>
 
-                                    <!-- Category badge (first non-uncategorized one) -->
+                                    <!-- Category badge -->
                                     <?php
                                     $item_cats = get_the_category();
                                     if ( ! empty( $item_cats ) ) {
@@ -148,7 +143,7 @@ get_header();
                 </div>
 
                 <!-- Custom Pagination -->
-                <div class="pagination" style="margin-top: 5rem; display: flex; justify-content: center; gap: 0.5rem;" aria-label="<?php esc_attr_e( 'Archive pagination', 'weardale-together' ); ?>">
+                <div class="pagination" style="margin-top: 5rem; display: flex; justify-content: center; gap: 0.5rem;" aria-label="<?php esc_attr_e( 'Search pagination', 'weardale-together' ); ?>">
                     <?php
                     echo paginate_links( array(
                         'prev_text' => '&larr; Previous',
@@ -162,12 +157,12 @@ get_header();
                 <!-- Cozy Empty State Notice -->
                 <div class="empty-state-notice" style="background-color: var(--color-white); border: 1px dashed var(--color-tan); padding: 5rem 3rem; text-align: center; border-radius: var(--border-radius-md); max-width: 600px; margin: 0 auto;">
                     <svg width="48" height="48" fill="none" stroke="var(--color-tan)" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto 1.5rem; display: block;" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    <h3 class="font-display" style="font-size: 1.75rem; color: var(--color-forest); margin-top: 0; margin-bottom: 1rem; font-weight: normal;"><?php esc_html_e( 'No Stories Found', 'weardale-together' ); ?></h3>
+                    <h3 class="font-display" style="font-size: 1.75rem; color: var(--color-forest); margin-top: 0; margin-bottom: 1rem; font-weight: normal;"><?php esc_html_e( 'No Results Found', 'weardale-together' ); ?></h3>
                     <p style="font-size: 1.1rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 2rem;">
-                        <?php esc_html_e( 'We couldn’t find any stories matching your criteria. Try adjusting your search keywords or browsing different categories.', 'weardale-together' ); ?>
+                        <?php esc_html_e( 'We couldn’t find any articles matching your search. Please check your spelling or try standard topics like "cafe", "school", "railway", or "crafts".', 'weardale-together' ); ?>
                     </p>
                     <a href="<?php echo esc_url( home_url( '/news-blog/' ) ); ?>" class="btn btn-secondary" style="padding: 0.6rem 1.5rem;">
-                        <?php esc_html_e( 'Clear Search & Filters', 'weardale-together' ); ?>
+                        <?php esc_html_e( 'Return to Journal', 'weardale-together' ); ?>
                     </a>
                 </div>
 

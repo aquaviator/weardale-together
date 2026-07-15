@@ -18,9 +18,9 @@ Weardale Together is a grassroots Community Interest Company (CIC) serving remot
 
 | Parameter | Value / Status |
 | :--- | :--- |
-| **Current Milestone** | Milestone 10: Community Directory Foundation Completed |
-| **Project Health** | Highly responsive event calendar and community directory active. |
-| **Development Phase** | Client Review & Accessibility Audit Preparation |
+| **Current Milestone** | Milestone 11: Editorial News & Stories Platform Completed |
+| **Project Health** | Excellent, featuring high-end news storytelling and unified relationship maps. |
+| **Development Phase** | Production Release Preparation & Accessibility Audit Preparation |
 | **Repository** | `https://github.com/aquaviator/weardale-together` |
 | **Branch** | `main` |
 
@@ -164,6 +164,15 @@ The local development environment baseline has been established. The following c
     - Integrated a read-only fallback menu function `weardale_together_fallback_menu()` in `header.php`.
     - Dynamically retrieves the directory archive link with `get_post_type_archive_link( 'weardale_directory' )` and events archive link.
     - Properly escaped, performs no database writes, and is instantly replaced once a menu is formally assigned to the `primary-menu` location.
+- [x] **Editorial News & Stories Platform (Sprint 11)**:
+  - **Standard Post Extension**: Enhanced the native WordPress `post` system with rich Story Editorial Metadata without introducing redundant custom post types, aligning with client requirements.
+  - **Secure Editorial Controls**: Implemented a styled administration meta editor panel (`news-meta.php`) with robust nonce checks, full sanitization, and user capability authorization for Programme, Event, and Directory associations.
+  - **Repeat-Safe Seed Framework**: Created a dynamic seeder (`news-seed.php`) that automatically registers standard categories (Cafe, Creative Arts, Young People, etc.) and populates 10 high-quality community story articles. Identifies existing stories via `_weardale_demo_key` to prevent duplication and dynamically binds relationships using listing keys.
+  - **Unified & Accessible Public Views**:
+    - *home.php*: Crafted a high-end editorial Journal archive featuring active-state category navigation pills, search filters, an elegant Featured Story spotlight banner, a three-column responsive card grid, and accessible pagination.
+    - *archive.php & search.php*: Oversaw identical editorial designs for category archives, tags, and keyword results with beautiful empty-state notices.
+    - *single.php*: Structured the single post view to display publishing metadata and a "Community Connections" panel dynamically linking related programmes, events, and facilities.
+  - **Homepage Spotlight Integration**: Updated `template-parts/homepage/news.php` to present 1 prominent Featured Story followed by 3 Latest Stories in a responsive bento layout, preventing any duplicate post display.
 
 ---
 

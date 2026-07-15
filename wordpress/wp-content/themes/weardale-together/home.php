@@ -1,8 +1,8 @@
 <?php
 /**
- * The template for displaying archive pages.
+ * The template for displaying the News & Stories (Our Journal) index.
  *
- * Updated to match the gorgeous, high-end editorial news & community storytelling style.
+ * Designed as a rich, warm, editorial community storytelling layout.
  *
  * @package WordPress
  * @subpackage Weardale_Together
@@ -14,25 +14,112 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 get_header();
+
+// Fetch the Featured Story (only display on page 1 and when no keyword search is active)
+$is_paged = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1;
+$search_query = get_search_query();
+
+$featured_id = 0;
+if ( 1 === $is_paged && empty( $search_query ) ) {
+    $featured_query = new WP_Query( array(
+        'post_type'      => 'post',
+        'posts_per_page' => 1,
+        'meta_key'       => '_weardale_featured_post',
+        'meta_value'     => '1',
+        'post_status'    => 'publish',
+    ) );
+
+    if ( $featured_query->have_posts() ) {
+        $featured_query->the_post();
+        $featured_id = get_the_ID();
+    }
+    wp_reset_postdata();
+}
 ?>
 
 <main id="primary-content" class="site-main" role="main" style="background-color: var(--bg-primary);">
     
-    <!-- Editorial Archive Header -->
+    <!-- Editorial Journal Header -->
     <header class="journal-header" style="background-color: var(--color-cream); border-bottom: 1px solid var(--color-tan); padding: 5rem 0 4rem 0;">
         <div class="container" style="text-align: center;">
             <span class="badge badge-creative" style="margin-bottom: 1rem; padding: 0.4rem 1.25rem; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.05em; border-radius: var(--border-radius-pill);">
-                <?php esc_html_e( 'Journal Archive', 'weardale-together' ); ?>
+                <?php esc_html_e( 'Our Journal', 'weardale-together' ); ?>
             </span>
-            
-            <?php
-            the_archive_title( '<h1 class="font-display" style="font-size: 3.25rem; color: var(--color-forest); margin-top: 0; margin-bottom: 1rem; line-height: 1.1; font-weight: normal;">', '</h1>' );
-            the_archive_description( '<div class="archive-description" style="font-family: var(--font-body); font-size: 1.2rem; color: var(--text-light); max-width: 600px; margin: 0 auto;">', '</div>' );
-            ?>
-            
+            <h1 class="font-display" style="font-size: 3.5rem; color: var(--color-forest); margin-top: 0; margin-bottom: 1rem; line-height: 1.1; font-weight: normal;">
+                <?php esc_html_e( 'Stories From the Heart of the Dale', 'weardale-together' ); ?>
+            </h1>
+            <p style="font-family: var(--font-body); font-size: 1.25rem; color: var(--text-light); max-width: 650px; margin: 0 auto;">
+                <?php esc_html_e( 'Sharing the slow rhythms, quiet victories, and creative expressions of community life throughout Weardale.', 'weardale-together' ); ?>
+            </p>
             <div style="width: 80px; height: 3px; background-color: var(--color-tan); margin: 2rem auto 0 auto;"></div>
         </div>
     </header>
+
+    <!-- Featured Story Spotlight (Only on Page 1) -->
+    <?php if ( $featured_id ) : ?>
+        <?php
+        // Re-query/setup the post details to render properly
+        $post = get_post( $featured_id );
+        setup_postdata( $post );
+        ?>
+        <section class="featured-story-section" style="padding: 4rem 0; border-bottom: 1px solid var(--color-tan); background-color: var(--color-white);">
+            <div class="container">
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center;" class="featured-grid">
+                    
+                    <!-- Left: Featured Image with Polaroid Feel -->
+                    <div class="featured-image-container" style="position: relative;">
+                        <?php if ( has_post_thumbnail() ) : ?>
+                            <div style="border: 1px solid var(--color-tan); padding: 12px; background: var(--color-cream); border-radius: var(--border-radius-md); box-shadow: 0 10px 25px rgba(59,92,58,0.06);">
+                                <?php the_post_thumbnail( 'large', array( 'style' => 'width:100%; height:auto; display:block; border-radius: var(--border-radius-sm); border: 1px solid var(--color-tan);' ) ); ?>
+                            </div>
+                        <?php else : ?>
+                            <div style="aspect-ratio: 16/10; background-color: var(--color-cream); border: 2px dashed var(--color-tan); border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; color: var(--text-light);">
+                                <span style="font-family: var(--font-headings); font-size: 1.25rem;"><?php esc_html_e( 'Weardale Together Story', 'weardale-together' ); ?></span>
+                            </div>
+                        <?php endif; ?>
+                        <span class="badge" style="position: absolute; top: -10px; left: 30px; background-color: #BA7D0C; color: var(--color-cream); font-size: 0.85rem; padding: 0.4rem 1rem; font-weight: bold; border-radius: var(--border-radius-sm); text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                            <?php esc_html_e( 'Featured Story', 'weardale-together' ); ?>
+                        </span>
+                    </div>
+
+                    <!-- Right: Content -->
+                    <div class="featured-text">
+                        <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <?php
+                            $post_cats = get_the_category();
+                            if ( ! empty( $post_cats ) ) {
+                                foreach ( $post_cats as $cat ) {
+                                    echo '<a href="' . esc_url( get_category_link( $cat->term_id ) ) . '" class="badge badge-creative" style="text-decoration: none; font-size: 0.8rem; background-color: var(--color-cream); color: var(--color-forest); border: 1px solid var(--color-tan);">' . esc_html( $cat->name ) . '</a>';
+                                }
+                            }
+                            ?>
+                        </div>
+
+                        <h2 class="font-display" style="font-size: 2.5rem; color: var(--color-forest); line-height: 1.1; margin-top: 0; margin-bottom: 1.5rem; font-weight: normal;">
+                            <a href="<?php the_permalink(); ?>" style="text-decoration: none; color: inherit;">
+                                <?php the_title(); ?>
+                            </a>
+                        </h2>
+
+                        <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">
+                            <?php echo esc_html( get_the_excerpt() ); ?>
+                        </p>
+
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                            <a href="<?php the_permalink(); ?>" class="btn btn-primary" style="padding: 0.75rem 2rem;">
+                                <?php esc_html_e( 'Read Full Story', 'weardale-together' ); ?>
+                            </a>
+                            <span style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-light);">
+                                <?php echo get_the_date(); ?>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <?php wp_reset_postdata(); ?>
+    <?php endif; ?>
 
     <!-- Search & Filters Bar Section -->
     <section class="journal-filters-section" style="padding: 2.5rem 0; border-bottom: 1px solid var(--color-tan); background-color: var(--bg-primary);">
@@ -87,6 +174,11 @@ get_header();
                     <?php
                     while ( have_posts() ) :
                         the_post();
+                        
+                        // Skip the featured post in the grid to avoid duplicate listing on page 1
+                        if ( get_the_ID() === $featured_id ) {
+                            continue;
+                        }
                         ?>
                         <article id="post-<?php the_ID(); ?>" <?php post_class( 'card' ); ?> style="display: flex; flex-direction: column; background-color: var(--color-white); border: 1px solid var(--color-tan); border-radius: var(--border-radius-md); overflow: hidden; box-shadow: 0 4px 12px rgba(59,92,58,0.03); transition: transform 0.2s ease, box-shadow 0.2s ease;">
                             
@@ -148,7 +240,7 @@ get_header();
                 </div>
 
                 <!-- Custom Pagination -->
-                <div class="pagination" style="margin-top: 5rem; display: flex; justify-content: center; gap: 0.5rem;" aria-label="<?php esc_attr_e( 'Archive pagination', 'weardale-together' ); ?>">
+                <div class="pagination" style="margin-top: 5rem; display: flex; justify-content: center; gap: 0.5rem;" aria-label="<?php esc_attr_e( 'Journal pagination', 'weardale-together' ); ?>">
                     <?php
                     echo paginate_links( array(
                         'prev_text' => '&larr; Previous',
