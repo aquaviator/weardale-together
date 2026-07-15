@@ -26,12 +26,12 @@
                 the_custom_logo();
             } else {
                 ?>
-                <span class="custom-logo-fallback" style="background-color: var(--color-forest); border-radius: 50%; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-family: var(--font-headings); font-size: 1.25rem;">WT</span>
-                <p class="site-title">
-                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" style="text-decoration: none; display: flex; align-items: center; gap: 0.75rem;">
+                    <span class="custom-logo-fallback" style="background-color: var(--color-forest); border-radius: 50%; width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center; color: var(--color-cream); font-weight: bold; font-family: var(--font-headings); font-size: 1.15rem; transition: var(--transition-smooth); box-shadow: 0 2px 8px rgba(59, 92, 58, 0.15);">WT</span>
+                    <p class="site-title" style="margin: 0; color: var(--color-forest); font-family: var(--font-headings); font-size: 1.5rem; line-height: 1; font-weight: normal;">
                         <?php bloginfo( 'name' ); ?>
-                    </a>
-                </p>
+                    </p>
+                </a>
                 <?php
             }
             ?>

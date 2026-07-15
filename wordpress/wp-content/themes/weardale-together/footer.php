@@ -16,8 +16,18 @@
             
             <!-- Column 1: Organization Details -->
             <div>
-                <h3 class="font-display" style="font-size: 1.6rem; margin-bottom: 1rem; color: var(--color-cream);">Weardale Together</h3>
-                <p style="font-size: 1rem; line-height: 1.5; color: var(--color-cream); opacity: 0.9;">
+                <div class="footer-logo-container">
+                    <?php
+                    if ( has_custom_logo() ) {
+                        the_custom_logo();
+                    } else {
+                        ?>
+                        <h3 class="font-display" style="font-size: 1.65rem; margin: 0 0 0.5rem 0; color: var(--color-cream);"><?php bloginfo( 'name' ); ?></h3>
+                        <?php
+                    }
+                    ?>
+                </div>
+                <p style="font-size: 1rem; line-height: 1.5; color: var(--color-cream); opacity: 0.9; margin-top: 0.5rem;">
                     <?php esc_html_e( 'A grassroots Community Interest Company serving rural communities in the North Pennines.', 'weardale-together' ); ?>
                 </p>
                 <p style="font-size: 0.9rem; color: var(--color-tan); margin-top: 1rem;">
