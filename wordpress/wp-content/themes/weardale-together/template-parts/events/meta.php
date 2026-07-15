@@ -228,5 +228,71 @@ if ( ! empty( $meta['end_date'] ) && $meta['end_date'] !== $meta['start_date'] )
             </div>
         <?php endif; ?>
 
+        <!-- Upcoming Occurrences / Exception Listings -->
+        <?php
+        if ( function_exists( 'weardale_platform_query_occurrences' ) ) {
+            $upcoming_occs = weardale_platform_query_occurrences( array(
+                'event_id'          => $post_id,
+                'scope'             => 'upcoming',
+                'limit'             => 5,
+                'include_cancelled' => true,
+            ) );
+            
+            if ( ! empty( $upcoming_occs ) ) :
+            ?>
+                <div class="upcoming-occurrences-section" style="
+                    margin-top: 1.75rem;
+                    border-top: 1px dashed var(--color-tan);
+                    padding-top: 1.25rem;
+                ">
+                    <h4 style="
+                        margin: 0 0 0.75rem 0;
+                        font-size: 0.8rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.05em;
+                        color: var(--text-secondary);
+                        font-weight: 700;
+                    ">
+                        🗓️ <?php esc_html_e( 'Upcoming in this Series', 'weardale-together' ); ?>
+                    </h4>
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <?php foreach ( $upcoming_occs as $occ ) : 
+                            $occ_time = date( 'l, M j @ H:i', strtotime( $occ['occurrence_start'] ) );
+                            $is_cancelled = $occ['occurrence_status'] === 'cancelled';
+                            $is_rescheduled = $occ['occurrence_status'] === 'rescheduled';
+                        ?>
+                            <li style="
+                                font-size: 0.85rem;
+                                padding: 0.4rem 0.6rem;
+                                border-radius: 4px;
+                                background: var(--color-white);
+                                border: 1px solid var(--color-tan);
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                opacity: <?php echo $is_cancelled ? '0.6' : '1'; ?>;
+                            ">
+                                <span style="<?php echo $is_cancelled ? 'text-decoration: line-through;' : ''; ?>">
+                                    <strong><?php echo esc_html( $occ_time ); ?></strong>
+                                </span>
+                                
+                                <?php if ( $is_cancelled ) : ?>
+                                    <span style="color: #dc2626; font-size: 0.7rem; font-weight: 700; background: #fee2e2; padding: 0.1rem 0.35rem; border-radius: 3px;">
+                                        ❌ <?php esc_html_e( 'Cancelled Slot', 'weardale-together' ); ?>
+                                    </span>
+                                <?php elseif ( $is_rescheduled ) : ?>
+                                    <span style="color: #2563eb; font-size: 0.7rem; font-weight: 700; background: #dbeafe; padding: 0.1rem 0.35rem; border-radius: 3px;">
+                                        🔁 <?php esc_html_e( 'Rescheduled', 'weardale-together' ); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php
+            endif;
+        }
+        ?>
+
     </div>
 </div>
