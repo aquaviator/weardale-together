@@ -33,6 +33,9 @@ get_header();
     // Section 4 – Programme Highlights Section (Strand Spotlight Cards)
     get_template_part( 'template-parts/homepage/programme-areas' );
 
+    // Section 4.5 – Community Directory Entry Point
+    get_template_part( 'template-parts/homepage/directory-promo' );
+
     // Section 5 – About Weardale Together Section
     get_template_part( 'template-parts/homepage/about' );
 

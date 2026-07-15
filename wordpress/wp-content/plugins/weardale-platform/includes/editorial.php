@@ -28,6 +28,7 @@ $modules = array(
     'directory-meta.php',
     'directory-queries.php',
     'directory-seed.php',
+    'site-setup.php',
 );
 
 foreach ( $modules as $module ) {
