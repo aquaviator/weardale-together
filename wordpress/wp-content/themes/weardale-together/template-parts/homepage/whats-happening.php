@@ -7,17 +7,10 @@
  * @since 1.0.0
  */
 
-// Custom WP_Query for WT's own upcoming events using platform query helper
-$events_query = function_exists( 'weardale_platform_get_events' ) 
-    ? weardale_platform_get_events( array( 'posts_per_page' => 3, 'scope' => 'upcoming' ) )
-    : new WP_Query( array(
-        'post_type'      => 'weardale_event',
-        'posts_per_page' => 3,
-        'meta_key'       => '_event_date',
-        'orderby'        => 'meta_value',
-        'order'          => 'ASC',
-        'post_status'    => 'publish',
-    ) );
+// Query the next 3 upcoming occurrences
+$upcoming_occurrences = function_exists( 'weardale_platform_query_occurrences' )
+    ? weardale_platform_query_occurrences( array( 'limit' => 3, 'scope' => 'upcoming', 'include_cancelled' => false ) )
+    : array();
 ?>
 
 <section class="section-padding" style="background-color: var(--color-white); border-bottom: 1px solid var(--color-tan);">
@@ -35,14 +28,12 @@ $events_query = function_exists( 'weardale_platform_get_events' )
             </div>
         </div>
 
-        <?php if ( $events_query->have_posts() ) : ?>
+        <?php if ( ! empty( $upcoming_occurrences ) ) : ?>
             <div class="grid grid-3">
                 <?php
-                while ( $events_query->have_posts() ) :
-                    $events_query->the_post();
-                    get_template_part( 'template-parts/events/card' );
-                endwhile;
-                wp_reset_postdata();
+                foreach ( $upcoming_occurrences as $occ ) :
+                    get_template_part( 'template-parts/events/card', null, array( 'occurrence' => $occ ) );
+                endforeach;
                 ?>
             </div>
         <?php else : ?>

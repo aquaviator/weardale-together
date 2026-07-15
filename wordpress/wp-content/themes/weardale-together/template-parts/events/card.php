@@ -13,19 +13,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $post_id = get_the_ID();
 
+// Retrieve occurrence context if passed, or fall back to querying next upcoming occurrence
+$occurrence = isset( $args['occurrence'] ) ? $args['occurrence'] : null;
+
+if ( ! $occurrence && function_exists( 'weardale_platform_get_next_occurrence' ) ) {
+    $occurrence = weardale_platform_get_next_occurrence( $post_id );
+}
+
+$card_post_id = $occurrence ? $occurrence['event_id'] : $post_id;
+
 // Retrieve all metadata safely via plugin helper
-$meta = function_exists( 'weardale_platform_get_event_meta' ) 
-    ? weardale_platform_get_event_meta( $post_id ) 
-    : array(
-        'start_date' => get_post_meta( $post_id, '_event_date', true ),
-        'time_text' => get_post_meta( $post_id, '_event_time', true ),
-        'venue_name' => get_post_meta( $post_id, '_event_location', true ),
-        'cost_text' => get_post_meta( $post_id, '_event_cost', true ),
-        'booking_status' => 'no_booking_required',
+$meta = ( $occurrence && isset( $occurrence['meta'] ) )
+    ? $occurrence['meta']
+    : ( function_exists( 'weardale_platform_get_event_meta' ) 
+        ? weardale_platform_get_event_meta( $card_post_id ) 
+        : array(
+            'start_date' => get_post_meta( $card_post_id, '_event_date', true ),
+            'time_text' => get_post_meta( $card_post_id, '_event_time', true ),
+            'venue_name' => get_post_meta( $card_post_id, '_event_location', true ),
+            'cost_text' => get_post_meta( $card_post_id, '_event_cost', true ),
+            'booking_status' => 'no_booking_required',
+            'all_day' => get_post_meta( $card_post_id, '_event_all_day', true ),
+        )
     );
 
 // Map the strand taxonomy to visual design accents
-$strands = get_the_terms( $post_id, 'strand' );
+$strands = get_the_terms( $card_post_id, 'strand' );
 $accent_color = 'var(--color-forest)';
 $badge_class = 'badge-shoots';
 $strand_name = 'WT Event';
@@ -55,14 +68,43 @@ if ( ! empty( $strands ) && ! is_wp_error( $strands ) ) {
     }
 }
 
-// Date formatting
-$formatted_date = ! empty( $meta['start_date'] ) 
-    ? date( 'l, F j, Y', strtotime( $meta['start_date'] ) ) 
-    : __( 'Date to be announced', 'weardale-together' );
+// Date formatting using wp_date (Phase 11)
+$time_text = isset( $meta['time_text'] ) ? $meta['time_text'] : '';
 
-if ( ! empty( $meta['end_date'] ) && $meta['end_date'] !== $meta['start_date'] ) {
-    $formatted_date .= ' - ' . date( 'F j, Y', strtotime( $meta['end_date'] ) );
+if ( $occurrence ) {
+    $start_ts = strtotime( $occurrence['occurrence_start'] );
+    $end_ts   = strtotime( $occurrence['occurrence_end'] );
+    $formatted_date = wp_date( 'l, F j, Y', $start_ts );
+    if ( ! empty( $occurrence['occurrence_end'] ) ) {
+        $start_day = wp_date( 'Y-m-d', $start_ts );
+        $end_day   = wp_date( 'Y-m-d', $end_ts );
+        if ( $start_day !== $end_day ) {
+            $formatted_date .= ' - ' . wp_date( 'F j, Y', $end_ts );
+        }
+    }
+    if ( empty( $meta['all_day'] ) ) {
+        $time_text = wp_date( 'H:i', $start_ts ) . ' - ' . wp_date( 'H:i', $end_ts );
+    } else {
+        $time_text = '';
+    }
+} else {
+    $formatted_date = ! empty( $meta['start_date'] ) 
+        ? wp_date( 'l, F j, Y', strtotime( $meta['start_date'] ) ) 
+        : __( 'Date to be announced', 'weardale-together' );
+
+    if ( ! empty( $meta['end_date'] ) && $meta['end_date'] !== $meta['start_date'] ) {
+        $formatted_date .= ' - ' . wp_date( 'F j, Y', strtotime( $meta['end_date'] ) );
+    }
 }
+
+$booking_status = ( $occurrence && $occurrence['occurrence_status'] === 'cancelled' ) 
+    ? 'cancelled' 
+    : ( isset( $meta['booking_status'] ) ? $meta['booking_status'] : 'no_booking_required' );
+
+$permalink = $occurrence ? $occurrence['permalink'] : get_permalink( $card_post_id );
+$title = get_the_title( $card_post_id );
+$excerpt = get_the_excerpt( $card_post_id );
+$has_thumb = $occurrence ? ! empty( $occurrence['thumbnail_url'] ) : has_post_thumbnail( $card_post_id );
 ?>
 
 <article class="card event-card" style="
@@ -76,17 +118,22 @@ if ( ! empty( $meta['end_date'] ) && $meta['end_date'] !== $meta['start_date'] )
     transition: var(--transition-smooth);
     overflow: hidden;
     position: relative;
+    <?php echo ( $booking_style === 'cancelled' || $booking_status === 'cancelled' ) ? 'opacity: 0.75;' : ''; ?>
 " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform='none'; this.style.boxShadow='var(--shadow-sm)';">
 
     <!-- Card Image Header -->
     <div class="event-card-image" style="position: relative; height: 180px; overflow: hidden; background-color: var(--color-cream);">
-        <?php if ( has_post_thumbnail() ) : ?>
-            <a href="<?php the_permalink(); ?>" style="display: block; width: 100%; height: 100%;">
-                <?php the_post_thumbnail( 'medium_large', array( 'style' => 'width: 100%; height: 100%; object-fit: cover; transition: transform var(--transition-smooth);', 'class' => 'card-img' ) ); ?>
+        <?php if ( $has_thumb ) : ?>
+            <a href="<?php echo esc_url( $permalink ); ?>" style="display: block; width: 100%; height: 100%;">
+                <?php if ( $occurrence && ! empty( $occurrence['thumbnail_url'] ) ) : ?>
+                    <img src="<?php echo esc_url( $occurrence['thumbnail_url'] ); ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform var(--transition-smooth);" class="card-img" alt="<?php echo esc_attr( $title ); ?>" referrerPolicy="no-referrer" />
+                <?php else : ?>
+                    <?php echo get_the_post_thumbnail( $card_post_id, 'medium_large', array( 'style' => 'width: 100%; height: 100%; object-fit: cover; transition: transform var(--transition-smooth);', 'class' => 'card-img' ) ); ?>
+                <?php endif; ?>
             </a>
         <?php else : ?>
             <!-- Warm stylized fallback banner -->
-            <a href="<?php the_permalink(); ?>" style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; text-decoration: none; background: linear-gradient(135deg, rgba(59, 92, 58, 0.05) 0%, rgba(107, 143, 94, 0.1) 100%);">
+            <a href="<?php echo esc_url( $permalink ); ?>" style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; text-decoration: none; background: linear-gradient(135deg, rgba(59, 92, 58, 0.05) 0%, rgba(107, 143, 94, 0.1) 100%);">
                 <span style="font-size: 3rem; opacity: 0.25;">🌿</span>
             </a>
         <?php endif; ?>
@@ -100,22 +147,22 @@ if ( ! empty( $meta['end_date'] ) && $meta['end_date'] !== $meta['start_date'] )
 
         <!-- Floating Booking Status Badge -->
         <div style="position: absolute; bottom: 1rem; right: 1rem; z-index: 5;">
-            <?php get_template_part( 'template-parts/events/status', null, array( 'status' => $meta['booking_status'], 'size' => 'small' ) ); ?>
+            <?php get_template_part( 'template-parts/events/status', null, array( 'status' => $booking_status, 'size' => 'small' ) ); ?>
         </div>
     </div>
 
     <!-- Card Content -->
     <div class="event-card-body" style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
         <h3 class="card-title" style="font-size: 1.35rem; font-family: var(--font-headings); font-weight: normal; line-height: 1.3; margin: 0 0 1rem 0; min-height: 3rem;">
-            <a href="<?php the_permalink(); ?>" style="text-decoration: none; color: var(--color-black); transition: var(--transition-smooth);" onmouseover="this.style.color='var(--color-forest)';" onmouseout="this.style.color='var(--color-black)';">
-                <?php the_title(); ?>
+            <a href="<?php echo esc_url( $permalink ); ?>" style="text-decoration: none; color: var(--color-black); transition: var(--transition-smooth);" onmouseover="this.style.color='var(--color-forest)';" onmouseout="this.style.color='var(--color-black)';">
+                <?php echo esc_html( $title ); ?>
             </a>
         </h3>
 
         <!-- Event excerpt -->
-        <?php if ( has_excerpt() ) : ?>
+        <?php if ( ! empty( $excerpt ) ) : ?>
             <p style="font-size: 0.925rem; line-height: 1.5; color: var(--text-secondary); margin: 0 0 1.25rem 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                <?php echo esc_html( get_the_excerpt() ); ?>
+                <?php echo esc_html( $excerpt ); ?>
             </p>
         <?php endif; ?>
 
@@ -136,17 +183,17 @@ if ( ! empty( $meta['end_date'] ) && $meta['end_date'] !== $meta['start_date'] )
                 <span aria-hidden="true" style="font-size: 1.1rem; flex-shrink: 0; display: inline-block; width: 1.2rem; text-align: center;">📅</span>
                 <div>
                     <strong><?php echo esc_html( $formatted_date ); ?></strong>
-                    <?php if ( $meta['all_day'] ) : ?>
+                    <?php if ( ! empty( $meta['all_day'] ) ) : ?>
                         <span style="font-style: italic; font-size: 0.85rem; color: var(--color-forest); margin-left: 0.25rem; font-weight: 600;">(<?php esc_html_e( 'All Day', 'weardale-together' ); ?>)</span>
                     <?php endif; ?>
                 </div>
             </div>
 
             <!-- Time Text -->
-            <?php if ( ! empty( $meta['time_text'] ) && ! $meta['all_day'] ) : ?>
+            <?php if ( ! empty( $time_text ) && empty( $meta['all_day'] ) ) : ?>
                 <div style="display: flex; align-items: flex-start; gap: 0.6rem;">
                     <span aria-hidden="true" style="font-size: 1.1rem; flex-shrink: 0; display: inline-block; width: 1.2rem; text-align: center;">🕒</span>
-                    <span><?php echo esc_html( $meta['time_text'] ); ?></span>
+                    <span><?php echo esc_html( $time_text ); ?></span>
                 </div>
             <?php endif; ?>
 
@@ -167,7 +214,7 @@ if ( ! empty( $meta['end_date'] ) && $meta['end_date'] !== $meta['start_date'] )
             <?php endif; ?>
         </div>
 
-        <a href="<?php the_permalink(); ?>" class="btn btn-secondary" style="width: 100%; text-align: center; justify-content: center; font-size: 0.95rem; padding: 0.6rem 1rem;">
+        <a href="<?php echo esc_url( $permalink ); ?>" class="btn btn-secondary" style="width: 100%; text-align: center; justify-content: center; font-size: 0.95rem; padding: 0.6rem 1rem;">
             <?php esc_html_e( 'View Details', 'weardale-together' ); ?>
         </a>
     </div>

@@ -176,17 +176,15 @@ function weardale_platform_query_occurrences( $args = array() ) {
  */
 function weardale_platform_get_next_occurrence( $event_id ) {
     $results = weardale_platform_query_occurrences( array(
+        'event_id'          => $event_id,
         'start_date'        => current_time( 'mysql', 1 ),
         'scope'             => 'upcoming',
         'limit'             => 1,
         'include_cancelled' => true,
     ) );
     
-    // Filter results to find matching event_id
-    foreach ( $results as $occ ) {
-        if ( intval( $occ['event_id'] ) === intval( $event_id ) ) {
-            return $occ;
-        }
+    if ( ! empty( $results ) ) {
+        return $results[0];
     }
     
     // If no future occurrences exist, try querying directly by event_id
@@ -204,7 +202,21 @@ function weardale_platform_get_next_occurrence( $event_id ) {
     $occ_raw = $wpdb->get_row( $query, ARRAY_A );
     
     if ( $occ_raw ) {
-        $occ_raw['meta'] = weardale_platform_get_event_meta_full( $event_id );
+        $occ_raw['permalink']    = get_permalink( $event_id );
+        $occ_raw['thumbnail_id'] = get_post_thumbnail_id( $event_id );
+        $occ_raw['thumbnail_url']= get_the_post_thumbnail_url( $event_id, 'medium_large' ) ?: '';
+        $occ_raw['meta']         = weardale_platform_get_event_meta_full( $event_id );
+        $occ_raw['strands']      = array();
+        $terms = wp_get_post_terms( $event_id, 'strand' );
+        if ( ! is_wp_error( $terms ) ) {
+            foreach ( $terms as $term ) {
+                $occ_raw['strands'][] = array(
+                    'term_id' => $term->term_id,
+                    'name'    => $term->name,
+                    'slug'    => $term->slug,
+                );
+            }
+        }
         return $occ_raw;
     }
     

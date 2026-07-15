@@ -23,6 +23,7 @@ $modules = array(
     'event-admin-calendar.php',
     'event-admin-list.php',
     'event-queries.php',
+    'event-tools.php',
 );
 
 foreach ( $modules as $module ) {
@@ -72,14 +73,9 @@ function weardale_platform_get_event_meta( $post_id ) {
 /**
  * Legacy Compatibility: weardale_platform_get_events()
  * Standard WP_Query lookup for compatibility with original SPRINT 9 list views.
+ * Updated to internally utilize weardale_platform_query_occurrences for consistent scheduling.
  */
 function weardale_platform_get_events( $args = array() ) {
-    $timezone = get_option( 'timezone_string' );
-    if ( ! empty( $timezone ) ) {
-        date_default_timezone_set( $timezone );
-    }
-    $today = date( 'Y-m-d' );
-    
     $default_args = array(
         'posts_per_page' => -1,
         'scope'          => 'upcoming', // 'upcoming', 'past', or 'all'
@@ -90,55 +86,47 @@ function weardale_platform_get_events( $args = array() ) {
     
     $parsed_args = wp_parse_args( $args, $default_args );
     
+    $limit = $parsed_args['posts_per_page'];
+    if ( $limit === -1 ) {
+        $limit = 100; // Safe upper bound to prevent infinite execution
+    }
+    
     $query_args = array(
-        'post_type'      => 'weardale_event',
-        'posts_per_page' => $parsed_args['posts_per_page'],
-        'post_status'    => $parsed_args['post_status'],
+        'scope'             => $parsed_args['scope'],
+        'limit'             => $limit,
+        'include_cancelled' => false,
     );
-    
-    $meta_query = array();
-    
-    if ( 'upcoming' === $parsed_args['scope'] ) {
-        $meta_query[] = array(
-            'key'     => '_event_date',
-            'value'   => $today,
-            'compare' => '>=',
-            'type'    => 'DATE',
-        );
-        $query_args['orderby'] = 'meta_value';
-        $query_args['meta_key'] = '_event_date';
-        $query_args['order'] = 'ASC';
-    } elseif ( 'past' === $parsed_args['scope'] ) {
-        $meta_query[] = array(
-            'key'     => '_event_date',
-            'value'   => $today,
-            'compare' => '<',
-            'type'    => 'DATE',
-        );
-        $query_args['orderby'] = 'meta_value';
-        $query_args['meta_key'] = '_event_date';
+    if ( ! empty( $parsed_args['strand'] ) ) {
+        $query_args['strand'] = $parsed_args['strand'];
+    }
+    if ( 'past' === $parsed_args['scope'] ) {
         $query_args['order'] = 'DESC';
     } else {
-        $query_args['orderby'] = 'meta_value';
-        $query_args['meta_key'] = '_event_date';
         $query_args['order'] = $parsed_args['order'];
     }
     
-    if ( ! empty( $meta_query ) ) {
-        $query_args['meta_query'] = $meta_query;
+    $occurrences = function_exists( 'weardale_platform_query_occurrences' )
+        ? weardale_platform_query_occurrences( $query_args )
+        : array();
+        
+    $post_ids = array();
+    foreach ( $occurrences as $occ ) {
+        $post_ids[] = intval( $occ['event_id'] );
     }
     
-    if ( ! empty( $parsed_args['strand'] ) ) {
-        $query_args['tax_query'] = array(
-            array(
-                'taxonomy' => 'strand',
-                'field'    => 'slug',
-                'terms'    => $parsed_args['strand'],
-            ),
-        );
+    if ( empty( $post_ids ) ) {
+        // Return a WP_Query that returns no posts safely
+        return new WP_Query( array( 'post_type' => 'weardale_event', 'post__in' => array( 0 ) ) );
     }
     
-    return new WP_Query( $query_args );
+    // To maintain exact occurrence scheduling order, orderby post__in is utilized
+    return new WP_Query( array(
+        'post_type'      => 'weardale_event',
+        'post__in'       => $post_ids,
+        'orderby'        => 'post__in',
+        'posts_per_page' => $limit,
+        'post_status'    => $parsed_args['post_status'],
+    ) );
 }
 
 /**

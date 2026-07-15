@@ -263,6 +263,50 @@ $all_strands = get_terms( array( 'taxonomy' => 'strand', 'hide_empty' => false )
         background: var(--color-forest);
         color: var(--color-cream);
     }
+
+    /* Mobile Calendar Agenda Style (Phase 3) */
+    @media (max-width: 768px) {
+        .wt-pub-cal-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 1rem !important;
+            background: none !important;
+            border: none !important;
+        }
+        .wt-pub-cal-grid-header {
+            display: none !important;
+        }
+        .wt-pub-cal-cell {
+            min-height: auto !important;
+            border: 2px solid var(--color-tan) !important;
+            border-radius: var(--border-radius-md) !important;
+            background: var(--color-white) !important;
+            padding: 1.25rem !important;
+        }
+        .wt-pub-cal-cell.inactive {
+            display: none !important;
+        }
+        .wt-pub-cal-cell:not(.has-occurrences) {
+            display: none !important;
+        }
+        .wt-pub-cal-cell.has-occurrences {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0.75rem !important;
+        }
+        .wt-pub-cal-num {
+            font-size: 1.25rem !important;
+            border-bottom: 2px solid var(--color-tan) !important;
+            padding-bottom: 0.35rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        .wt-pub-cal-num::before {
+            content: "📅 Day " !important;
+            font-weight: 500 !important;
+            font-size: 0.95rem !important;
+            color: var(--text-secondary) !important;
+        }
+    }
 </style>
 
 <main id="primary-content" class="site-main" role="main">
@@ -451,8 +495,9 @@ $all_strands = get_terms( array( 'taxonomy' => 'strand', 'hide_empty' => false )
                         for ( $d = 1; $d <= $days_in_month; $d++ ) {
                             $is_today = ( $d === $today_d && $month === $today_m && $year === $today_y );
                             $today_class = $is_today ? 'today' : '';
+                            $has_occ_class = ! empty( $by_day[ $d ] ) ? 'has-occurrences' : '';
                             
-                            echo '<div class="wt-pub-cal-cell ' . esc_attr( $today_class ) . '">';
+                            echo '<div class="wt-pub-cal-cell ' . esc_attr( $today_class ) . ' ' . esc_attr( $has_occ_class ) . '">';
                             echo '<div class="wt-pub-cal-num">' . esc_html( $d ) . '</div>';
 
                             if ( ! empty( $by_day[ $d ] ) ) {
@@ -518,30 +563,64 @@ $all_strands = get_terms( array( 'taxonomy' => 'strand', 'hide_empty' => false )
                         </h2>
                         <span style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--text-secondary); font-weight: 500;">
                             <?php 
-                            $upcoming_args = array( 'scope' => 'upcoming', 'posts_per_page' => -1 );
+                            $paged_upcoming = isset( $_GET['up_page'] ) ? max( 1, intval( $_GET['up_page'] ) ) : 1;
+                            $limit_upcoming = 12;
+                            $offset_upcoming = ( $paged_upcoming - 1 ) * $limit_upcoming;
+
+                            $upcoming_args = array(
+                                'scope'             => 'upcoming',
+                                'limit'             => $limit_upcoming,
+                                'offset'            => $offset_upcoming,
+                                'include_cancelled' => false,
+                            );
                             if ( $strand_term ) {
                                 $upcoming_args['strand'] = $strand_term->slug;
                             }
-                            $upcoming_query = function_exists( 'weardale_platform_get_events' ) 
-                                ? weardale_platform_get_events( $upcoming_args ) 
-                                : new WP_Query( array( 'post_type' => 'weardale_event', 'posts_per_page' => -1 ) );
 
-                            $upcoming_count = $upcoming_query->found_posts;
+                            $upcoming_occurrences = function_exists( 'weardale_platform_query_occurrences' ) 
+                                ? weardale_platform_query_occurrences( $upcoming_args ) 
+                                : array();
+
+                            $count_args = $upcoming_args;
+                            $count_args['limit'] = -1;
+                            $count_args['offset'] = 0;
+                            $all_upcoming = function_exists( 'weardale_platform_query_occurrences' ) 
+                                ? weardale_platform_query_occurrences( $count_args ) 
+                                : array();
+                            $upcoming_count = count( $all_upcoming );
+
                             printf( _n( '%d upcoming activity found', '%d upcoming activities found', $upcoming_count, 'weardale-together' ), $upcoming_count );
                             ?>
                         </span>
                     </div>
 
-                    <?php if ( $upcoming_query->have_posts() ) : ?>
+                    <?php if ( ! empty( $upcoming_occurrences ) ) : ?>
                         <div class="grid grid-3">
                             <?php 
-                            while ( $upcoming_query->have_posts() ) : 
-                                $upcoming_query->the_post();
-                                get_template_part( 'template-parts/events/card' );
-                            endwhile; 
-                            wp_reset_postdata();
+                            foreach ( $upcoming_occurrences as $occ ) :
+                                get_template_part( 'template-parts/events/card', null, array( 'occurrence' => $occ ) );
+                            endforeach; 
                             ?>
                         </div>
+
+                        <?php 
+                        $total_up_pages = ceil( $upcoming_count / $limit_upcoming );
+                        if ( $total_up_pages > 1 ) : ?>
+                            <div class="pagination" style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 3rem;">
+                                <?php for ( $p = 1; $p <= $total_up_pages; $p++ ) : ?>
+                                    <?php 
+                                    $active_style = ( $p === $paged_upcoming ) 
+                                        ? 'background-color: var(--color-forest); color: var(--color-cream);' 
+                                        : 'background-color: var(--color-cream); color: var(--color-black);';
+                                    $page_url = add_query_arg( 'up_page', $p );
+                                    ?>
+                                    <a href="<?php echo esc_url( $page_url ); ?>" class="btn" style="padding: 0.4rem 1rem; text-decoration: none; border-radius: var(--border-radius-sm); border: 1px solid var(--color-tan); font-weight: 600; <?php echo $active_style; ?>">
+                                        <?php echo $p; ?>
+                                    </a>
+                                <?php endfor; ?>
+                            </div>
+                        <?php endif; ?>
+
                     <?php else : ?>
                         <?php 
                         get_template_part( 'template-parts/events/empty-state', null, array(
@@ -555,15 +634,34 @@ $all_strands = get_terms( array( 'taxonomy' => 'strand', 'hide_empty' => false )
 
                 <!-- SECTION 2: PAST EVENTS (HISTORIC ARCHIVE) -->
                 <?php 
-                $past_args = array( 'scope' => 'past', 'posts_per_page' => 12 );
+                $paged_past = isset( $_GET['past_page'] ) ? max( 1, intval( $_GET['past_page'] ) ) : 1;
+                $limit_past = 12;
+                $offset_past = ( $paged_past - 1 ) * $limit_past;
+
+                $past_args = array(
+                    'scope'             => 'past',
+                    'limit'             => $limit_past,
+                    'offset'            => $offset_past,
+                    'include_cancelled' => false,
+                    'order'             => 'DESC',
+                );
                 if ( $strand_term ) {
                     $past_args['strand'] = $strand_term->slug;
                 }
-                $past_query = function_exists( 'weardale_platform_get_events' ) 
-                    ? weardale_platform_get_events( $past_args ) 
-                    : null;
 
-                if ( $past_query && $past_query->have_posts() ) : 
+                $past_occurrences = function_exists( 'weardale_platform_query_occurrences' ) 
+                    ? weardale_platform_query_occurrences( $past_args ) 
+                    : array();
+
+                $count_past_args = $past_args;
+                $count_past_args['limit'] = -1;
+                $count_past_args['offset'] = 0;
+                $all_past = function_exists( 'weardale_platform_query_occurrences' ) 
+                    ? weardale_platform_query_occurrences( $count_past_args ) 
+                    : array();
+                $past_count = count( $all_past );
+
+                if ( ! empty( $past_occurrences ) ) : 
                 ?>
                     <section id="past-events" aria-labelledby="past-events-title" style="
                         border-top: 1px solid var(--color-tan);
@@ -589,13 +687,29 @@ $all_strands = get_terms( array( 'taxonomy' => 'strand', 'hide_empty' => false )
 
                         <div class="grid grid-3" style="opacity: 0.85;">
                             <?php 
-                            while ( $past_query->have_posts() ) : 
-                                $past_query->the_post();
-                                get_template_part( 'template-parts/events/card' );
-                            endwhile; 
-                            wp_reset_postdata();
+                            foreach ( $past_occurrences as $occ ) :
+                                get_template_part( 'template-parts/events/card', null, array( 'occurrence' => $occ ) );
+                            endforeach; 
                             ?>
                         </div>
+
+                        <?php 
+                        $total_past_pages = ceil( $past_count / $limit_past );
+                        if ( $total_past_pages > 1 ) : ?>
+                            <div class="pagination" style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 3rem;">
+                                <?php for ( $p = 1; $p <= $total_past_pages; $p++ ) : ?>
+                                    <?php 
+                                    $active_style = ( $p === $paged_past ) 
+                                        ? 'background-color: var(--color-forest); color: var(--color-cream);' 
+                                        : 'background-color: var(--color-cream); color: var(--color-black);';
+                                    $page_url = add_query_arg( 'past_page', $p );
+                                    ?>
+                                    <a href="<?php echo esc_url( $page_url ); ?>" class="btn" style="padding: 0.4rem 1rem; text-decoration: none; border-radius: var(--border-radius-sm); border: 1px solid var(--color-tan); font-weight: 600; <?php echo $active_style; ?>">
+                                        <?php echo $p; ?>
+                                    </a>
+                                <?php endfor; ?>
+                            </div>
+                        <?php endif; ?>
                     </section>
                 <?php endif; ?>
             <?php endif; ?>

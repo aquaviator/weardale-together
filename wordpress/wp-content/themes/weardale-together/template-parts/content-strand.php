@@ -209,73 +209,27 @@ switch ( $strand ) {
         
         <?php
         // Query related events tagged to the active strand
-        $args = array(
-            'post_type'      => 'weardale_event',
-            'post_status'    => 'publish',
-            'posts_per_page' => 3,
+        $query_args = array(
+            'limit'             => 3,
+            'scope'             => 'upcoming',
+            'include_cancelled' => false,
         );
 
         if ( $strand_term ) {
-            $args['tax_query'] = array(
-                array(
-                    'taxonomy' => 'strand',
-                    'field'    => 'slug',
-                    'terms'    => $strand_term,
-                ),
-            );
+            $query_args['strand'] = $strand_term;
         }
 
-        // Try ordering by event date metadata if available
-        $args['meta_key'] = '_event_date';
-        $args['orderby']  = 'meta_value';
-        $args['order']    = 'ASC';
+        $upcoming_occurrences = function_exists( 'weardale_platform_query_occurrences' )
+            ? weardale_platform_query_occurrences( $query_args )
+            : array();
 
-        $event_query = new WP_Query( $args );
-
-        if ( $event_query->have_posts() ) :
+        if ( ! empty( $upcoming_occurrences ) ) :
             ?>
             <div class="grid grid-3">
                 <?php
-                while ( $event_query->have_posts() ) :
-                    $event_query->the_post();
-                    $event_date     = get_post_meta( get_the_ID(), '_event_date', true );
-                    $event_time     = get_post_meta( get_the_ID(), '_event_time', true );
-                    $event_location = get_post_meta( get_the_ID(), '_event_location', true );
-                    $event_cost     = get_post_meta( get_the_ID(), '_event_cost', true );
-                    ?>
-                    <div class="card" style="height: 100%; display: flex; flex-direction: column; border-radius: var(--border-radius-md); border: 1px solid var(--color-tan); background-color: var(--color-white); padding: 2rem;">
-                        <h3 class="card-title" style="font-size: 1.35rem; margin-top: 0; color: var(--color-forest); font-family: var(--font-headings);"><?php the_title(); ?></h3>
-                        
-                        <?php if ( $event_date ) : ?>
-                            <p class="card-meta" style="margin-bottom: 1rem; color: var(--text-light); font-size: 0.9rem;">
-                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:text-bottom; margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                <?php echo esc_html( date( 'F j, Y', strtotime( $event_date ) ) ); ?>
-                            </p>
-                        <?php endif; ?>
-                        
-                        <div class="event-details" style="font-size: 0.9rem; margin-bottom: 1rem; flex-grow: 0; line-height: 1.5;">
-                            <?php if ( $event_time ) : ?>
-                                <p style="margin: 0.2rem 0;"><strong>Time:</strong> <?php echo esc_html( $event_time ); ?></p>
-                            <?php endif; ?>
-                            <?php if ( $event_location ) : ?>
-                                <p style="margin: 0.2rem 0;"><strong>Location:</strong> <?php echo esc_html( $event_location ); ?></p>
-                            <?php endif; ?>
-                            <?php if ( $event_cost ) : ?>
-                                <p style="margin: 0.2rem 0;"><strong>Cost:</strong> <?php echo esc_html( $event_cost ); ?></p>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="event-excerpt" style="font-size: 0.95rem; line-height: 1.5; color: var(--text-light); margin-bottom: 1.5rem; flex-grow: 1;">
-                            <?php the_excerpt(); ?>
-                        </div>
-                        
-                        <a href="<?php the_permalink(); ?>" class="btn btn-secondary btn-sm" style="margin-top: auto; font-size: 0.85rem; padding: 0.5rem 1rem; width: 100%; text-align: center; border-radius: var(--border-radius-sm); border: 1.5px solid var(--color-tan); background-color: transparent; color: var(--color-forest); font-weight: 700; transition: var(--transition-smooth);">
-                            View Event Details
-                        </a>
-                    </div>
-                <?php
-                endwhile;
-                wp_reset_postdata();
+                foreach ( $upcoming_occurrences as $occ ) :
+                    get_template_part( 'template-parts/events/card', null, array( 'occurrence' => $occ ) );
+                endforeach;
                 ?>
             </div>
         <?php else : ?>
