@@ -24,6 +24,10 @@ $modules = array(
     'event-admin-list.php',
     'event-queries.php',
     'event-tools.php',
+    'directory-post-type.php',
+    'directory-meta.php',
+    'directory-queries.php',
+    'directory-seed.php',
 );
 
 foreach ( $modules as $module ) {

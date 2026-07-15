@@ -18,8 +18,8 @@ Weardale Together is a grassroots Community Interest Company (CIC) serving remot
 
 | Parameter | Value / Status |
 | :--- | :--- |
-| **Current Milestone** | Milestone 9: Events Management & Community Discovery Completed |
-| **Project Health** | Highly responsive event calendar and accessible directory active. |
+| **Current Milestone** | Milestone 10: Community Directory Foundation Completed |
+| **Project Health** | Highly responsive event calendar and community directory active. |
 | **Development Phase** | Client Review & Accessibility Audit Preparation |
 | **Repository** | `https://github.com/aquaviator/weardale-together` |
 | **Branch** | `main` |
@@ -140,6 +140,11 @@ The local development environment baseline has been established. The following c
 - [x] **Single Event detail template (Sprint 9)**: Completed `single-weardale_event.php` detailing all expanded schema metadata utilizing an aside complement sidebar to assist assistive technologies and guarantee WCAG 2.2 AA.
 - [x] **Mobile Breakpoint Harmony (Sprint 9)**: Adjusted the primary header and mobile layout breakpoint to `1120px` to perfectly prevent wrapping of navigation elements.
 - [x] **Automatic Permalinks Flush (Sprint 9)**: Programmed automatic URL rewrite flushing on plugin activation to apply the `/whats-on/` slug instantly.
+- [x] **Community Directory CPT (Sprint 10)**: Created the single unified directory post-type `weardale_directory` and supporting taxonomies `directory_type`, `village`, and `service_area` to represent all listing types flexibly.
+- [x] **Metadata & Meta Box (Sprint 10)**: Designed a high-contrast admin meta editor with responsive, keyboard-accessible tabs (Contact, Details, Socials) and rigorous security/sanitization checks.
+- [x] **Query API Layer (Sprint 10)**: Built `weardale_platform_query_directory()` that performs advanced filtering by keyword, village, type, service area, verified status, and accessibility details.
+- [x] **Seed Data Engine (Sprint 10)**: Engineered an idempotent, repeat-safe seeding system pre-populating 15 real-world-inspired Weardale listings, marked with `_weardale_demo_content = 1` and protected from over-writing edited records.
+- [x] **Public Presentation & Grid (Sprint 10)**: Programmed custom archive list screens (`archive-weardale_directory.php`), single listing templates (`single-weardale_directory.php`), reusable cards (`card.php`), and empty state handlers, fully compliant with WCAG 2.2 AA guidelines.
 
 ---
 
