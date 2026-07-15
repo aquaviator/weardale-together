@@ -27,6 +27,19 @@ function weardale_platform_activate() {
     if ( version_compare( PHP_VERSION, '7.4.0', '<' ) ) {
         wp_die( esc_html__( 'Weardale Platform requires PHP version 7.4.0 or higher.', 'weardale-platform' ) );
     }
+    
+    // Load editorial.php if available, register the CPT/taxonomies, and flush rewrite rules
+    $editorial_file = WEARDALE_PLATFORM_DIR . 'includes/editorial.php';
+    if ( file_exists( $editorial_file ) ) {
+        include_once $editorial_file;
+        if ( function_exists( 'weardale_platform_register_event_cpt' ) ) {
+            weardale_platform_register_event_cpt();
+        }
+        if ( function_exists( 'weardale_platform_register_strand_taxonomy' ) ) {
+            weardale_platform_register_strand_taxonomy();
+        }
+    }
+    flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'weardale_platform_activate' );
 

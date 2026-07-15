@@ -31,13 +31,28 @@ We manage our own events through a custom dashboard. To create a new event listi
 2. Click **Add New Event**.
 3. Input the title (e.g., *Summer Clay Crafting*) and describe the activity in the editor.
 4. Scroll down to the **Weardale Event Details** panel and fill out:
-   * **Event Date**: Set the date of the session.
-   * **Event Timing**: e.g., `10:00 AM - 1:00 PM`.
-   * **Location/Venue**: e.g., `Stanhope Hub Community Garden`.
-   * **Cost/Fee**: e.g., `Free (Donations Welcome)`.
-5. Set a **Featured Image**.
-6. Check the associated strand taxonomy (e.g. `Creative Arts`).
-7. Click **Publish**. It will automatically appear under **What's Happening This Week** on the homepage!
+   * **Schedule & Timing**:
+     * **Start Date & End Date**: Choose dates. Events can span multiple days!
+     * **All-Day Event**: Toggle this if the event runs all day (this hides the specific hours text).
+     * **Time Text**: e.g., `10:00 AM - 1:00 PM`.
+   * **Location & Map**:
+     * **Venue Name**: e.g., `Stanhope Hub Community Garden`.
+     * **Full Location Address**: e.g., `12 Front Street, Stanhope, DL13 2TY`.
+     * **Google Map URL**: Paste a map share link. A dynamic "Get Directions" button will automatically render on the single event page!
+   * **Audience & Requirements**:
+     * **Target Audience**: e.g., `Isolated Seniors`, `Families with toddlers`.
+     * **Age Guidance**: e.g., `Under 12s must be accompanied`.
+     * **Accessibility Information**: e.g., `Wheelchair ramp available. Hearing loop active.`
+   * **Registration & Bookings**:
+     * **Booking Status**: Choose from `No Booking Required`, `Booking Recommended`, `Booking Required`, `Sold Out`, or `Cancelled`. Elegant colored badges will render on the card and detail page!
+     * **Booking URL**: Link to Eventbrite or ticketing system.
+     * **Booking Instructions**: Short notes (e.g., *Register at the desk on arrival*).
+   * **Organiser Information**:
+     * **Organiser Name**: e.g., `Cheryl Thompson`.
+     * **Organiser Contact**: Phone/email for resident enquiries.
+5. Set a **Featured Image** (this will display nicely at the top of the event card and single page).
+6. Check the associated strand taxonomy (e.g. `Creative Arts`) to style the page header and accents!
+7. Click **Publish**. It will automatically appear under **What's Happening This Week** on the homepage and on the main `/whats-on/` directory page!
 
 ---
 

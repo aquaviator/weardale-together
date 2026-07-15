@@ -7,16 +7,17 @@
  * @since 1.0.0
  */
 
-// Custom WP_Query for WT's own upcoming events
-$args = array(
-    'post_type'      => 'weardale_event',
-    'posts_per_page' => 3,
-    'meta_key'       => '_event_date',
-    'orderby'        => 'meta_value',
-    'order'          => 'ASC',
-);
-
-$events_query = new WP_Query( $args );
+// Custom WP_Query for WT's own upcoming events using platform query helper
+$events_query = function_exists( 'weardale_platform_get_events' ) 
+    ? weardale_platform_get_events( array( 'posts_per_page' => 3, 'scope' => 'upcoming' ) )
+    : new WP_Query( array(
+        'post_type'      => 'weardale_event',
+        'posts_per_page' => 3,
+        'meta_key'       => '_event_date',
+        'orderby'        => 'meta_value',
+        'order'          => 'ASC',
+        'post_status'    => 'publish',
+    ) );
 ?>
 
 <section class="section-padding" style="background-color: var(--color-white); border-bottom: 1px solid var(--color-tan);">
@@ -28,7 +29,7 @@ $events_query = new WP_Query( $args );
                 <h2 class="font-display" style="font-size: 2.5rem; margin-bottom: 0;"><?php esc_html_e( 'What\'s Happening This Week', 'weardale-together' ); ?></h2>
             </div>
             <div>
-                <a href="<?php echo esc_url( home_url( '/events/' ) ); ?>" class="btn btn-secondary">
+                <a href="<?php echo esc_url( get_post_type_archive_link( 'weardale_event' ) ); ?>" class="btn btn-secondary">
                     <?php esc_html_e( 'See All WT Events', 'weardale-together' ); ?>
                 </a>
             </div>
@@ -39,75 +40,15 @@ $events_query = new WP_Query( $args );
                 <?php
                 while ( $events_query->have_posts() ) :
                     $events_query->the_post();
-                    
-                    // Retrieve metadata registered by the plugin
-                    $event_date    = get_post_meta( get_the_ID(), '_event_date', true );
-                    $event_time    = get_post_meta( get_the_ID(), '_event_time', true );
-                    $event_location = get_post_meta( get_the_ID(), '_event_location', true );
-                    $event_cost     = get_post_meta( get_the_ID(), '_event_cost', true );
-                    
-                    // Format date nicely
-                    $formatted_date = ! empty( $event_date ) ? date( 'l, F j, Y', strtotime( $event_date ) ) : 'Date to be announced';
-                    ?>
-                    
-                    <article class="card" style="border-top: 4px solid var(--color-forest);">
-                        <div style="margin-bottom: 1rem;">
-                            <span class="badge badge-creative" style="font-size: 0.75rem;"><?php esc_html_e( 'WT Event', 'weardale-together' ); ?></span>
-                        </div>
-
-                        <h3 class="card-title" style="font-size: 1.4rem; margin-bottom: 1rem; min-height: 3.5rem;">
-                            <a href="<?php the_permalink(); ?>" style="text-decoration: none; color: inherit;">
-                                <?php the_title(); ?>
-                            </a>
-                        </h3>
-
-                        <!-- Event meta attributes -->
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.5rem; flex-grow: 1;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span>📅</span>
-                                <strong><?php echo esc_html( $formatted_date ); ?></strong>
-                            </div>
-                            <?php if ( ! empty( $event_time ) ) : ?>
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span>🕒</span>
-                                    <span><?php echo esc_html( $event_time ); ?></span>
-                                </div>
-                            <?php endif; ?>
-                            <?php if ( ! empty( $event_location ) ) : ?>
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span>📍</span>
-                                    <span><?php echo esc_html( $event_location ); ?></span>
-                                </div>
-                            <?php endif; ?>
-                            <?php if ( ! empty( $event_cost ) ) : ?>
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span>🪙</span>
-                                    <span><?php echo esc_html( $event_cost ); ?></span>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <a href="<?php the_permalink(); ?>" class="btn btn-secondary" style="align-self: flex-start; padding: 0.5rem 1rem; font-size: 0.9rem;">
-                            <?php esc_html_e( 'View Details', 'weardale-together' ); ?>
-                        </a>
-                    </article>
-
-                    <?php
+                    get_template_part( 'template-parts/events/card' );
                 endwhile;
                 wp_reset_postdata();
                 ?>
             </div>
         <?php else : ?>
             
-            <!-- Warm placeholder when no events are scheduled -->
-            <div style="background-color: var(--color-cream); border: 1px dashed var(--color-tan); padding: 3rem; text-align: center; border-radius: var(--border-radius-md);">
-                <p style="font-size: 1.15rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
-                    <?php esc_html_e( 'We are currently planning our next block of creative workshops, kids camps, and café sessions. Check back shortly!', 'weardale-together' ); ?>
-                </p>
-                <a href="<?php echo esc_url( home_url( '/contact-us/' ) ); ?>" class="btn btn-secondary">
-                    <?php esc_html_e( 'Enquire About Upcoming Sessions', 'weardale-together' ); ?>
-                </a>
-            </div>
+            <!-- Reusable Warm empty-state when no events are scheduled -->
+            <?php get_template_part( 'template-parts/events/empty-state' ); ?>
 
         <?php endif; ?>
 

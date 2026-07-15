@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var menuLinks = menu.getElementsByTagName('a');
     for (var i = 0; i < menuLinks.length; i++) {
         menuLinks[i].addEventListener('click', function() {
-            if (window.innerWidth <= 992) {
+            if (window.innerWidth <= 1120) {
                 container.classList.remove('toggled');
                 button.setAttribute('aria-expanded', 'false');
             }
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Reset classes and attributes cleanly when resizing back to desktop width
     window.addEventListener('resize', function() {
-        if (window.innerWidth > 992) {
+        if (window.innerWidth > 1120) {
             container.classList.remove('toggled');
             button.setAttribute('aria-expanded', 'false');
         }

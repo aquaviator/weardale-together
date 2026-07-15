@@ -65,7 +65,7 @@ function weardale_together_fallback_menu() {
     echo '<li><a href="' . esc_url( home_url( '/young-people/' ) ) . '">Young People</a></li>';
     echo '<li><a href="' . esc_url( home_url( '/creative-arts/' ) ) . '">Creative Arts</a></li>';
     echo '<li><a href="' . esc_url( home_url( '/roots-shoots/' ) ) . '">Roots & Shoots</a></li>';
-    echo '<li><a href="' . esc_url( home_url( '/events/' ) ) . '">Events</a></li>';
+    echo '<li><a href="' . esc_url( home_url( '/whats-on/' ) ) . '">What\'s On</a></li>';
     echo '<li><a href="' . esc_url( home_url( '/about/' ) ) . '">About WT</a></li>';
     echo '</ul>';
 }

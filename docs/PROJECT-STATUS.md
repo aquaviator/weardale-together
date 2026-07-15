@@ -18,8 +18,8 @@ Weardale Together is a grassroots Community Interest Company (CIC) serving remot
 
 | Parameter | Value / Status |
 | :--- | :--- |
-| **Current Milestone** | Milestone 8: Brand Integration & Editorial Experience Completed |
-| **Project Health** | Local development baseline established. Brand & Editorial assets verified. |
+| **Current Milestone** | Milestone 9: Events Management & Community Discovery Completed |
+| **Project Health** | Highly responsive event calendar and accessible directory active. |
 | **Development Phase** | Client Review & Accessibility Audit Preparation |
 | **Repository** | `https://github.com/aquaviator/weardale-together` |
 | **Branch** | `main` |
@@ -135,6 +135,11 @@ The local development environment baseline has been established. The following c
 - [x] **Header Navigation Polish**: Implemented semi-transparent sticky positioning utilizing backdrop-blur, re-themed the mobile slide-down menu in organic cream colors, and added letter-spaced uppercase typography.
 - [x] **Editorial Typography Overhaul**: Instituted `72ch` column limits, square bullet list markers, and balanced vertical margins on post layouts to optimize readability.
 - [x] **Reusable Block Layouts**: Styled core editorial blocks including Editorial Callouts, Feature Cards, blockquotes, Info Panels, and Highlight Boxes in components.css for layout creation by content authors.
+- [x] **Event Management System (Sprint 9)**: Expanded custom editorial schemas with date ranges, booking statuses, audience requirements, and custom booking maps.
+- [x] **Unified What's On Archive (Sprint 9)**: Developed `archive-weardale_event.php` utilizing reusable card template files, providing instant filtration by strand and separating upcoming vs past schedules with clear counts.
+- [x] **Single Event detail template (Sprint 9)**: Completed `single-weardale_event.php` detailing all expanded schema metadata utilizing an aside complement sidebar to assist assistive technologies and guarantee WCAG 2.2 AA.
+- [x] **Mobile Breakpoint Harmony (Sprint 9)**: Adjusted the primary header and mobile layout breakpoint to `1120px` to perfectly prevent wrapping of navigation elements.
+- [x] **Automatic Permalinks Flush (Sprint 9)**: Programmed automatic URL rewrite flushing on plugin activation to apply the `/whats-on/` slug instantly.
 
 ---
 
