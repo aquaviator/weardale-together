@@ -49,7 +49,8 @@ function weardale_platform_query_occurrences( $args = array() ) {
     }
     
     // 1. Time bounds and scopes
-    $now_utc = current_time( 'mysql', 1 ); // UTC date/time
+    // Use local time for comparison because the DB stores local times (concatenated from admin metadata inputs)
+    $now_local = current_time( 'mysql', 0 );
     
     if ( ! empty( $parsed['start_date'] ) ) {
         $where_clauses[] = "o.occurrence_start >= %s";
@@ -65,10 +66,10 @@ function weardale_platform_query_occurrences( $args = array() ) {
     if ( empty( $parsed['start_date'] ) && empty( $parsed['end_date'] ) ) {
         if ( 'upcoming' === $parsed['scope'] ) {
             $where_clauses[] = "o.occurrence_start >= %s";
-            $query_params[]  = $now_utc;
+            $query_params[]  = $now_local;
         } elseif ( 'past' === $parsed['scope'] ) {
             $where_clauses[] = "o.occurrence_start < %s";
-            $query_params[]  = $now_utc;
+            $query_params[]  = $now_local;
         }
     }
     
@@ -97,15 +98,35 @@ function weardale_platform_query_occurrences( $args = array() ) {
         
         $where_clauses[] = "tt.taxonomy = 'strand'";
         
-        if ( is_array( $parsed['strand'] ) ) {
-            $slugs_placeholder = implode( ',', array_fill( 0, count( $parsed['strand'] ), '%s' ) );
+        // Map and expand synonyms to robustly match either theme-requested or DB-stored slugs
+        $strand_input = is_array( $parsed['strand'] ) ? $parsed['strand'] : array( $parsed['strand'] );
+        $expanded_strands = array();
+        
+        foreach ( $strand_input as $strand_slug ) {
+            if ( $strand_slug instanceof WP_Term ) {
+                $strand_slug = $strand_slug->slug;
+            }
+            $slug_lower = strtolower( trim( (string) $strand_slug ) );
+            if ( in_array( $slug_lower, array( 'youth', 'young-people', 'forest-school' ), true ) ) {
+                $expanded_strands = array_merge( $expanded_strands, array( 'youth', 'young-people', 'forest-school' ) );
+            } elseif ( in_array( $slug_lower, array( 'creative', 'creative-arts', 'creative-roots' ), true ) ) {
+                $expanded_strands = array_merge( $expanded_strands, array( 'creative', 'creative-arts', 'creative-roots' ) );
+            } elseif ( in_array( $slug_lower, array( 'cafe', 'root-branch-cafe' ), true ) ) {
+                $expanded_strands = array_merge( $expanded_strands, array( 'cafe', 'root-branch-cafe' ) );
+            } elseif ( in_array( $slug_lower, array( 'roots-shoots', 'shoots' ), true ) ) {
+                $expanded_strands = array_merge( $expanded_strands, array( 'roots-shoots', 'shoots' ) );
+            } else {
+                $expanded_strands[] = $slug_lower;
+            }
+        }
+        $expanded_strands = array_unique( array_filter( $expanded_strands ) );
+        
+        if ( ! empty( $expanded_strands ) ) {
+            $slugs_placeholder = implode( ',', array_fill( 0, count( $expanded_strands ), '%s' ) );
             $where_clauses[] = "t.slug IN ($slugs_placeholder)";
-            foreach ( $parsed['strand'] as $slug ) {
+            foreach ( $expanded_strands as $slug ) {
                 $query_params[] = sanitize_title( $slug );
             }
-        } else {
-            $where_clauses[] = "t.slug = %s";
-            $query_params[]  = sanitize_title( $parsed['strand'] );
         }
     }
     
@@ -177,7 +198,7 @@ function weardale_platform_query_occurrences( $args = array() ) {
 function weardale_platform_get_next_occurrence( $event_id ) {
     $results = weardale_platform_query_occurrences( array(
         'event_id'          => $event_id,
-        'start_date'        => current_time( 'mysql', 1 ),
+        'start_date'        => current_time( 'mysql', 0 ),
         'scope'             => 'upcoming',
         'limit'             => 1,
         'include_cancelled' => true,
@@ -190,14 +211,14 @@ function weardale_platform_get_next_occurrence( $event_id ) {
     // If no future occurrences exist, try querying directly by event_id
     global $wpdb;
     $table_occ = $wpdb->prefix . 'weardale_event_occurrences';
-    $now_utc = current_time( 'mysql', 1 );
+    $now_local = current_time( 'mysql', 0 );
     
     $query = $wpdb->prepare(
         "SELECT * FROM $table_occ 
          WHERE event_id = %d AND occurrence_start >= %s 
          ORDER BY occurrence_start ASC LIMIT 1",
         $event_id,
-        $now_utc
+        $now_local
     );
     $occ_raw = $wpdb->get_row( $query, ARRAY_A );
     
