@@ -29,10 +29,55 @@ function weardale_platform_add_site_setup_submenu() {
 add_action( 'admin_menu', 'weardale_platform_add_site_setup_submenu' );
 
 /**
+ * Check if a URL destination exists in the current site database.
+ * 
+ * @param string $url The destination URL to check.
+ * @return bool True if destination exists/is valid, false otherwise.
+ */
+function weardale_platform_destination_exists( $url ) {
+    // 1. Home page always exists
+    if ( $url === home_url( '/' ) || $url === home_url() ) {
+        return true;
+    }
+
+    // 2. Archive pages for registered CPTs are always considered to exist
+    $directory_archive = get_post_type_archive_link( 'weardale_directory' );
+    $event_archive = get_post_type_archive_link( 'weardale_event' );
+
+    if ( $directory_archive && $url === $directory_archive ) {
+        return true;
+    }
+    if ( $event_archive && $url === $event_archive ) {
+        return true;
+    }
+
+    // 3. Check for specific page slugs
+    $home_url = home_url();
+    if ( strpos( $url, $home_url ) !== 0 ) {
+        return false;
+    }
+
+    $path = str_replace( $home_url, '', $url );
+    $slug = trim( $path, '/' );
+
+    if ( empty( $slug ) ) {
+        return true;
+    }
+
+    // Resolve hierarchical pages or standard slugs
+    $page = get_page_by_path( $slug );
+    if ( $page && $page->post_status === 'publish' ) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
  * Idempotent Site Navigation Setup Routine
  *
  * Creates Primary, Footer, and Legal menus if unassigned or missing,
- * and populates them with Approved Information Architecture links.
+ * and populates them with Approved Information Architecture links if they exist.
  *
  * @return array Detailed results of the bootstrap execution.
  */
@@ -61,38 +106,56 @@ function weardale_platform_bootstrap_navigation() {
 
         if ( ! is_wp_error( $primary_menu_id ) && $primary_menu_id ) {
             $menu_items = wp_get_nav_menu_items( $primary_menu_id );
+            // Only populate if the menu has no items to prevent duplicate addition
             if ( empty( $menu_items ) ) {
-                $items_to_add = array(
+                $candidates = array(
                     array( 'title' => 'Home', 'url' => home_url( '/' ) ),
                     array( 'title' => 'Root & Branch Café', 'url' => home_url( '/cafe/' ) ),
                     array( 'title' => 'Young People', 'url' => home_url( '/young-people/' ) ),
                     array( 'title' => 'Creative Arts', 'url' => home_url( '/creative-arts/' ) ),
                     array( 'title' => 'Roots & Shoots', 'url' => home_url( '/roots-shoots/' ) ),
-                    array( 'title' => 'What’s On', 'url' => home_url( '/whats-on/' ) ),
-                    array( 'title' => 'Community Directory', 'url' => get_post_type_archive_link( 'weardale_directory' ) ?: home_url( '/directory/' ) ),
+                    array( 'title' => 'What’s On', 'url' => get_post_type_archive_link( 'weardale_event' ) ?: home_url( '/whats-on/' ) ),
+                    array( 'title' => 'Directory', 'url' => get_post_type_archive_link( 'weardale_directory' ) ?: home_url( '/directory/' ) ),
                     array( 'title' => 'About WT', 'url' => home_url( '/about/' ) ),
                 );
 
+                $created = 0;
+                $skipped = 0;
                 $position = 1;
-                foreach ( $items_to_add as $item ) {
-                    wp_update_nav_menu_item( $primary_menu_id, 0, array(
-                        'menu-item-title'    => $item['title'],
-                        'menu-item-url'      => $item['url'],
-                        'menu-item-status'   => 'publish',
-                        'menu-item-type'     => 'custom',
-                        'menu-item-position' => $position++,
-                    ) );
+
+                foreach ( $candidates as $item ) {
+                    if ( weardale_platform_destination_exists( $item['url'] ) ) {
+                        wp_update_nav_menu_item( $primary_menu_id, 0, array(
+                            'menu-item-title'    => $item['title'],
+                            'menu-item-url'      => $item['url'],
+                            'menu-item-status'   => 'publish',
+                            'menu-item-type'     => 'custom',
+                            'menu-item-position' => $position++,
+                        ) );
+                        $created++;
+                    } else {
+                        $skipped++;
+                    }
                 }
-                $results['primary'] = array( 'status' => 'created', 'message' => __( 'Primary Navigation Menu created and populated with 8 items.', 'weardale-platform' ) );
+                $results['primary'] = array(
+                    'status' => 'created',
+                    'message' => sprintf( __( 'Primary Navigation Menu created: %d items added, %d missing destinations skipped.', 'weardale-platform' ), $created, $skipped )
+                );
             } else {
-                $results['primary'] = array( 'status' => 'assigned', 'message' => __( 'Primary Navigation Menu already exists with items. Menu assigned to location.', 'weardale-platform' ) );
+                $results['primary'] = array(
+                    'status' => 'assigned',
+                    'message' => __( 'Primary Navigation Menu already exists with items. Existing menu items preserved and assigned to location.', 'weardale-platform' )
+                );
             }
 
             // Assign to location
             $locations['primary-menu'] = $primary_menu_id;
         }
     } else {
-        $results['primary'] = array( 'status' => 'skipped', 'message' => __( 'Primary Navigation Menu is already assigned and configured.', 'weardale-platform' ) );
+        $results['primary'] = array(
+            'status' => 'preserved',
+            'message' => __( 'Existing configuration preserved. Primary Navigation Menu is already assigned and manually configured items remain untouched.', 'weardale-platform' )
+        );
     }
 
     // --- 2. FOOTER NAVIGATION MENU ---
@@ -108,32 +171,49 @@ function weardale_platform_bootstrap_navigation() {
         if ( ! is_wp_error( $footer_menu_id ) && $footer_menu_id ) {
             $menu_items = wp_get_nav_menu_items( $footer_menu_id );
             if ( empty( $menu_items ) ) {
-                $items_to_add = array(
+                $candidates = array(
                     array( 'title' => 'News & Blog', 'url' => home_url( '/news-blog/' ) ),
                     array( 'title' => 'Volunteer With Us', 'url' => home_url( '/volunteer/' ) ),
                     array( 'title' => 'Newsletter Sign-up', 'url' => home_url( '/newsletter/' ) ),
                     array( 'title' => 'Get In Touch', 'url' => home_url( '/contact-us/' ) ),
                 );
 
+                $created = 0;
+                $skipped = 0;
                 $position = 1;
-                foreach ( $items_to_add as $item ) {
-                    wp_update_nav_menu_item( $footer_menu_id, 0, array(
-                        'menu-item-title'    => $item['title'],
-                        'menu-item-url'      => $item['url'],
-                        'menu-item-status'   => 'publish',
-                        'menu-item-type'     => 'custom',
-                        'menu-item-position' => $position++,
-                    ) );
+
+                foreach ( $candidates as $item ) {
+                    if ( weardale_platform_destination_exists( $item['url'] ) ) {
+                        wp_update_nav_menu_item( $footer_menu_id, 0, array(
+                            'menu-item-title'    => $item['title'],
+                            'menu-item-url'      => $item['url'],
+                            'menu-item-status'   => 'publish',
+                            'menu-item-type'     => 'custom',
+                            'menu-item-position' => $position++,
+                        ) );
+                        $created++;
+                    } else {
+                        $skipped++;
+                    }
                 }
-                $results['footer'] = array( 'status' => 'created', 'message' => __( 'Footer Navigation Menu created and populated with 4 items.', 'weardale-platform' ) );
+                $results['footer'] = array(
+                    'status' => 'created',
+                    'message' => sprintf( __( 'Footer Navigation Menu created: %d items added, %d missing destinations skipped.', 'weardale-platform' ), $created, $skipped )
+                );
             } else {
-                $results['footer'] = array( 'status' => 'assigned', 'message' => __( 'Footer Navigation Menu already exists with items. Menu assigned to location.', 'weardale-platform' ) );
+                $results['footer'] = array(
+                    'status' => 'assigned',
+                    'message' => __( 'Footer Navigation Menu already exists with items. Existing menu items preserved and assigned to location.', 'weardale-platform' )
+                );
             }
 
             $locations['footer-menu'] = $footer_menu_id;
         }
     } else {
-        $results['footer'] = array( 'status' => 'skipped', 'message' => __( 'Footer Navigation Menu is already assigned and configured.', 'weardale-platform' ) );
+        $results['footer'] = array(
+            'status' => 'preserved',
+            'message' => __( 'Existing configuration preserved. Footer Navigation Menu is already assigned and manually configured items remain untouched.', 'weardale-platform' )
+        );
     }
 
     // --- 3. LEGAL NAVIGATION MENU ---
@@ -149,29 +229,46 @@ function weardale_platform_bootstrap_navigation() {
         if ( ! is_wp_error( $legal_menu_id ) && $legal_menu_id ) {
             $menu_items = wp_get_nav_menu_items( $legal_menu_id );
             if ( empty( $menu_items ) ) {
-                $items_to_add = array(
+                $candidates = array(
                     array( 'title' => 'Privacy Notice', 'url' => home_url( '/privacy-notice/' ) ),
                 );
 
+                $created = 0;
+                $skipped = 0;
                 $position = 1;
-                foreach ( $items_to_add as $item ) {
-                    wp_update_nav_menu_item( $legal_menu_id, 0, array(
-                        'menu-item-title'    => $item['title'],
-                        'menu-item-url'      => $item['url'],
-                        'menu-item-status'   => 'publish',
-                        'menu-item-type'     => 'custom',
-                        'menu-item-position' => $position++,
-                    ) );
+
+                foreach ( $candidates as $item ) {
+                    if ( weardale_platform_destination_exists( $item['url'] ) ) {
+                        wp_update_nav_menu_item( $legal_menu_id, 0, array(
+                            'menu-item-title'    => $item['title'],
+                            'menu-item-url'      => $item['url'],
+                            'menu-item-status'   => 'publish',
+                            'menu-item-type'     => 'custom',
+                            'menu-item-position' => $position++,
+                        ) );
+                        $created++;
+                    } else {
+                        $skipped++;
+                    }
                 }
-                $results['legal'] = array( 'status' => 'created', 'message' => __( 'Legal Navigation Menu created and populated with 1 item.', 'weardale-platform' ) );
+                $results['legal'] = array(
+                    'status' => 'created',
+                    'message' => sprintf( __( 'Legal Navigation Menu created: %d items added, %d missing destinations skipped.', 'weardale-platform' ), $created, $skipped )
+                );
             } else {
-                $results['legal'] = array( 'status' => 'assigned', 'message' => __( 'Legal Navigation Menu already exists with items. Menu assigned to location.', 'weardale-platform' ) );
+                $results['legal'] = array(
+                    'status' => 'assigned',
+                    'message' => __( 'Legal Navigation Menu already exists with items. Existing menu items preserved and assigned to location.', 'weardale-platform' )
+                );
             }
 
             $locations['legal-menu'] = $legal_menu_id;
         }
     } else {
-        $results['legal'] = array( 'status' => 'skipped', 'message' => __( 'Legal Navigation Menu is already assigned and configured.', 'weardale-platform' ) );
+        $results['legal'] = array(
+            'status' => 'preserved',
+            'message' => __( 'Existing configuration preserved. Legal Navigation Menu is already assigned and manually configured items remain untouched.', 'weardale-platform' )
+        );
     }
 
     // Update locations theme mod
@@ -181,15 +278,42 @@ function weardale_platform_bootstrap_navigation() {
 }
 
 /**
- * Auto-bootstrap core menus on dashboard entry (idempotent, runs once)
+ * Display restrained administrator notice if Primary Navigation location is unassigned.
  */
-function weardale_platform_auto_bootstrap_menus() {
-    if ( get_option( 'weardale_menus_bootstrapped_v1' ) !== '1' ) {
-        weardale_platform_bootstrap_navigation();
-        update_option( 'weardale_menus_bootstrapped_v1', '1' );
+function weardale_platform_site_setup_admin_notice() {
+    // Only display to administrators with 'manage_options' capability
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+
+    // Prevent appearing on the public frontend
+    if ( ! is_admin() ) {
+        return;
+    }
+
+    $locations = get_theme_mod( 'nav_menu_locations' );
+    $primary_assigned = ! empty( $locations['primary-menu'] ) && is_nav_menu( $locations['primary-menu'] );
+
+    if ( ! $primary_assigned ) {
+        $setup_url = admin_url( 'tools.php?page=weardale-site-setup' );
+        ?>
+        <div class="notice notice-warning is-dismissible">
+            <p>
+                <?php
+                printf(
+                    wp_kses(
+                        __( 'Weardale Together site navigation has not been configured. Please visit <a href="%s">Weardale Site Setup</a> to bootstrap standard menus.', 'weardale-platform' ),
+                        array( 'a' => array( 'href' => array() ) )
+                    ),
+                    esc_url( $setup_url )
+                );
+                ?>
+            </p>
+        </div>
+        <?php
     }
 }
-add_action( 'admin_init', 'weardale_platform_auto_bootstrap_menus' );
+add_action( 'admin_notices', 'weardale_platform_site_setup_admin_notice' );
 
 /**
  * Render the Site Setup admin interface

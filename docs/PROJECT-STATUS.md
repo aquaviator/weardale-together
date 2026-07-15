@@ -145,6 +145,25 @@ The local development environment baseline has been established. The following c
 - [x] **Query API Layer (Sprint 10)**: Built `weardale_platform_query_directory()` that performs advanced filtering by keyword, village, type, service area, verified status, and accessibility details.
 - [x] **Seed Data Engine (Sprint 10)**: Engineered an idempotent, repeat-safe seeding system pre-populating 15 real-world-inspired Weardale listings, marked with `_weardale_demo_content = 1` and protected from over-writing edited records.
 - [x] **Public Presentation & Grid (Sprint 10)**: Programmed custom archive list screens (`archive-weardale_directory.php`), single listing templates (`single-weardale_directory.php`), reusable cards (`card.php`), and empty state handlers, fully compliant with WCAG 2.2 AA guidelines.
+- [x] **Navigation Setup Safety & Verification (Sprint 10B.1)**:
+  - **Explicit Setup Workflow**: Removed all automatic site-configuration writes from initialization hooks (`admin_init`, `init`, etc.). The setup only executes upon an explicit form submission under **Tools → Weardale Site Setup** with rigorous nonce validation, `manage_options` check, and an intentional button click.
+  - **Restrained Administrator Notices**: If the `Primary Navigation` menu location is unassigned, a polite, non-intrusive warning notice is displayed in the WordPress admin area only to users with the `manage_options` capability. The notice is completely hidden from the public-facing frontend, does not write anything to the database, and automatically disappears once the Primary menu location is assigned.
+  - **Repeat-Safe and Preservation-Proof Menu Setup**:
+    - *First Run*: Creates missing menus (Primary, Footer, Legal), populates items, and assigns locations only if unassigned. Items with missing destinations are automatically skipped using dynamic `weardale_platform_destination_exists()` checks, preventing placeholder links.
+    - *Second Run*: Runs with absolute safety, producing no duplicate menus or items, making no changes to menu order, and preserving manually modified menus entirely. It reports that existing configurations have been successfully preserved.
+  - **Menu Structures & Dynamically Checked Destinations**:
+    - *Primary*: Home (`/`), Root & Branch Café (`/cafe/`), Young People (`/young-people/`), Creative Arts (`/creative-arts/`), Roots & Shoots (`/roots-shoots/`), What’s On (dynamic event archive link), Directory (dynamic directory archive link), and About WT (`/about/`).
+    - *Footer*: News & Blog (`/news-blog/`), Volunteer With Us (`/volunteer/`), Newsletter Sign-up (`/newsletter/`), and Get In Touch (`/contact-us/`).
+    - *Legal*: Privacy Notice (`/privacy-notice/`).
+  - **Dynamic Check Helper**: Implemented `weardale_platform_destination_exists()`, which parses slugs dynamically, checks database existence of published pages via `get_page_by_path()`, and skips adding items if pages are missing (preventing dead links).
+  - **Homepage Directory Integration**:
+    - Integrated the Community Directory Promo block (`template-parts/homepage/directory-promo.php`) as a calm, editorial, rural, high-contrast entry point on the homepage.
+    - Features an elegant Weardale palette (soft cream background, forest green badge, and a soft clay terracotta border utilizing the `--color-strand-shoots` variable).
+    - Showcases custom high-contrast category icons (`🏛️`, `🚌`, `🎨`, `🤝`) in a clean, bento-grid aligned layout.
+  - **Fallback Menu Review**:
+    - Integrated a read-only fallback menu function `weardale_together_fallback_menu()` in `header.php`.
+    - Dynamically retrieves the directory archive link with `get_post_type_archive_link( 'weardale_directory' )` and events archive link.
+    - Properly escaped, performs no database writes, and is instantly replaced once a menu is formally assigned to the `primary-menu` location.
 
 ---
 

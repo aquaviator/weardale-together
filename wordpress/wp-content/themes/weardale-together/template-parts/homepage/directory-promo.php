@@ -12,14 +12,14 @@ $directory_url = get_post_type_archive_link( 'weardale_directory' ) ?: home_url(
 
 <section id="homepage-directory-promo" class="section-padding" style="background-color: var(--color-white); border-bottom: 1px solid var(--color-tan);">
     <div class="container">
-        <div style="background-color: var(--color-cream); border: 2px solid var(--color-tan); border-radius: var(--border-radius-md); padding: 4rem 3rem; display: grid; grid-template-columns: 1.25fr 1fr; gap: 4rem; align-items: center; box-shadow: 0 4px 15px rgba(59, 92, 58, 0.05);">
+        <div style="background-color: var(--color-cream); border: 2px solid var(--color-strand-shoots); border-radius: var(--border-radius-md); padding: 4rem 3rem; display: grid; grid-template-columns: 1.25fr 1fr; gap: 4rem; align-items: center; box-shadow: 0 4px 15px rgba(59, 92, 58, 0.05);">
             
             <!-- Left block: Content & CTA -->
             <div>
-                <span class="badge" style="background-color: var(--color-forest); color: var(--color-cream); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">
+                <span class="badge" style="background-color: var(--color-forest); color: var(--color-cream); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: var(--border-radius-pill); font-size: 0.85rem; display: inline-block;">
                     <?php esc_html_e( 'Local Connections', 'weardale-together' ); ?>
                 </span>
-                <h2 class="font-display" style="font-size: 2.75rem; color: var(--color-forest); margin-bottom: 1.5rem; line-height: 1.1;">
+                <h2 class="font-display" style="font-family: var(--font-headings); font-size: 2.75rem; color: var(--color-forest); margin-bottom: 1.5rem; line-height: 1.1; font-weight: normal;">
                     <?php esc_html_e( 'Explore the Community Directory', 'weardale-together' ); ?>
                 </h2>
                 <p style="color: var(--text-secondary); line-height: 1.6; font-size: 1.1rem; margin-bottom: 2rem;">

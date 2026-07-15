@@ -60,14 +60,15 @@
 // Fallback menu function to ensure links are visible if no menu is configured in WordPress Admin
 function weardale_together_fallback_menu() {
     $directory_url = get_post_type_archive_link( 'weardale_directory' ) ?: home_url( '/directory/' );
+    $events_url    = get_post_type_archive_link( 'weardale_event' ) ?: home_url( '/whats-on/' );
     echo '<ul>';
-    echo '<li class="current-menu-item"><a href="' . esc_url( home_url( '/' ) ) . '">Home</a></li>';
+    echo '<li><a href="' . esc_url( home_url( '/' ) ) . '">Home</a></li>';
     echo '<li><a href="' . esc_url( home_url( '/cafe/' ) ) . '">Root & Branch Café</a></li>';
     echo '<li><a href="' . esc_url( home_url( '/young-people/' ) ) . '">Young People</a></li>';
     echo '<li><a href="' . esc_url( home_url( '/creative-arts/' ) ) . '">Creative Arts</a></li>';
     echo '<li><a href="' . esc_url( home_url( '/roots-shoots/' ) ) . '">Roots & Shoots</a></li>';
-    echo '<li><a href="' . esc_url( home_url( '/whats-on/' ) ) . '">What\'s On</a></li>';
-    echo '<li><a href="' . esc_url( $directory_url ) . '">Community Directory</a></li>';
+    echo '<li><a href="' . esc_url( $events_url ) . '">What\'s On</a></li>';
+    echo '<li><a href="' . esc_url( $directory_url ) . '">Directory</a></li>';
     echo '<li><a href="' . esc_url( home_url( '/about/' ) ) . '">About WT</a></li>';
     echo '</ul>';
 }
