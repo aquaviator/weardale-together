@@ -6,3 +6,40 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Local WordPress Configuration & Server Files
+wp-config.php
+.htaccess
+sitemap.xml
+sitemap.xml.gz
+
+# WordPress core ignore rules if core is extracted in root or /wordpress
+wordpress/*
+!wordpress/wp-content/
+
+# Ignore everything inside wp-content except custom themes and plugins
+wordpress/wp-content/*
+!wordpress/wp-content/themes/
+!wordpress/wp-content/plugins/
+
+# Ignore custom themes and plugins inside wp-content that are not ours (optional backup)
+wordpress/wp-content/themes/*
+!wordpress/wp-content/themes/weardale-together/
+wordpress/wp-content/plugins/*
+!wordpress/wp-content/plugins/weardale-platform/
+
+# Dynamic WordPress assets and caches
+wordpress/wp-content/uploads/
+wordpress/wp-content/upgrade/
+wordpress/wp-content/cache/
+wordpress/wp-content/backups/
+wordpress/wp-content/debug.log
+
+# IDE & Editor specific files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
