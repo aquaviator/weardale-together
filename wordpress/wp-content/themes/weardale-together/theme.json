@@ -1,0 +1,81 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 2,
+  "settings": {
+    "color": {
+      "palette": [
+        {
+          "name": "Warm Cream",
+          "slug": "cream",
+          "color": "#F5F0E8"
+        },
+        {
+          "name": "Deep Forest Green",
+          "slug": "forest",
+          "color": "#3B5C3A"
+        },
+        {
+          "name": "Sage Green",
+          "slug": "sage",
+          "color": "#6B8F5E"
+        },
+        {
+          "name": "Warm Tan",
+          "slug": "tan",
+          "color": "#C4B89A"
+        },
+        {
+          "name": "Near Black",
+          "slug": "black",
+          "color": "#2C2C2A"
+        },
+        {
+          "name": "White",
+          "slug": "white",
+          "color": "#FFFFFF"
+        },
+        {
+          "name": "Café Sandy Warm",
+          "slug": "cafe",
+          "color": "#C4956A"
+        },
+        {
+          "name": "Creative Golden Amber",
+          "slug": "creative",
+          "color": "#E8A020"
+        },
+        {
+          "name": "Youth Bold Amber",
+          "slug": "youth",
+          "color": "#E8962A"
+        },
+        {
+          "name": "Shoots Soft Terracotta",
+          "slug": "shoots",
+          "color": "#D4826A"
+        }
+      ],
+      "custom": false,
+      "link": true
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "fontFamily": "\"Yeseva One\", Georgia, serif",
+          "name": "Yeseva One",
+          "slug": "display"
+        },
+        {
+          "fontFamily": "\"Nunito\", sans-serif",
+          "name": "Nunito",
+          "slug": "body"
+        }
+      ],
+      "customFontSize": false
+    },
+    "layout": {
+      "contentSize": "800px",
+      "wideSize": "1200px"
+    }
+  }
+}

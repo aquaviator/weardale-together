@@ -1,0 +1,21 @@
+/*
+Theme Name: Weardale Together
+Theme URI: https://weardaletogether.org.uk/
+Author: Weardale Together Delivery Team
+Author URI: https://weardaletogether.org.uk/
+Description: A warm, organic, handcrafted, and highly accessible classic PHP theme for Weardale Together CIC. Designed for residents, families, and visitors of the North Pennines.
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: weardale-together
+Tags: clean, warm-cream, accessibility-ready, custom-menu, featured-images, translation-ready, mobile-friendly
+
+This stylesheet provides basic structure, responsive typography, visible keyboard focus states,
+and screen reader helper utilities for accessible navigation.
+*/
+
+@import 'css/variables.css';
+@import 'css/typography.css';
+@import 'css/layout.css';
+@import 'css/components.css';
+@import 'css/strands.css';

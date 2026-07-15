@@ -1,0 +1,6 @@
+{
+  "name": "Weardale Together",
+  "description": "The official website and digital hub for Weardale Together CIC, supporting community strands across Weardale.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

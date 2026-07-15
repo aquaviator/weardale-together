@@ -1,0 +1,180 @@
+/**
+ * Reusable Components and Form UI Styles
+ */
+
+/* Navigation Menu */
+.main-navigation ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.main-navigation a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 0.5rem 0;
+    border-bottom: 2px solid transparent;
+}
+
+.main-navigation a:hover,
+.main-navigation .current-menu-item a {
+    color: var(--color-forest);
+    border-bottom-color: var(--color-sage);
+}
+
+/* Mobile Toggle */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--color-forest);
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+@media (max-width: 992px) {
+    .menu-toggle {
+        display: block;
+    }
+    
+    .main-navigation {
+        display: none; /* In full implementation, JS toggles class to show */
+    }
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 0.85rem 1.75rem;
+    border-radius: var(--border-radius-pill);
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: var(--transition-bounce);
+    line-height: 1.2;
+}
+
+.btn-primary {
+    background-color: var(--color-forest);
+    color: var(--color-cream);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-sage);
+    color: var(--color-white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 92, 58, 0.15);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border-color: var(--color-forest);
+    color: var(--color-forest);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(59, 92, 58, 0.05);
+    color: var(--color-sage);
+    border-color: var(--color-sage);
+    transform: translateY(-2px);
+}
+
+.btn-white {
+    background-color: var(--color-white);
+    color: var(--color-forest);
+}
+
+.btn-white:hover {
+    background-color: var(--color-cream);
+    transform: translateY(-2px);
+}
+
+/* Cards */
+.card {
+    background-color: var(--color-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
+    transition: var(--transition-smooth);
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(196, 184, 154, 0.2);
+    border-color: var(--color-sage);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-meta {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--color-forest);
+    font-size: 1rem;
+}
+
+.form-control {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    transition: var(--transition-smooth);
+}
+
+.form-control:focus {
+    border-color: var(--color-forest);
+    box-shadow: 0 0 0 3px rgba(59, 92, 58, 0.1);
+}
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Badges / Tags */
+.badge {
+    display: inline-flex;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: var(--border-radius-pill);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1;
+}
+
+.badge-cafe { background-color: rgba(196, 149, 106, 0.15); color: var(--color-strand-cafe); }
+.badge-creative { background-color: rgba(232, 160, 32, 0.15); color: var(--color-strand-creative); }
+.badge-youth { background-color: rgba(232, 150, 42, 0.15); color: var(--color-strand-youth); }
+.badge-shoots { background-color: rgba(212, 130, 106, 0.15); color: var(--color-strand-shoots); }

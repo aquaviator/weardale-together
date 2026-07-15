@@ -1,0 +1,42 @@
+/**
+ * Design System Variables for Weardale Together
+ */
+:root {
+    /* Core Color Palette */
+    --color-cream: #F5F0E8;
+    --color-forest: #3B5C3A;
+    --color-sage: #6B8F5E;
+    --color-tan: #C4B89A;
+    --color-black: #2C2C2A;
+    --color-white: #FFFFFF;
+    
+    /* Strand Accent Colors */
+    --color-strand-cafe: #C4956A;        /* Sandy warm */
+    --color-strand-creative: #E8A020;    /* Golden amber */
+    --color-strand-youth: #E8962A;       /* Bold amber */
+    --color-strand-shoots: #D4826A;      /* Soft terracotta */
+    
+    /* Functional Colors */
+    --bg-primary: var(--color-cream);
+    --text-primary: var(--color-black);
+    --text-secondary: #55534F;
+    --text-light: #7E7B74;
+    --border-color: var(--color-tan);
+    
+    /* Typography */
+    --font-headings: "Yeseva One", Georgia, serif;
+    --font-body: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    --font-mono: "Courier New", Courier, monospace;
+    
+    /* Transitions & Borders */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --border-radius-sm: 4px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 24px;
+    --border-radius-pill: 9999px;
+    
+    /* Spacing & Widths */
+    --container-max-width: 1200px;
+    --container-narrow-width: 800px;
+}

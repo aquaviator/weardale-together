@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Yeseva+One&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Nunito", system-ui, sans-serif;
+  --font-display: "Yeseva One", Georgia, serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #F5F0E8;
+  color: #2C2C2A;
+}
+
+/* Custom scrollbar to match warm cream */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #F5F0E8;
+}
+::-webkit-scrollbar-thumb {
+  background: #C4B89A;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6B8F5E;
+}

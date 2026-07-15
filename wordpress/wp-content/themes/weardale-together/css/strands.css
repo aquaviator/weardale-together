@@ -1,0 +1,129 @@
+/**
+ * Strand Styling: Different Rooms in the Same House
+ */
+
+/* 1. Root & Branch Café (Sandy/Tan, Cosy, Polaroid-style frames) */
+.strand-cafe {
+    --bg-strand-overlay: rgba(196, 149, 106, 0.05);
+    --border-strand-accent: var(--color-strand-cafe);
+}
+
+.strand-cafe h1, .strand-cafe h2, .strand-cafe h3 {
+    color: #9E6B3E; /* Warm coffee tan */
+}
+
+/* Polaroid Photo Style */
+.polaroid-frame {
+    background-color: var(--color-white);
+    padding: 1rem 1rem 2.5rem 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transform: rotate(-1.5deg);
+    transition: var(--transition-smooth);
+    display: inline-block;
+}
+
+.polaroid-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.polaroid-frame:hover {
+    transform: rotate(0deg) scale(1.02);
+}
+
+/* 2. Creative Roots / Creative Arts (Botanical, ink illustration, golden wash) */
+.strand-creative {
+    --bg-strand-overlay: rgba(232, 160, 32, 0.05);
+    --border-strand-accent: var(--color-strand-creative);
+}
+
+.strand-creative h1, .strand-creative h2, .strand-creative h3 {
+    color: #BA7D0C; /* Dark golden amber */
+}
+
+/* Hand-drawn ink border effect */
+.sketch-card {
+    border: 2px solid var(--text-primary);
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; /* Irregular border radius */
+    padding: 2rem;
+    background-color: var(--color-white);
+    transition: var(--transition-smooth);
+}
+
+.sketch-card:hover {
+    transform: rotate(0.5deg);
+    border-color: var(--color-strand-creative);
+}
+
+/* 3. Youth Programme (Bold, High Contrast, Collage style) */
+.strand-youth {
+    --bg-strand-overlay: rgba(232, 150, 42, 0.08);
+    --border-strand-accent: var(--color-strand-youth);
+}
+
+.strand-youth h1, .strand-youth h2, .strand-youth h3 {
+    color: var(--color-strand-youth);
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+}
+
+/* Torn paper collage style card */
+.collage-card {
+    background-color: var(--color-white);
+    border: 3px solid var(--color-black);
+    box-shadow: 6px 6px 0 var(--color-black);
+    padding: 2rem;
+    transition: var(--transition-smooth);
+    position: relative;
+}
+
+.collage-card::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 20px;
+    right: 20px;
+    height: 6px;
+    background-color: var(--color-strand-youth);
+    border-left: 2px solid var(--color-black);
+    border-right: 2px solid var(--color-black);
+}
+
+.collage-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--color-strand-youth);
+}
+
+/* 4. Roots & Shoots (Soft Terracotta, Playful curves) */
+.strand-shoots {
+    --bg-strand-overlay: rgba(212, 130, 106, 0.05);
+    --border-strand-accent: var(--color-strand-shoots);
+}
+
+.strand-shoots h1, .strand-shoots h2, .strand-shoots h3 {
+    color: #B2583E; /* Deep terracotta */
+}
+
+/* Tactile rounded card */
+.clay-card {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-tan);
+    border-radius: var(--border-radius-lg);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.clay-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background-color: var(--color-strand-shoots);
+}
