@@ -231,6 +231,15 @@ switch ( $type_slug ) {
                                 </div>
                             <?php endif; ?>
 
+                            <!-- Online Enquiry Button -->
+                            <?php if ( get_post_meta( $post_id, '_directory_allow_enquiry', true ) === '1' ) : ?>
+                                <div style="margin-top: 0.5rem;">
+                                    <a href="<?php echo esc_url( add_query_arg( array( 'enquiry_type' => 'directory', 'enquiry_id' => $post_id ), home_url( '/contact-us/' ) ) ); ?>" class="btn btn-primary" style="display: block; text-align: center; font-weight: 700; text-decoration: none; padding: 0.6rem 1rem; background-color: var(--color-forest); color: var(--color-cream); border-color: var(--color-forest);">
+                                        ✉️ Enquire Online &rarr;
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+
                             <hr style="border: 0; border-top: 1px solid var(--color-tan); margin: 0.5rem 0;">
 
                             <!-- Opening Hours -->

@@ -31,6 +31,7 @@ $modules = array(
     'news-meta.php',
     'news-seed.php',
     'site-setup.php',
+    'participation.php',
 );
 
 foreach ( $modules as $module ) {

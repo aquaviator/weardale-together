@@ -18,8 +18,8 @@ Weardale Together is a grassroots Community Interest Company (CIC) serving remot
 
 | Parameter | Value / Status |
 | :--- | :--- |
-| **Current Milestone** | Milestone 11: Editorial News & Stories Platform Completed |
-| **Project Health** | Excellent, featuring high-end news storytelling and unified relationship maps. |
+| **Current Milestone** | Milestone 12: Participation & Engagement Completed |
+| **Project Health** | Excellent, featuring high-end news storytelling, unified relationship maps, and clean, secured, and localized enquiry pathways. |
 | **Development Phase** | Production Release Preparation & Accessibility Audit Preparation |
 | **Repository** | `https://github.com/aquaviator/weardale-together` |
 | **Branch** | `main` |
@@ -178,6 +178,15 @@ The local development environment baseline has been established. The following c
   - **Robust Frontend Queries**: Updated `content-strand.php` to fetch variants for the active strand and use `compare => 'IN'` in the `meta_query` of `WP_Query`, allowing posts to appear on strand pages regardless of whether they have a legacy or canonical identifier stored in database metadata.
   - **Clean Plugin Integration**: Modified `news-meta.php` to normalize metadata on retrieval and use canonical keys in the "Associated Programme Strand" dropdown, while standardizing saving pathways to guarantee all future updates are persisted strictly as canonical identifiers.
   - **Single Post Connection Badges**: Standardized the post connection badges in `single.php` to handle both canonical and legacy identifiers seamlessly, preventing broken badge displays or links.
+- [x] **Participation & Engagement (Sprint 12)**:
+  - **Unified Enquiry Workflow**: Engineered a core database/PHP module (`participation.php`) providing fully unified enquiry processing for general contact, volunteers, programmes, and event contexts.
+  - **Server-Side Processing & Nonce Protection**: Implemented secure post submission via `admin-post.php` with robust nonce verification, input sanitization (`sanitize_text_field`, `sanitize_textarea_field`), and validation errors stored in localized `$_SESSION` caches for instant user correction.
+  - **Elegantly Handled Contextual Binding**: Automatically bind the post context dynamically to form submissions for programmes, events, and community directories. Added contextual "Enquire Online" buttons into directory sidebars and refined "Enquire About This Event" buttons in event templates to carry queries seamlessly.
+  - **Spam Mitigation & Security**: Built standard honeypot checks (`wt_honey`) to silently filter bot traffic, and created a client IP-based transient rate limiter to restrict users to a maximum of 5 messages per hour.
+  - **Advanced Administrator Controls**: Expanded **Tools → Weardale Site Setup** with complete, beautifully integrated form inputs allowing administrators to toggle the live enquiry system, customize the on-screen success wording, manage postal addresses and phone numbers, configure public hours, specify the delivery recipient email, and toggle standard "Reply-To" email headers.
+  - **Mailchimp Integration**: Integrated a clean option in the admin settings panel to configure the Mailchimp Form Action URL. If blank, it displays a polite, custom-designed, and styled placeholder box; if populated, it swaps with a standard, accessible, responsive native Mailchimp form.
+  - **Repeat-Safe Development Seeder**: Built a robust seeder pre-populating 3 realistic Volunteer Opportunity entries and 1 customizable directory listing equipped with on-site enquiries enabled, alongside standard setup fields.
+  - **WCAG 2.2 AA Compliance**: Ensured that all custom templates feature clean error summaries linked to fields, high-contrast visual cues, and explicit keyboard-navigable accessibility focus anchors.
 
 ---
 

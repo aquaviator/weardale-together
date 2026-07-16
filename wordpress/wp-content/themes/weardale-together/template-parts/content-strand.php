@@ -195,6 +195,19 @@ switch ( $strand ) {
                 </div>
 
             <?php endif; ?>
+
+            <!-- Reusable Programme Enquiry Card -->
+            <div style="margin-top: 2rem; background-color: var(--color-white); border: 2px solid <?php echo esc_attr( $accent_color ); ?>; border-radius: var(--border-radius-md); padding: 1.5rem; text-align: center; box-shadow: var(--shadow-sm);">
+                <h3 class="font-display" style="font-size: 1.3rem; color: var(--color-forest); margin: 0 0 0.5rem 0; font-weight: normal;">
+                    <?php printf( esc_html__( 'Questions about %s?', 'weardale-together' ), esc_html( $title ) ); ?>
+                </h3>
+                <p style="margin: 0 0 1.25rem 0; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.4;">
+                    <?php esc_html_e( 'Want to learn more, drop in, or join a session? Our team is happy to help.', 'weardale-together' ); ?>
+                </p>
+                <a href="<?php echo esc_url( add_query_arg( array( 'enquiry_type' => 'programme', 'enquiry_id' => $strand_term ), home_url( '/contact-us/' ) ) ); ?>" class="btn btn-primary" style="display: block; width: 100%; text-align: center; border-color: <?php echo esc_attr( $accent_color ); ?>; background-color: <?php echo esc_attr( $accent_color ); ?>; color: var(--color-white);">
+                    <?php esc_html_e( 'Ask about this programme', 'weardale-together' ); ?>
+                </a>
+            </div>
         </aside>
 
     </div>

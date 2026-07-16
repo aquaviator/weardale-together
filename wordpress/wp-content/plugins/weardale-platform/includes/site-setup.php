@@ -323,15 +323,59 @@ function weardale_platform_render_site_setup_page() {
         wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'weardale-platform' ) );
     }
 
-    $results = null;
+    $results        = null;
+    $settings_saved = false;
+    $seed_results   = null;
+
+    // 1. Navigation Bootstrapper
     if ( isset( $_POST['wt_bootstrap_nonce'] ) && wp_verify_nonce( $_POST['wt_bootstrap_nonce'], 'wt_bootstrap_action' ) ) {
         $results = weardale_platform_bootstrap_navigation();
     }
 
+    // 2. Settings Saver
+    if ( isset( $_POST['wt_settings_nonce'] ) && wp_verify_nonce( $_POST['wt_settings_nonce'], 'wt_settings_action' ) ) {
+        update_option( 'weardale_enquiry_enabled', sanitize_text_field( $_POST['weardale_enquiry_enabled'] ) );
+        update_option( 'weardale_enquiry_recipient', sanitize_email( $_POST['weardale_enquiry_recipient'] ) );
+        update_option( 'weardale_enquiry_reply_to', sanitize_text_field( $_POST['weardale_enquiry_reply_to'] ) );
+        update_option( 'weardale_enquiry_confirmation', sanitize_textarea_field( $_POST['weardale_enquiry_confirmation'] ) );
+        update_option( 'weardale_mailchimp_url', esc_url_raw( $_POST['weardale_mailchimp_url'] ) );
+
+        update_option( 'weardale_contact_address', sanitize_textarea_field( $_POST['weardale_contact_address'] ) );
+        update_option( 'weardale_contact_phone', sanitize_text_field( $_POST['weardale_contact_phone'] ) );
+        update_option( 'weardale_contact_email', sanitize_email( $_POST['weardale_contact_email'] ) );
+        update_option( 'weardale_contact_opening_hours', sanitize_textarea_field( $_POST['weardale_contact_opening_hours'] ) );
+        update_option( 'weardale_contact_directions', sanitize_textarea_field( $_POST['weardale_contact_directions'] ) );
+        update_option( 'weardale_contact_social_facebook', esc_url_raw( $_POST['weardale_contact_social_facebook'] ) );
+        update_option( 'weardale_contact_social_instagram', esc_url_raw( $_POST['weardale_contact_social_instagram'] ) );
+        $settings_saved = true;
+    }
+
+    // 3. Demo Content Seeder
+    if ( isset( $_POST['wt_seed_nonce'] ) && wp_verify_nonce( $_POST['wt_seed_nonce'], 'wt_seed_action' ) ) {
+        if ( function_exists( 'weardale_platform_seed_participation_data' ) ) {
+            $seed_results = weardale_platform_seed_participation_data();
+        }
+    }
+
+    // Retrieve settings
+    $enquiry_enabled      = get_option( 'weardale_enquiry_enabled', 'yes' );
+    $enquiry_recipient    = get_option( 'weardale_enquiry_recipient', get_option( 'admin_email' ) );
+    $enquiry_reply_to     = get_option( 'weardale_enquiry_reply_to', 'yes' );
+    $enquiry_confirmation = get_option( 'weardale_enquiry_confirmation', __( 'Thank you for contacting Weardale Together. Your message has been received, and our team of volunteers and local staff will read it shortly. As a small, grassroots community organization, we appreciate your patience and will get back to you as soon as possible.', 'weardale-platform' ) );
+    $mailchimp_url        = get_option( 'weardale_mailchimp_url' );
+
+    $contact_address      = get_option( 'weardale_contact_address' );
+    $contact_phone        = get_option( 'weardale_contact_phone' );
+    $contact_email        = get_option( 'weardale_contact_email' );
+    $contact_opening_hours= get_option( 'weardale_contact_opening_hours' );
+    $contact_directions   = get_option( 'weardale_contact_directions' );
+    $contact_social_fb    = get_option( 'weardale_contact_social_facebook' );
+    $contact_social_ig    = get_option( 'weardale_contact_social_instagram' );
+
     ?>
     <div class="wrap">
         <h1><?php esc_html_e( 'Weardale Site Setup', 'weardale-platform' ); ?></h1>
-        <p><?php esc_html_e( 'Quickly bootstrap core site configuration, menus, and layout states for Weardale Together.', 'weardale-platform' ); ?></p>
+        <p><?php esc_html_e( 'Quickly bootstrap core site configuration, menus, layout states, and participation options for Weardale Together.', 'weardale-platform' ); ?></p>
 
         <?php if ( $results ) : ?>
             <div class="notice notice-success is-dismissible" style="padding: 15px; margin-top: 15px; border-left-color: #16a34a;">
@@ -347,15 +391,185 @@ function weardale_platform_render_site_setup_page() {
             </div>
         <?php endif; ?>
 
-        <div class="card" style="max-width: 600px; margin-top: 20px; padding: 20px; background: #fff; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
-            <h2>🗺️ <?php esc_html_e( 'Bootstrap Site Navigation', 'weardale-platform' ); ?></h2>
-            <p><?php esc_html_e( 'This tool will automatically create and assign the Primary, Footer, and Legal navigation menus. It is safe to run repeatedly: it will never overwrite custom menus or items that you have already configured manually.', 'weardale-platform' ); ?></p>
-            
-            <form method="post" style="margin-top: 20px;">
-                <?php wp_nonce_field( 'wt_bootstrap_action', 'wt_bootstrap_nonce' ); ?>
-                <input type="submit" class="button button-primary button-large" value="<?php esc_attr_e( 'Bootstrap Site Navigation', 'weardale-platform' ); ?>">
-            </form>
+        <?php if ( $settings_saved ) : ?>
+            <div class="notice notice-success is-dismissible" style="padding: 15px; margin-top: 15px; border-left-color: #16a34a;">
+                <p><strong><?php esc_html_e( 'Settings saved successfully.', 'weardale-platform' ); ?></strong></p>
+            </div>
+        <?php endif; ?>
+
+        <?php if ( $seed_results ) : ?>
+            <div class="notice notice-success is-dismissible" style="padding: 15px; margin-top: 15px; border-left-color: #16a34a;">
+                <h3><?php esc_html_e( 'Development Demo Seeding Complete', 'weardale-platform' ); ?></h3>
+                <p>
+                    <?php 
+                    printf( 
+                        esc_html__( 'Created %d new records, and skipped %d existing records.', 'weardale-platform' ), 
+                        intval( $seed_results['created'] ), 
+                        intval( $seed_results['skipped'] ) 
+                    ); 
+                    ?>
+                </p>
+            </div>
+        <?php endif; ?>
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 20px; max-width: 1200px; align-items: start;">
+            <?php if ( window_width_min_768() ) : ?>
+            <style>
+                @media (min-width: 768px) {
+                    .wt-setup-grid {
+                        display: grid !important;
+                        grid-template-columns: 2fr 1fr !important;
+                        gap: 30px !important;
+                    }
+                }
+            </style>
+            <?php endif; ?>
+            <div class="wt-setup-grid" style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <!-- LEFT COLUMN: Main Config Form -->
+                <div>
+                    <form method="post" action="">
+                        <?php wp_nonce_field( 'wt_settings_action', 'wt_settings_nonce' ); ?>
+                        
+                        <!-- Box 1: Enquiry settings -->
+                        <div class="card" style="margin-bottom: 20px; padding: 20px; background: #fff; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04); max-width: 100%;">
+                            <h2>📬 <?php esc_html_e( 'Participation Enquiry Settings', 'weardale-platform' ); ?></h2>
+                            <p class="description" style="margin-bottom: 20px;"><?php esc_html_e( 'Configure validation constraints, delivery targets, and confirmation wording for on-site contact/enquiry forms.', 'weardale-platform' ); ?></p>
+                            
+                            <table class="form-table" role="presentation">
+                                <tr>
+                                    <th scope="row"><label for="weardale_enquiry_enabled"><?php esc_html_e( 'Enquiry System Status', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <select id="weardale_enquiry_enabled" name="weardale_enquiry_enabled">
+                                            <option value="yes" <?php selected( $enquiry_enabled, 'yes' ); ?>><?php esc_html_e( 'Enabled (Active on-site)', 'weardale-platform' ); ?></option>
+                                            <option value="no" <?php selected( $enquiry_enabled, 'no' ); ?>><?php esc_html_e( 'Disabled (Temporarily Offline)', 'weardale-platform' ); ?></option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_enquiry_recipient"><?php esc_html_e( 'Notification Recipient Email', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <input type="email" id="weardale_enquiry_recipient" name="weardale_enquiry_recipient" class="regular-text" required value="<?php echo esc_attr( $enquiry_recipient ); ?>">
+                                        <p class="description"><?php esc_html_e( 'All form submissions from visitors are validated, formatted, and emailed here.', 'weardale-platform' ); ?></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_enquiry_reply_to"><?php esc_html_e( 'Inject "Reply-To" Header', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <select id="weardale_enquiry_reply_to" name="weardale_enquiry_reply_to">
+                                            <option value="yes" <?php selected( $enquiry_reply_to, 'yes' ); ?>><?php esc_html_e( 'Yes (Allow clicking "Reply" directly to visitors)', 'weardale-platform' ); ?></option>
+                                            <option value="no" <?php selected( $enquiry_reply_to, 'no' ); ?>><?php esc_html_e( 'No (Safer, use default mail sender header)', 'weardale-platform' ); ?></option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_enquiry_confirmation"><?php esc_html_e( 'On-Screen Confirmation Wording', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <textarea id="weardale_enquiry_confirmation" name="weardale_enquiry_confirmation" rows="4" class="large-text"><?php echo esc_textarea( $enquiry_confirmation ); ?></textarea>
+                                        <p class="description"><?php esc_html_e( 'Wording shown to the user immediately after a successful submission.', 'weardale-platform' ); ?></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_mailchimp_url"><?php esc_html_e( 'Mailchimp Form Action URL', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <input type="url" id="weardale_mailchimp_url" name="weardale_mailchimp_url" class="large-text" placeholder="https://xxxx.usxx.list-manage.com/subscribe/post?u=xxxx&id=xxxx" value="<?php echo esc_url( $mailchimp_url ); ?>">
+                                        <p class="description"><?php esc_html_e( 'Paste the naked HTML Form Action URL from your Mailchimp dashboard here. If left empty, a placeholder coming-soon block is displayed to guests.', 'weardale-platform' ); ?></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Box 2: Contact Hub details -->
+                        <div class="card" style="margin-bottom: 20px; padding: 20px; background: #fff; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04); max-width: 100%;">
+                            <h2>🏢 <?php esc_html_e( 'General Contact & Hub Details', 'weardale-platform' ); ?></h2>
+                            <p class="description" style="margin-bottom: 20px;"><?php esc_html_e( 'Manage address and physical location parameters shown in sidebar directories and the primary Contact page layout.', 'weardale-platform' ); ?></p>
+                            
+                            <table class="form-table" role="presentation">
+                                <tr>
+                                    <th scope="row"><label for="weardale_contact_address"><?php esc_html_e( 'Hub Postal Address', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <textarea id="weardale_contact_address" name="weardale_contact_address" rows="3" class="large-text"><?php echo esc_textarea( $contact_address ); ?></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_contact_phone"><?php esc_html_e( 'Hub Telephone Number', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <input type="text" id="weardale_contact_phone" name="weardale_contact_phone" class="regular-text" value="<?php echo esc_attr( $contact_phone ); ?>">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_contact_email"><?php esc_html_e( 'Hub Public Email Address', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <input type="email" id="weardale_contact_email" name="weardale_contact_email" class="regular-text" value="<?php echo esc_attr( $contact_email ); ?>">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_contact_opening_hours"><?php esc_html_e( 'Public Opening Hours', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <textarea id="weardale_contact_opening_hours" name="weardale_contact_opening_hours" rows="3" class="large-text"><?php echo esc_textarea( $contact_opening_hours ); ?></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_contact_directions"><?php esc_html_e( 'Physical Landmark / Directions', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <textarea id="weardale_contact_directions" name="weardale_contact_directions" rows="3" class="large-text"><?php echo esc_textarea( $contact_directions ); ?></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_contact_social_facebook"><?php esc_html_e( 'Facebook Page Link', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <input type="url" id="weardale_contact_social_facebook" name="weardale_contact_social_facebook" class="large-text" value="<?php echo esc_url( $contact_social_fb ); ?>">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_contact_social_instagram"><?php esc_html_e( 'Instagram Link', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <input type="url" id="weardale_contact_social_instagram" name="weardale_contact_social_instagram" class="large-text" value="<?php echo esc_url( $contact_social_ig ); ?>">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <input type="submit" class="button button-primary button-large" value="<?php esc_attr_e( 'Save General & Participation Settings', 'weardale-platform' ); ?>">
+                    </form>
+                </div>
+
+                <!-- RIGHT COLUMN: Tools and seeders -->
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <!-- Bootstrapper Box -->
+                    <div class="card" style="padding: 20px; background: #fff; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04); margin: 0;">
+                        <h2>🗺️ <?php esc_html_e( 'Bootstrap Navigation', 'weardale-platform' ); ?></h2>
+                        <p><?php esc_html_e( 'Automatically creates and assigns the Primary, Footer, and Legal menus. It is safe to run repeatedly: it will never overwrite custom menus or items.', 'weardale-platform' ); ?></p>
+                        
+                        <form method="post" style="margin-top: 15px;">
+                            <?php wp_nonce_field( 'wt_bootstrap_action', 'wt_bootstrap_nonce' ); ?>
+                            <input type="submit" class="button button-secondary button-large" style="width: 100%; text-align: center;" value="<?php esc_attr_e( 'Bootstrap Menus Now', 'weardale-platform' ); ?>">
+                        </form>
+                    </div>
+
+                    <!-- Seeder Box -->
+                    <div class="card" style="padding: 20px; background: #fff; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04); margin: 0;">
+                        <h2>🙋‍♀️ <?php esc_html_e( 'Seed Development Data', 'weardale-platform' ); ?></h2>
+                        <p><?php esc_html_e( 'Populates the site database with real-world sample pages, active volunteer opportunities, and test directories to experience active workflows immediately.', 'weardale-platform' ); ?></p>
+                        
+                        <form method="post" style="margin-top: 15px;">
+                            <?php wp_nonce_field( 'wt_seed_action', 'wt_seed_nonce' ); ?>
+                            <input type="submit" class="button button-secondary button-large" style="width: 100%; text-align: center;" value="<?php esc_attr_e( 'Seed Sample Data Now', 'weardale-platform' ); ?>">
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
     </div>
     <?php
+}
+
+/**
+ * Fallback width check helper
+ */
+function window_width_min_768() {
+    return true;
 }

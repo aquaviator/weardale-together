@@ -201,7 +201,7 @@ $is_past = ( ! empty( $meta['start_date'] ) && $meta['start_date'] < $today );
                                             <?php esc_html_e( 'Book Tickets Now', 'weardale-together' ); ?>
                                         </a>
                                     <?php endif; ?>
-                                    <a href="<?php echo esc_url( home_url( '/contact-us/' ) ); ?>" class="btn btn-secondary">
+                                    <a href="<?php echo esc_url( add_query_arg( array( 'enquiry_type' => 'event', 'enquiry_id' => $post_id ), home_url( '/contact-us/' ) ) ); ?>" class="btn btn-secondary">
                                         <?php esc_html_e( 'Enquire About This Event', 'weardale-together' ); ?>
                                     </a>
                                 </div>

@@ -37,6 +37,7 @@ function weardale_platform_render_directory_meta_box( $post ) {
     $address            = get_post_meta( $post->ID, '_directory_address', true );
     $phone              = get_post_meta( $post->ID, '_directory_phone', true );
     $email              = get_post_meta( $post->ID, '_directory_email', true );
+    $allow_enquiry      = get_post_meta( $post->ID, '_directory_allow_enquiry', true ) === '1';
     $website            = get_post_meta( $post->ID, '_directory_website', true );
     $opening_hours      = get_post_meta( $post->ID, '_directory_opening_hours', true );
     $accessibility      = get_post_meta( $post->ID, '_directory_accessibility', true );
@@ -153,6 +154,17 @@ function weardale_platform_render_directory_meta_box( $post ) {
                 <label for="directory_email"><?php esc_html_e( 'Email Address', 'weardale-platform' ); ?></label>
                 <div>
                     <input type="email" id="directory_email" name="directory_email" class="regular-text" value="<?php echo esc_attr( $email ); ?>">
+                </div>
+            </div>
+
+            <div class="wd-form-grid">
+                <label><?php esc_html_e( 'On-Site Enquiries', 'weardale-platform' ); ?></label>
+                <div>
+                    <label class="wd-checkbox-label">
+                        <input type="checkbox" name="directory_allow_enquiry" value="1" <?php checked( $allow_enquiry, true ); ?>>
+                        <strong><?php esc_html_e( 'Allow Online Enquiries', 'weardale-platform' ); ?></strong>
+                    </label>
+                    <p class="wd-help-desc"><?php esc_html_e( 'Enable a prominent on-site "Enquire Online" contact action button for this directory listing.', 'weardale-platform' ); ?></p>
                 </div>
             </div>
 
@@ -367,5 +379,8 @@ function weardale_platform_save_directory_metadata( $post_id ) {
     // Handle checkboxes
     $verified = isset( $_POST['directory_verified'] ) ? '1' : '0';
     update_post_meta( $post_id, '_directory_verified', $verified );
+
+    $allow_enquiry = isset( $_POST['directory_allow_enquiry'] ) ? '1' : '0';
+    update_post_meta( $post_id, '_directory_allow_enquiry', $allow_enquiry );
 }
 add_action( 'save_post_weardale_directory', 'weardale_platform_save_directory_metadata' );
