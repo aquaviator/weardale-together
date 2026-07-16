@@ -459,7 +459,7 @@ function weardale_platform_render_contact_form() {
                         <strong><?php esc_html_e( 'Consent to Contact', 'weardale-platform' ); ?></strong> <span style="color: #b91c1c;" aria-hidden="true">*</span><br>
                         <span style="color: var(--text-secondary);">
                             <?php 
-                            $privacy_link = home_url( '/privacy-notice/' );
+                            $privacy_link = weardale_platform_get_legal_page_url( 'weardale_legal_privacy_page' );
                             printf(
                                 wp_kses(
                                     __( 'I agree that Weardale Together may use the details submitted in this form to respond to my enquiry, in accordance with the <a href="%s" target="_blank" style="color: var(--color-forest); text-decoration: underline;">Privacy Notice</a>. (Subject to client/legal approval)', 'weardale-platform' ),
@@ -775,22 +775,90 @@ function weardale_platform_render_volunteer_page() {
 add_shortcode( 'weardale_volunteer_page', 'weardale_platform_render_volunteer_page' );
 
 /**
- * Shortcode: Newsletter Page Layout
+ * Retrieve Legal Page URL
+ *
+ * Resolves selected page ID to its published permalink, with structured fallback support.
+ *
+ * @param string $page_option Option key containing the page ID.
+ * @return string Resolved Page URL.
  */
-function weardale_platform_render_newsletter_page() {
-    ob_start();
-    $mailchimp_url = get_option( 'weardale_mailchimp_url' );
-    ?>
-    <div class="weardale-newsletter-page" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 2rem 0;">
-        <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;" role="img" aria-label="Mailbox">📬</span>
-        <h2 class="font-display" style="font-size: 2.25rem; color: var(--color-forest); margin-top: 0; margin-bottom: 1rem; font-weight: normal;">
-            <?php esc_html_e( 'Join Weardale Together', 'weardale-platform' ); ?>
-        </h2>
-        <p style="font-size: 1.1rem; line-height: 1.6; color: var(--text-primary); margin-bottom: 2.5rem;">
-            <?php esc_html_e( 'Receive seasonal newsletters, stories from across the valley, updates from our community café, and upcoming event notifications straight to your inbox.', 'weardale-platform' ); ?>
-        </p>
+function weardale_platform_get_legal_page_url( $page_option ) {
+    $page_id = get_option( $page_option );
+    if ( $page_id ) {
+        $url = get_permalink( $page_id );
+        if ( $url ) {
+            return $url;
+        }
+    }
+    // Fallback defaults if unconfigured
+    if ( $page_option === 'weardale_legal_privacy_page' ) {
+        return home_url( '/privacy-notice/' );
+    } elseif ( $page_option === 'weardale_legal_cookie_page' ) {
+        return home_url( '/cookie-policy/' );
+    } elseif ( $page_option === 'weardale_legal_terms_page' ) {
+        return home_url( '/terms-conditions/' );
+    }
+    return home_url();
+}
 
-        <?php if ( ! empty( $mailchimp_url ) ) : ?>
+/**
+ * Reusable Newsletter Signup Component
+ *
+ * Renders active Mailchimp sign-up form when configured, otherwise displays coming-soon notice.
+ * Supports 'page', 'homepage', and 'footer' contexts.
+ *
+ * @param string $context Context location ('page', 'homepage', 'footer').
+ * @return string HTML output.
+ */
+function weardale_platform_get_newsletter_form( $context = 'page' ) {
+    $mailchimp_url = get_option( 'weardale_mailchimp_url' );
+    $privacy_link  = weardale_platform_get_legal_page_url( 'weardale_legal_privacy_page' );
+    
+    ob_start();
+    
+    if ( ! empty( $mailchimp_url ) ) {
+        if ( $context === 'footer' ) {
+            ?>
+            <form action="<?php echo esc_url( $mailchimp_url ); ?>" method="post" target="_blank" novalidate style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                    <label for="footer_mc_email" class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Email Address</label>
+                    <input type="email" name="EMAIL" id="footer_mc_email" required placeholder="name@example.com"
+                           style="padding: 0.5rem 0.75rem; border: 1px solid rgba(255,255,255,0.2); border-radius: var(--border-radius-sm); font-size: 0.9rem; width: 100%; background-color: rgba(255,255,255,0.1); color: var(--color-cream);">
+                </div>
+                <button type="submit" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 700; width: 100%; text-align: center; background-color: var(--color-tan); color: var(--color-forest); border: none; cursor: pointer;">
+                    <?php esc_html_e( 'Subscribe', 'weardale-platform' ); ?>
+                </button>
+                <div style="font-size: 0.75rem; color: var(--color-tan); opacity: 0.8; line-height: 1.3;">
+                    <?php printf( __( 'By subscribing, you agree to our <a href="%s" style="color: inherit; text-decoration: underline;">Privacy Notice</a>.', 'weardale-platform' ), esc_url( $privacy_link ) ); ?>
+                </div>
+            </form>
+            <?php
+        } elseif ( $context === 'homepage' ) {
+            ?>
+            <form action="<?php echo esc_url( $mailchimp_url ); ?>" method="post" target="_blank" novalidate style="display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 600px; margin: 0 auto;">
+                <label for="homepage_mc_email" class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Email Address</label>
+                <input type="email" name="EMAIL" id="homepage_mc_email" placeholder="Enter your email address..." required 
+                       style="max-width: 380px; flex-grow: 1; border: 1px solid var(--color-tan); border-radius: var(--border-radius-pill); padding: 0.75rem 1.25rem; font-size: 1rem; background-color: var(--color-white);">
+                <button type="submit" class="btn btn-primary" style="border-radius: var(--border-radius-pill); padding: 0.75rem 1.5rem; cursor: pointer;">
+                    <?php esc_html_e( 'Sign Up Now', 'weardale-platform' ); ?>
+                </button>
+            </form>
+            <div style="margin-top: 1.25rem; font-size: 0.85rem; color: var(--text-light); line-height: 1.4;">
+                <p style="margin: 0;">
+                    <?php 
+                    printf(
+                        wp_kses(
+                            __( 'By joining, you consent to Weardale Together sending newsletter emails in accordance with our <a href="%s" style="color: var(--color-sage); text-decoration: underline;">Privacy Notice</a>.', 'weardale-platform' ),
+                            array( 'a' => array( 'href' => array(), 'style' => array() ) )
+                        ),
+                        esc_url( $privacy_link )
+                    ); 
+                    ?>
+                </p>
+            </div>
+            <?php
+        } else { // 'page'
+            ?>
             <div class="card" style="background-color: var(--color-cream); border: 2px solid var(--color-tan); padding: 2.5rem; border-radius: var(--border-radius-md); text-align: left; box-shadow: var(--shadow-sm);">
                 <form action="<?php echo esc_url( $mailchimp_url ); ?>" method="post" target="_blank" novalidate style="display: flex; flex-direction: column; gap: 1.25rem;">
                     
@@ -812,7 +880,6 @@ function weardale_platform_render_newsletter_page() {
 
                     <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; margin-top: 0.25rem;">
                         <?php 
-                        $privacy_link = home_url( '/privacy-notice/' );
                         printf(
                             wp_kses(
                                 __( 'By joining, you consent to Weardale Together sending newsletter emails. We use Mailchimp as our platform. You can unsubscribe at any time using the link in our footers. Read our <a href="%s" style="color: var(--color-forest); text-decoration: underline;">Privacy Notice</a>.', 'weardale-platform' ),
@@ -823,14 +890,47 @@ function weardale_platform_render_newsletter_page() {
                         ?>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="padding: 0.85rem 2rem; font-size: 1.05rem; font-weight: 700; align-self: flex-start; margin-top: 0.5rem;">
+                    <button type="submit" class="btn btn-primary" style="padding: 0.85rem 2rem; font-size: 1.05rem; font-weight: 700; align-self: flex-start; margin-top: 0.5rem; cursor: pointer;">
                         <?php esc_html_e( 'Subscribe to Newsletter', 'weardale-platform' ); ?>
                     </button>
 
                 </form>
             </div>
-        <?php else : ?>
-            <div class="card" style="background-color: var(--color-cream); border: 2px dashed var(--color-tan); padding: 3rem; border-radius: var(--border-radius-md); box-shadow: var(--shadow-sm);">
+            <?php
+        }
+    } else {
+        if ( $context === 'footer' ) {
+            ?>
+            <div style="background-color: rgba(255, 255, 255, 0.1); padding: 0.75rem; border-radius: var(--border-radius-sm); border: 1px solid rgba(255, 255, 255, 0.2);">
+                <p style="font-size: 0.85rem; color: var(--color-tan); margin-bottom: 0; text-align: center; line-height: 1.3;">
+                    <em><?php esc_html_e( 'Newsletter signup is temporarily offline.', 'weardale-platform' ); ?></em>
+                </p>
+                <?php if ( current_user_can( 'manage_options' ) ) : ?>
+                    <p style="margin: 0.5rem 0 0 0; font-size: 0.75rem; text-align: center;">
+                        <a href="<?php echo esc_url( admin_url( 'tools.php?page=weardale-site-setup' ) ); ?>" style="color: #fff; text-decoration: underline; font-weight: 600;"><?php esc_html_e( 'Configure Now', 'weardale-platform' ); ?></a>
+                    </p>
+                <?php endif; ?>
+            </div>
+            <?php
+        } elseif ( $context === 'homepage' ) {
+            ?>
+            <div class="card" style="background-color: var(--color-white); border: 2px dashed var(--color-tan); padding: 2.5rem 2rem; border-radius: var(--border-radius-md); max-width: 600px; margin: 0 auto; box-shadow: 0 4px 15px rgba(196, 184, 154, 0.15);">
+                <h3 class="font-display" style="font-size: 1.5rem; color: var(--color-forest); margin-top: 0; margin-bottom: 0.75rem; font-weight: normal;">
+                    📬 <?php esc_html_e( 'Newsletter Sign-Up Coming Soon', 'weardale-platform' ); ?>
+                </h3>
+                <p style="margin: 0; line-height: 1.5; color: var(--text-secondary); font-size: 0.95rem;">
+                    <?php esc_html_e( 'We are currently preparing our digital mailing systems. Sign-up forms will be activated as soon as our Mailchimp integration is finalized by our team. Thank you for your interest and support!', 'weardale-platform' ); ?>
+                </p>
+                <?php if ( current_user_can( 'manage_options' ) ) : ?>
+                    <div style="margin-top: 1.5rem; background: #fffbeb; border-left: 4px solid #d97706; padding: 1rem; text-align: left; font-size: 0.85rem; color: #78350f; border-radius: var(--border-radius-sm);">
+                        <strong>Administrator Info:</strong> Go to <a href="<?php echo esc_url( admin_url( 'tools.php?page=weardale-site-setup' ) ); ?>" style="text-decoration: underline; color: inherit; font-weight: 600;">Weardale Site Setup</a> and paste your Mailchimp Form Action URL under "Participation Settings" to enable the live sign-up form.
+                    </div>
+                <?php endif; ?>
+            </div>
+            <?php
+        } else { // 'page'
+            ?>
+            <div class="card" style="background-color: var(--color-cream); border: 2px dashed var(--color-tan); padding: 3rem; border-radius: var(--border-radius-md); box-shadow: var(--shadow-sm); max-width: 600px; margin: 0 auto;">
                 <h3 class="font-display" style="font-size: 1.5rem; color: var(--color-forest); margin-top: 0; margin-bottom: 0.75rem; font-weight: normal;">
                     📬 <?php esc_html_e( 'Newsletter Sign-Up Coming Soon', 'weardale-platform' ); ?>
                 </h3>
@@ -838,12 +938,34 @@ function weardale_platform_render_newsletter_page() {
                     <?php esc_html_e( 'We are currently preparing our digital mailing systems. Sign-up forms will be activated as soon as our Mailchimp integration is finalized by our editorial team. Thank you for your interest and support!', 'weardale-platform' ); ?>
                 </p>
                 <?php if ( current_user_can( 'manage_options' ) ) : ?>
-                    <div style="margin-top: 1.5rem; background: #fffbeb; border-left: 4px solid #d97706; padding: 1rem; text-align: left; font-size: 0.85rem; color: #78350f;">
+                    <div style="margin-top: 1.5rem; background: #fffbeb; border-left: 4px solid #d97706; padding: 1rem; text-align: left; font-size: 0.85rem; color: #78350f; border-radius: var(--border-radius-sm);">
                         <strong>Administrator Info:</strong> Go to <a href="<?php echo esc_url( admin_url( 'tools.php?page=weardale-site-setup' ) ); ?>" style="text-decoration: underline; color: inherit; font-weight: 600;">Weardale Site Setup</a> and paste your Mailchimp Form Action URL under "Participation Settings" to enable the live sign-up form.
                     </div>
                 <?php endif; ?>
             </div>
-        <?php endif; ?>
+            <?php
+        }
+    }
+    
+    return ob_get_clean();
+}
+
+/**
+ * Shortcode: Newsletter Page Layout
+ */
+function weardale_platform_render_newsletter_page() {
+    ob_start();
+    ?>
+    <div class="weardale-newsletter-page" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 2rem 0;">
+        <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;" role="img" aria-label="Mailbox">📬</span>
+        <h2 class="font-display" style="font-size: 2.25rem; color: var(--color-forest); margin-top: 0; margin-bottom: 1rem; font-weight: normal;">
+            <?php esc_html_e( 'Join Weardale Together', 'weardale-platform' ); ?>
+        </h2>
+        <p style="font-size: 1.1rem; line-height: 1.6; color: var(--text-primary); margin-bottom: 2.5rem;">
+            <?php esc_html_e( 'Receive seasonal newsletters, stories from across the valley, updates from our community café, and upcoming event notifications straight to your inbox.', 'weardale-platform' ); ?>
+        </p>
+
+        <?php echo weardale_platform_get_newsletter_form( 'page' ); ?>
     </div>
     <?php
     return ob_get_clean();

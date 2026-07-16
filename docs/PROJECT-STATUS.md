@@ -18,9 +18,9 @@ Weardale Together is a grassroots Community Interest Company (CIC) serving remot
 
 | Parameter | Value / Status |
 | :--- | :--- |
-| **Current Milestone** | Milestone 12: Participation & Engagement Completed |
-| **Project Health** | Excellent, featuring high-end news storytelling, unified relationship maps, and clean, secured, and localized enquiry pathways. |
-| **Development Phase** | Production Release Preparation & Accessibility Audit Preparation |
+| **Current Milestone** | Milestone 13: Newsletter, Legal & Configuration Integration Completed |
+| **Project Health** | Excellent, featuring robust newsletter components, dynamic configurations, legal page dropdown selectors, and integrated configuration health diagnostics. |
+| **Development Phase** | Production Release Preparation, Configuration Validation, & Accessibility Audit Preparation |
 | **Repository** | `https://github.com/aquaviator/weardale-together` |
 | **Branch** | `main` |
 
@@ -187,6 +187,11 @@ The local development environment baseline has been established. The following c
   - **Mailchimp Integration**: Integrated a clean option in the admin settings panel to configure the Mailchimp Form Action URL. If blank, it displays a polite, custom-designed, and styled placeholder box; if populated, it swaps with a standard, accessible, responsive native Mailchimp form.
   - **Repeat-Safe Development Seeder**: Built a robust seeder pre-populating 3 realistic Volunteer Opportunity entries and 1 customizable directory listing equipped with on-site enquiries enabled, alongside standard setup fields.
   - **WCAG 2.2 AA Compliance**: Ensured that all custom templates feature clean error summaries linked to fields, high-contrast visual cues, and explicit keyboard-navigable accessibility focus anchors.
+- [x] **Newsletter, Legal & Configuration Integration (Sprint 13)**:
+  - **Dynamic Organisation & Legal Meta Fields**: Added database settings options inside **Tools → Weardale Site Setup** to configure legal terms, privacy notices, and cookie policy pages via standard WordPress dropdown menus (`wp_dropdown_pages`), plus core registration details (CIC company number, registered charity numbers, and company abbreviations).
+  - **Dynamic Footer Transformation**: Refactored `footer.php` to remove hardcoded branding, physical locations, and contact coordinates. The footer dynamically retrieves all organisation data, email links, phone actions, social profiles, and the custom legal privacy notice page.
+  - **Centralised Reusable Newsletter Component**: Formulated `weardale_platform_get_newsletter_form()` supporting responsive and context-aware styling layouts for Pages, Homepages, and Footers. Seamlessly embeds live Mailchimp submission rules with full i18n support, automated consent notices, and administrative feedback helpers.
+  - **Integrated Configuration Health Board**: Added a diagnostic dashboard card to the Weardale Site Setup screen checking for operational completeness (such as Mailchimp availability, privacy page selections, email configurations, and site logo presence), allowing administrators to identify and resolve missing settings proactively.
 
 ---
 
@@ -206,7 +211,7 @@ Before this project is ready for formal deployment, several engineering audits a
 ---
 
 ## 11. Known Issues & Limitations
-* **Mailchimp Embed Code**: The homepage newsletter section is a placeholder awaiting Mailchimp integration. It does not possess operational live synchronization capabilities in this baseline state and must be wired to real audience registration action endpoints in the production stage.
+* **Mailchimp Integration**: Mailchimp forms are now fully integrated and dynamically styled across Page, Homepage, and Footer layouts. They activate instantly when the administrative `weardale_mailchimp_url` setting is populated, fallback gracefully to responsive "coming soon" placeholders if blank, and require zero manual template edits.
 * **Starter Database Seed**: The file `/scripts/seed-db.sql` is an optional local development seed intended only for a fresh WordPress installation using the standard `wp_` table prefix. It contains demonstration content, should not be treated as real or final client content, and is not designed to be imported repeatedly over existing tables.
 * **Mock Event Database Simulators**: The AI Studio React Preview has an interactive event generator that outputs SQL queries. These are visually precise for development sandboxing but do not modify the real local WordPress database automatically.
 

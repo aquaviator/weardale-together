@@ -347,6 +347,18 @@ function weardale_platform_render_site_setup_page() {
         update_option( 'weardale_contact_directions', sanitize_textarea_field( $_POST['weardale_contact_directions'] ) );
         update_option( 'weardale_contact_social_facebook', esc_url_raw( $_POST['weardale_contact_social_facebook'] ) );
         update_option( 'weardale_contact_social_instagram', esc_url_raw( $_POST['weardale_contact_social_instagram'] ) );
+
+        // Organisation Details
+        update_option( 'weardale_organisation_name', sanitize_text_field( $_POST['weardale_organisation_name'] ) );
+        update_option( 'weardale_organisation_short_name', sanitize_text_field( $_POST['weardale_organisation_short_name'] ) );
+        update_option( 'weardale_organisation_company_number', sanitize_text_field( $_POST['weardale_organisation_company_number'] ) );
+        update_option( 'weardale_organisation_charity_number', sanitize_text_field( $_POST['weardale_organisation_charity_number'] ) );
+
+        // Legal Page Selectors
+        update_option( 'weardale_legal_privacy_page', isset( $_POST['weardale_legal_privacy_page'] ) ? intval( $_POST['weardale_legal_privacy_page'] ) : 0 );
+        update_option( 'weardale_legal_cookie_page', isset( $_POST['weardale_legal_cookie_page'] ) ? intval( $_POST['weardale_legal_cookie_page'] ) : 0 );
+        update_option( 'weardale_legal_terms_page', isset( $_POST['weardale_legal_terms_page'] ) ? intval( $_POST['weardale_legal_terms_page'] ) : 0 );
+
         $settings_saved = true;
     }
 
@@ -371,6 +383,14 @@ function weardale_platform_render_site_setup_page() {
     $contact_directions   = get_option( 'weardale_contact_directions' );
     $contact_social_fb    = get_option( 'weardale_contact_social_facebook' );
     $contact_social_ig    = get_option( 'weardale_contact_social_instagram' );
+
+    $org_name             = get_option( 'weardale_organisation_name' );
+    $org_short_name       = get_option( 'weardale_organisation_short_name', 'WT' );
+    $org_company          = get_option( 'weardale_organisation_company_number' );
+    $org_charity          = get_option( 'weardale_organisation_charity_number' );
+    $legal_privacy_page   = get_option( 'weardale_legal_privacy_page' );
+    $legal_cookie_page    = get_option( 'weardale_legal_cookie_page' );
+    $legal_terms_page     = get_option( 'weardale_legal_terms_page' );
 
     ?>
     <div class="wrap">
@@ -486,6 +506,32 @@ function weardale_platform_render_site_setup_page() {
                             
                             <table class="form-table" role="presentation">
                                 <tr>
+                                    <th scope="row"><label for="weardale_organisation_name"><?php esc_html_e( 'Organisation Name (Override)', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <input type="text" id="weardale_organisation_name" name="weardale_organisation_name" class="regular-text" placeholder="<?php echo esc_attr( get_option( 'blogname' ) ); ?>" value="<?php echo esc_attr( $org_name ); ?>">
+                                        <p class="description"><?php esc_html_e( 'If left blank, the site title defined in General Settings is used.', 'weardale-platform' ); ?></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_organisation_short_name"><?php esc_html_e( 'Abbreviation / Short Name', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <input type="text" id="weardale_organisation_short_name" name="weardale_organisation_short_name" class="regular-text" value="<?php echo esc_attr( $org_short_name ); ?>">
+                                        <p class="description"><?php esc_html_e( 'Short name (e.g. WT) used in compact layouts.', 'weardale-platform' ); ?></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_organisation_company_number"><?php esc_html_e( 'CIC / Company Number', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <input type="text" id="weardale_organisation_company_number" name="weardale_organisation_company_number" class="regular-text" value="<?php echo esc_attr( $org_company ); ?>">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_organisation_charity_number"><?php esc_html_e( 'Registered Charity Number', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <input type="text" id="weardale_organisation_charity_number" name="weardale_organisation_charity_number" class="regular-text" value="<?php echo esc_attr( $org_charity ); ?>">
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th scope="row"><label for="weardale_contact_address"><?php esc_html_e( 'Hub Postal Address', 'weardale-platform' ); ?></label></th>
                                     <td>
                                         <textarea id="weardale_contact_address" name="weardale_contact_address" rows="3" class="large-text"><?php echo esc_textarea( $contact_address ); ?></textarea>
@@ -530,6 +576,52 @@ function weardale_platform_render_site_setup_page() {
                             </table>
                         </div>
 
+                        <!-- Box 3: Legal Page Settings -->
+                        <div class="card" style="margin-bottom: 20px; padding: 20px; background: #fff; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04); max-width: 100%;">
+                            <h2>⚖️ <?php esc_html_e( 'Legal Page Settings', 'weardale-platform' ); ?></h2>
+                            <p class="description" style="margin-bottom: 20px;"><?php esc_html_e( 'Select the published pages that correspond to your official privacy policy, cookie rules, and legal terms.', 'weardale-platform' ); ?></p>
+                            
+                            <table class="form-table" role="presentation">
+                                <tr>
+                                    <th scope="row"><label for="weardale_legal_privacy_page"><?php esc_html_e( 'Privacy Notice Page', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <?php
+                                        wp_dropdown_pages( array(
+                                            'name'             => 'weardale_legal_privacy_page',
+                                            'selected'         => get_option( 'weardale_legal_privacy_page' ),
+                                            'show_option_none' => __( '-- Select Privacy Page --', 'weardale-platform' ),
+                                        ) );
+                                        ?>
+                                        <p class="description"><?php esc_html_e( 'Links to privacy consent and footer notices will target this page.', 'weardale-platform' ); ?></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_legal_cookie_page"><?php esc_html_e( 'Cookie Policy Page', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <?php
+                                        wp_dropdown_pages( array(
+                                            'name'             => 'weardale_legal_cookie_page',
+                                            'selected'         => get_option( 'weardale_legal_cookie_page' ),
+                                            'show_option_none' => __( '-- Select Cookie Page --', 'weardale-platform' ),
+                                        ) );
+                                        ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_legal_terms_page"><?php esc_html_e( 'Terms & Conditions Page', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <?php
+                                        wp_dropdown_pages( array(
+                                            'name'             => 'weardale_legal_terms_page',
+                                            'selected'         => get_option( 'weardale_legal_terms_page' ),
+                                            'show_option_none' => __( '-- Select Terms Page --', 'weardale-platform' ),
+                                        ) );
+                                        ?>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
                         <input type="submit" class="button button-primary button-large" value="<?php esc_attr_e( 'Save General & Participation Settings', 'weardale-platform' ); ?>">
                     </form>
                 </div>
@@ -537,6 +629,64 @@ function weardale_platform_render_site_setup_page() {
                 <!-- RIGHT COLUMN: Tools and seeders -->
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     
+                    <!-- Configuration Health Card -->
+                    <div class="card" style="padding: 20px; background: #fff; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04); margin: 0;">
+                        <h2>📋 <?php esc_html_e( 'Configuration Health', 'weardale-platform' ); ?></h2>
+                        <p class="description"><?php esc_html_e( 'Concise diagnostics checking the completeness of your site setup.', 'weardale-platform' ); ?></p>
+                        
+                        <ul style="list-style-type: none; padding-left: 0; margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                            <?php
+                            // 1. Mailchimp configured check
+                            if ( empty( $mailchimp_url ) ) {
+                                echo '<li style="background: #fff8e1; border-left: 4px solid #ffb300; padding: 10px; font-size: 0.9rem; color: #5d4037; border-radius: 4px;">';
+                                echo '<strong>⚠️ ' . esc_html__( 'Mailchimp Not Configured', 'weardale-platform' ) . ':</strong> ' . esc_html__( 'Mailchimp Form Action URL is missing. Newsletter forms are currently displaying a coming-soon placeholder block.', 'weardale-platform' );
+                                echo '</li>';
+                            } else {
+                                echo '<li style="background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 10px; font-size: 0.9rem; color: #1b5e20; border-radius: 4px;">';
+                                echo '<strong>✅ ' . esc_html__( 'Mailchimp Configured', 'weardale-platform' ) . ':</strong> ' . esc_html__( 'Live Mailchimp sign-up form is active across newsletter components.', 'weardale-platform' );
+                                echo '</li>';
+                            }
+
+                            // 2. Privacy page configured check
+                            $privacy_page_id = get_option( 'weardale_legal_privacy_page' );
+                            if ( empty( $privacy_page_id ) || ! get_post( $privacy_page_id ) ) {
+                                echo '<li style="background: #fde8e8; border-left: 4px solid #f8b4b4; padding: 10px; font-size: 0.9rem; color: #9b1c1c; border-radius: 4px;">';
+                                echo '<strong>⚠️ ' . esc_html__( 'Privacy Page Missing', 'weardale-platform' ) . ':</strong> ' . esc_html__( 'No published privacy policy page has been selected. Links currently fallback to a default /privacy-notice/ slug.', 'weardale-platform' );
+                                echo '</li>';
+                            } else {
+                                echo '<li style="background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 10px; font-size: 0.9rem; color: #1b5e20; border-radius: 4px;">';
+                                echo '<strong>✅ ' . esc_html__( 'Privacy Page Configured', 'weardale-platform' ) . ':</strong> ' . esc_html__( 'Privacy Policy links successfully route to selected page.', 'weardale-platform' );
+                                echo '</li>';
+                            }
+
+                            // 3. Facebook missing check
+                            if ( empty( $contact_social_fb ) ) {
+                                echo '<li style="background: #fff8e1; border-left: 4px solid #ffb300; padding: 10px; font-size: 0.9rem; color: #5d4037; border-radius: 4px;">';
+                                echo '<strong>ℹ️ ' . esc_html__( 'Facebook Link Missing', 'weardale-platform' ) . ':</strong> ' . esc_html__( 'No Facebook page URL has been specified. Footers and contact forms will fallback to standard default placeholder coordinates.', 'weardale-platform' );
+                                echo '</li>';
+                            }
+
+                            // 4. Logo missing check
+                            if ( ! has_custom_logo() ) {
+                                echo '<li style="background: #fff8e1; border-left: 4px solid #ffb300; padding: 10px; font-size: 0.9rem; color: #5d4037; border-radius: 4px;">';
+                                echo '<strong>ℹ️ ' . esc_html__( 'Logo Missing', 'weardale-platform' ) . ':</strong> ' . esc_html__( 'No custom site logo has been uploaded. Renders are utilizing default visual monogram monograms.', 'weardale-platform' );
+                                echo '</li>';
+                            } else {
+                                echo '<li style="background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 10px; font-size: 0.9rem; color: #1b5e20; border-radius: 4px;">';
+                                echo '<strong>✅ ' . esc_html__( 'Logo Loaded', 'weardale-platform' ) . ':</strong> ' . esc_html__( 'Your custom site logo is active.', 'weardale-platform' );
+                                echo '</li>';
+                            }
+
+                            // 5. Contact email missing check
+                            if ( empty( $contact_email ) ) {
+                                echo '<li style="background: #fff8e1; border-left: 4px solid #ffb300; padding: 10px; font-size: 0.9rem; color: #5d4037; border-radius: 4px;">';
+                                echo '<strong>⚠️ ' . esc_html__( 'Contact Email Missing', 'weardale-platform' ) . ':</strong> ' . esc_html__( 'Public contact email address has not been set. Direct email triggers will fallback to hello@weardaletogether.org.uk.', 'weardale-platform' );
+                                echo '</li>';
+                            }
+                            ?>
+                        </ul>
+                    </div>
+
                     <!-- Bootstrapper Box -->
                     <div class="card" style="padding: 20px; background: #fff; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04); margin: 0;">
                         <h2>🗺️ <?php esc_html_e( 'Bootstrap Navigation', 'weardale-platform' ); ?></h2>
