@@ -14,15 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Initialize sessions for form validation errors and input preservation
+ * Initialize sessions for form validation errors and input preservation (No-Op)
  */
 function weardale_platform_init_sessions() {
-    if ( ! session_id() && ! headers_sent() ) {
-        // Start native session securely for front-end form state
-        if ( ! is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
-            session_start();
-        }
-    }
+    // Deprecated: Native PHP sessions have been removed to prevent caching, header-sent errors,
+    // and session blocking. Short-lived transients with cryptographic UUID tokens are used instead.
 }
 add_action( 'init', 'weardale_platform_init_sessions' );
 
@@ -100,27 +96,32 @@ function weardale_platform_validate_enquiry_context( $type, $id ) {
  * Handle form submission from admin-post.php
  */
 function weardale_platform_handle_enquiry_submission() {
-    // 1. Verify CSRF Nonce
+    // 1. Verify CSRF Nonce (Gracefully redirect back on expired or invalid nonces)
     if ( ! isset( $_POST['weardale_submit_enquiry_nonce'] ) || ! wp_verify_nonce( $_POST['weardale_submit_enquiry_nonce'], 'weardale_submit_enquiry_action' ) ) {
-        wp_die( esc_html__( 'Security validation failed. Please reload and try again.', 'weardale-platform' ) );
+        $feedback_token = wp_generate_uuid4();
+        $feedback_data  = array(
+            'errors' => array( 'general' => __( 'Security verification expired. Please reload the page and try submitting again.', 'weardale-platform' ) ),
+            'input'  => array(),
+        );
+        set_transient( 'weardale_feedback_' . $feedback_token, $feedback_data, 300 );
+        wp_safe_redirect( add_query_arg( 'wt_feedback', $feedback_token, wp_get_referer() ) );
+        exit;
     }
 
-    // 2. Anti-spam Honeypot Check
+    // 2. Anti-spam Honeypot Check (Silently redirect to fool spam bots)
     if ( ! empty( $_POST['wt_honey'] ) ) {
-        // Silent block: redirect to success page to fool spam bots
         $success_url = add_query_arg( 'enquiry_success', '1', wp_get_referer() );
+        $success_url = remove_query_arg( 'wt_feedback', $success_url );
         wp_safe_redirect( $success_url );
         exit;
     }
 
     // 3. Extract and sanitize input fields
-    $name       = isset( $_POST['wt_name'] ) ? sanitize_text_field( $_POST['wt_name'] ) : '';
-    $email      = isset( $_POST['wt_email'] ) ? sanitize_email( $_POST['wt_email'] ) : '';
-    $phone      = isset( $_POST['wt_phone'] ) ? sanitize_text_field( $_POST['wt_phone'] ) : '';
-    $message    = isset( $_POST['wt_message'] ) ? sanitize_textarea_field( $_POST['wt_message'] ) : '';
-    $consent    = isset( $_POST['wt_consent'] ) ? '1' : '0';
-    $newsletter = isset( $_POST['wt_newsletter'] ) ? '1' : '0';
-
+    $name         = isset( $_POST['wt_name'] ) ? sanitize_text_field( $_POST['wt_name'] ) : '';
+    $email        = isset( $_POST['wt_email'] ) ? sanitize_email( $_POST['wt_email'] ) : '';
+    $phone        = isset( $_POST['wt_phone'] ) ? sanitize_text_field( $_POST['wt_phone'] ) : '';
+    $message      = isset( $_POST['wt_message'] ) ? sanitize_textarea_field( $_POST['wt_message'] ) : '';
+    $consent      = isset( $_POST['wt_consent'] ) ? '1' : '0';
     $context_type = isset( $_POST['wt_context_type'] ) ? sanitize_text_field( $_POST['wt_context_type'] ) : '';
     $context_id   = isset( $_POST['wt_context_id'] ) ? sanitize_text_field( $_POST['wt_context_id'] ) : '';
 
@@ -132,11 +133,16 @@ function weardale_platform_handle_enquiry_submission() {
     if ( empty( $email ) || ! is_email( $email ) ) {
         $errors['wt_email'] = __( 'Please enter a valid email address.', 'weardale-platform' );
     }
-    if ( empty( $message ) ) {
+    if ( empty( trim( $message ) ) ) {
         $errors['wt_message'] = __( 'Please enter your message or enquiry details.', 'weardale-platform' );
     }
     if ( empty( $consent ) ) {
-        $errors['wt_consent'] = __( 'You must consent to our privacy policy to submit your message.', 'weardale-platform' );
+        $errors['wt_consent'] = __( 'You must consent to our privacy terms to submit your message.', 'weardale-platform' );
+    }
+
+    // Validate Context if supplied
+    if ( ( ! empty( $context_type ) || ! empty( $context_id ) ) && weardale_platform_validate_enquiry_context( $context_type, $context_id ) === null ) {
+        $errors['general'] = __( 'The requested enquiry topic is invalid or has expired.', 'weardale-platform' );
     }
 
     // 5. Check if contact/enquiry system is disabled or unconfigured
@@ -147,23 +153,23 @@ function weardale_platform_handle_enquiry_submission() {
         $errors['general'] = __( 'Enquiries are temporarily disabled or unconfigured on this site. Please try calling or visiting in person.', 'weardale-platform' );
     }
 
-    // Redirect back with validation errors if found
+    // Redirect back with validation errors if found (using transients instead of PHP sessions)
     if ( ! empty( $errors ) ) {
-        if ( ! session_id() && ! headers_sent() ) {
-            session_start();
-        }
-        $_SESSION['weardale_form_errors'] = $errors;
-        $_SESSION['weardale_form_input']  = array(
-            'name'         => $name,
-            'email'        => $email,
-            'phone'        => $phone,
-            'message'      => $message,
-            'newsletter'   => $newsletter,
-            'context_type' => $context_type,
-            'context_id'   => $context_id,
+        $feedback_token = wp_generate_uuid4();
+        $feedback_data  = array(
+            'errors' => $errors,
+            'input'  => array(
+                'name'         => $name,
+                'email'        => $email,
+                'phone'        => $phone,
+                'message'      => $message,
+                'context_type' => $context_type,
+                'context_id'   => $context_id,
+            ),
         );
+        set_transient( 'weardale_feedback_' . $feedback_token, $feedback_data, 300 ); // 5 minutes expiry
 
-        wp_safe_redirect( wp_get_referer() );
+        wp_safe_redirect( add_query_arg( 'wt_feedback', $feedback_token, wp_get_referer() ) );
         exit;
     }
 
@@ -176,7 +182,21 @@ function weardale_platform_handle_enquiry_submission() {
         set_transient( $transient_key, 1, HOUR_IN_SECONDS );
     } else {
         if ( $rate_count >= 5 ) {
-            wp_die( esc_html__( 'Rate limit exceeded. Please wait a while before sending another enquiry.', 'weardale-platform' ) );
+            $feedback_token = wp_generate_uuid4();
+            $feedback_data  = array(
+                'errors' => array( 'general' => __( 'You have reached the maximum number of enquiries allowed per hour. Please wait a while or contact us directly by phone.', 'weardale-platform' ) ),
+                'input'  => array(
+                    'name'         => $name,
+                    'email'        => $email,
+                    'phone'        => $phone,
+                    'message'      => $message,
+                    'context_type' => $context_type,
+                    'context_id'   => $context_id,
+                ),
+            );
+            set_transient( 'weardale_feedback_' . $feedback_token, $feedback_data, 300 );
+            wp_safe_redirect( add_query_arg( 'wt_feedback', $feedback_token, wp_get_referer() ) );
+            exit;
         }
         set_transient( $transient_key, $rate_count + 1, HOUR_IN_SECONDS );
     }
@@ -198,7 +218,6 @@ function weardale_platform_handle_enquiry_submission() {
     if ( ! empty( $phone ) ) {
         $body .= "Telephone:       " . esc_html( $phone ) . "\n";
     }
-    $body .= "Newsletter Join: " . ( $newsletter ? 'YES (Requested digital newsletter subscription)' : 'NO' ) . "\n\n";
     $body .= "Message Body:\n";
     $body .= "--------------------------------------------------------\n";
     $body .= $message . "\n";
@@ -218,20 +237,27 @@ function weardale_platform_handle_enquiry_submission() {
     // 8. Deliver Email via wp_mail()
     $mail_sent = wp_mail( $recipient, $subject, $body, $headers );
 
-    if ( ! session_id() && ! headers_sent() ) {
-        session_start();
-    }
-    unset( $_SESSION['weardale_form_input'] );
-    unset( $_SESSION['weardale_form_errors'] );
-
     if ( $mail_sent ) {
-        // Redirect to success anchor
+        // Redirect to success anchor (clearing previous feedback param if present)
         $success_url = add_query_arg( 'enquiry_success', '1', wp_get_referer() );
+        $success_url = remove_query_arg( 'wt_feedback', $success_url );
         wp_safe_redirect( $success_url );
         exit;
     } else {
-        $_SESSION['weardale_form_errors'] = array( 'general' => __( 'Our mail server failed to deliver your message. Please try calling or emailing us directly instead.', 'weardale-platform' ) );
-        wp_safe_redirect( wp_get_referer() );
+        $feedback_token = wp_generate_uuid4();
+        $feedback_data  = array(
+            'errors' => array( 'general' => __( 'Our mail server failed to deliver your message. Please try calling or emailing us directly instead.', 'weardale-platform' ) ),
+            'input'  => array(
+                'name'         => $name,
+                'email'        => $email,
+                'phone'        => $phone,
+                'message'      => $message,
+                'context_type' => $context_type,
+                'context_id'   => $context_id,
+            ),
+        );
+        set_transient( 'weardale_feedback_' . $feedback_token, $feedback_data, 300 );
+        wp_safe_redirect( add_query_arg( 'wt_feedback', $feedback_token, wp_get_referer() ) );
         exit;
     }
 }
@@ -242,17 +268,20 @@ add_action( 'admin_post_weardale_submit_enquiry', 'weardale_platform_handle_enqu
  * Render inner enquiry form with active errors and old inputs
  */
 function weardale_platform_render_contact_form() {
-    if ( ! session_id() && ! headers_sent() ) {
-        session_start();
+    $errors = array();
+    $input  = array();
+
+    if ( isset( $_GET['wt_feedback'] ) ) {
+        $feedback_token = sanitize_key( $_GET['wt_feedback'] );
+        $feedback_data  = get_transient( 'weardale_feedback_' . $feedback_token );
+        if ( is_array( $feedback_data ) ) {
+            $errors = isset( $feedback_data['errors'] ) ? $feedback_data['errors'] : array();
+            $input  = isset( $feedback_data['input'] ) ? $feedback_data['input'] : array();
+            delete_transient( 'weardale_feedback_' . $feedback_token );
+        }
     }
 
-    $errors     = isset( $_SESSION['weardale_form_errors'] ) ? $_SESSION['weardale_form_errors'] : array();
-    $input      = isset( $_SESSION['weardale_form_input'] ) ? $_SESSION['weardale_form_input'] : array();
     $is_success = isset( $_GET['enquiry_success'] ) && $_GET['enquiry_success'] === '1';
-
-    // Clean session data immediately to avoid stale errors on manual refreshes
-    unset( $_SESSION['weardale_form_errors'] );
-    unset( $_SESSION['weardale_form_input'] );
 
     $recipient       = get_option( 'weardale_enquiry_recipient' );
     $enquiry_enabled = get_option( 'weardale_enquiry_enabled', 'yes' );
@@ -305,11 +334,10 @@ function weardale_platform_render_contact_form() {
     $validated             = weardale_platform_validate_enquiry_context( $type, $id );
     $display_context_title = $validated ? $validated['title'] : '';
 
-    $old_name       = isset( $input['name'] ) ? esc_attr( $input['name'] ) : '';
-    $old_email      = isset( $input['email'] ) ? esc_attr( $input['email'] ) : '';
-    $old_phone      = isset( $input['phone'] ) ? esc_attr( $input['phone'] ) : '';
-    $old_message    = isset( $input['message'] ) ? esc_textarea( $input['message'] ) : '';
-    $old_newsletter = isset( $input['newsletter'] ) && $input['newsletter'] === '1' ? 'checked' : '';
+    $old_name    = isset( $input['name'] ) ? esc_attr( $input['name'] ) : '';
+    $old_email   = isset( $input['email'] ) ? esc_attr( $input['email'] ) : '';
+    $old_phone   = isset( $input['phone'] ) ? esc_attr( $input['phone'] ) : '';
+    $old_message = isset( $input['message'] ) ? esc_textarea( $input['message'] ) : '';
     ?>
     <div class="weardale-enquiry-form-wrapper" style="width: 100%;">
         
@@ -428,13 +456,13 @@ function weardale_platform_render_contact_form() {
                     <input type="checkbox" name="wt_consent" id="wt_consent" value="1" required style="margin-top: 0.2rem;"
                            <?php echo isset( $errors['wt_consent'] ) ? 'aria-invalid="true" aria-describedby="wt_consent_error"' : ''; ?>>
                     <div>
-                        <strong><?php esc_html_e( 'Privacy Consent', 'weardale-platform' ); ?></strong> <span style="color: #b91c1c;" aria-hidden="true">*</span><br>
+                        <strong><?php esc_html_e( 'Consent to Contact', 'weardale-platform' ); ?></strong> <span style="color: #b91c1c;" aria-hidden="true">*</span><br>
                         <span style="color: var(--text-secondary);">
                             <?php 
                             $privacy_link = home_url( '/privacy-notice/' );
                             printf(
                                 wp_kses(
-                                    __( 'I consent to Weardale Together storing and using my details to respond to this enquiry as detailed in our <a href="%s" target="_blank" style="color: var(--color-forest); text-decoration: underline;">Privacy Notice</a>.', 'weardale-platform' ),
+                                    __( 'I agree that Weardale Together may use the details submitted in this form to respond to my enquiry, in accordance with the <a href="%s" target="_blank" style="color: var(--color-forest); text-decoration: underline;">Privacy Notice</a>. (Subject to client/legal approval)', 'weardale-platform' ),
                                     array( 'a' => array( 'href' => array(), 'target' => array(), 'style' => array() ) )
                                 ),
                                 esc_url( $privacy_link )
@@ -448,19 +476,6 @@ function weardale_platform_render_contact_form() {
                         <?php echo esc_html( $errors['wt_consent'] ); ?>
                     </span>
                 <?php endif; ?>
-            </div>
-
-            <!-- Newsletter option -->
-            <div class="form-group">
-                <label class="wd-checkbox-label" style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; font-size: 0.95rem; line-height: 1.45;">
-                    <input type="checkbox" name="wt_newsletter" id="wt_newsletter" value="1" <?php echo $old_newsletter; ?> style="margin-top: 0.2rem;">
-                    <div>
-                        <strong><?php esc_html_e( 'Receive seasonal news and opportunity updates', 'weardale-platform' ); ?></strong> <span style="font-weight: normal; color: var(--text-light); font-size: 0.85rem;">(<?php esc_html_e( 'Optional', 'weardale-platform' ); ?>)</span><br>
-                        <span style="color: var(--text-secondary);">
-                            <?php esc_html_e( 'Join our newsletter for updates. Consent is separate and we will never subscribe you automatically.', 'weardale-platform' ); ?>
-                        </span>
-                    </div>
-                </label>
             </div>
 
             <button type="submit" class="btn btn-primary" style="align-self: flex-start; padding: 0.85rem 2rem; font-size: 1.05rem; font-weight: 700; margin-top: 0.5rem; border-radius: var(--border-radius-sm);">
