@@ -17,6 +17,9 @@ export interface WTPost {
   date: string;
   author: string;
   strand?: 'cafe' | 'creative' | 'youth' | 'roots-shoots';
+  featured?: boolean;
+  relatedEvent?: string;
+  relatedDirectory?: string;
 }
 
 export interface WPFile {

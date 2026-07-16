@@ -32,6 +32,59 @@ export default function App() {
   const [events, setEvents] = useState<WTEvent[]>(starterEvents);
   const [posts, setPosts] = useState<WTPost[]>(starterPosts);
   
+  // Simulation Story Editorial Metadata States
+  const [selectedSimPostId, setSelectedSimPostId] = useState<string>('p4'); // Default to 'A SONG for Weardale'
+  const [metaForm, setMetaForm] = useState({
+    featured: false,
+    strand: 'creative',
+    relatedEvent: "Andy's Event",
+    relatedDirectory: "Weardale Creative Makers Guild"
+  });
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [consoleTraceLog, setConsoleTraceLog] = useState<string>('');
+
+  const currentSimPost = posts.find(p => p.id === selectedSimPostId);
+
+  const handleSaveMetaForm = () => {
+    const updated = posts.map(p => {
+      if (p.id === selectedSimPostId) {
+        return {
+          ...p,
+          featured: metaForm.featured,
+          strand: metaForm.strand as any,
+          relatedEvent: metaForm.relatedEvent,
+          relatedDirectory: metaForm.relatedDirectory
+        };
+      } else {
+        // Enforce single-active-featured constraint if the current one is being promoted to featured
+        if (metaForm.featured) {
+          return { ...p, featured: false };
+        }
+        return p;
+      }
+    });
+
+    setPosts(updated);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 3000);
+
+    const activeSqlFeaturedUnfeature = metaForm.featured 
+      ? `UPDATE wp_postmeta SET meta_value = '0' WHERE meta_key = '_weardale_featured_post' AND post_id != ${selectedSimPostId === 'p1' ? '101' : selectedSimPostId === 'p2' ? '102' : selectedSimPostId === 'p3' ? '103' : '104'};\n`
+      : '';
+
+    const sqlLog = `// TRACE: admin_post_save_post hook triggered for Post ID: ${selectedSimPostId === 'p1' ? '101' : selectedSimPostId === 'p2' ? '102' : selectedSimPostId === 'p3' ? '103' : '104'} ("${currentSimPost?.title}")
+// Nonce checked successfully. Sanitizing meta inputs...
+// wp_postmeta SQL queries executed:
+UPDATE wp_postmeta SET meta_value = '${metaForm.strand}' WHERE meta_key = '_weardale_post_programme' AND post_id = ${selectedSimPostId === 'p1' ? '101' : selectedSimPostId === 'p2' ? '102' : selectedSimPostId === 'p3' ? '103' : '104'};
+UPDATE wp_postmeta SET meta_value = '${metaForm.relatedEvent}' WHERE meta_key = '_weardale_related_event_id' AND post_id = ${selectedSimPostId === 'p1' ? '101' : selectedSimPostId === 'p2' ? '102' : selectedSimPostId === 'p3' ? '103' : '104'};
+UPDATE wp_postmeta SET meta_value = '${metaForm.relatedDirectory}' WHERE meta_key = '_weardale_related_directory_id' AND post_id = ${selectedSimPostId === 'p1' ? '101' : selectedSimPostId === 'p2' ? '102' : selectedSimPostId === 'p3' ? '103' : '104'};
+${activeSqlFeaturedUnfeature}UPDATE wp_postmeta SET meta_value = '${metaForm.featured ? '1' : '0'}' WHERE meta_key = '_weardale_featured_post' AND post_id = ${selectedSimPostId === 'p1' ? '101' : selectedSimPostId === 'p2' ? '102' : selectedSimPostId === 'p3' ? '103' : '104'};
+
+// Database state synced. Redirection header status 302 to edit.php. Cache purged.`;
+
+    setConsoleTraceLog(sqlLog);
+  };
+  
   // Custom states for interactive mock forms
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
@@ -563,16 +616,253 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                     </p>
                   </div>
 
+                  {/* LIVE WORDPRESS METADATA SIMULATOR */}
+                  <div className="bg-zinc-900 text-zinc-100 rounded-2xl p-6 sm:p-8 mb-12 border border-zinc-800 shadow-xl" id="wordpress-metadata-simulator">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">WordPress admin_init & meta-save Simulation</span>
+                        </div>
+                        <h4 className="font-display text-2xl text-white">Story Editorial Metadata Box (Simulator)</h4>
+                        <p className="text-xs text-zinc-400 leading-relaxed mt-1">
+                          Select any published post to view and update its real WordPress custom post meta (linked to <code className="text-emerald-400">news-meta.php</code> save-hook logic).
+                        </p>
+                      </div>
+                      <div className="px-3 py-1 bg-zinc-800 border border-zinc-700 text-[11px] text-zinc-300 font-mono rounded">
+                        wp_postmeta synced
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                      {/* Left Side: Selected Post Selector */}
+                      <div className="bg-zinc-950 p-5 rounded-xl border border-zinc-850">
+                        <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2 font-bold">1. Select Story to Edit</label>
+                        <select 
+                          value={selectedSimPostId}
+                          onChange={(e) => {
+                            const pId = e.target.value;
+                            setSelectedSimPostId(pId);
+                            const matched = posts.find(p => p.id === pId);
+                            if (matched) {
+                              setMetaForm({
+                                featured: matched.featured || false,
+                                strand: matched.strand || '',
+                                relatedEvent: matched.relatedEvent || '',
+                                relatedDirectory: matched.relatedDirectory || ''
+                              });
+                            }
+                          }}
+                          className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-400 focus:outline-none mb-4"
+                        >
+                          {posts.map(p => (
+                            <option key={p.id} value={p.id}>
+                              {p.title} {p.featured ? '(★ Featured)' : ''}
+                            </option>
+                          ))}
+                        </select>
+
+                        <div className="text-xs text-zinc-500 space-y-1.5 bg-zinc-900/40 p-3 rounded-lg border border-zinc-850">
+                          <p><strong>Title:</strong> {currentSimPost?.title}</p>
+                          <p><strong>Published Date:</strong> {currentSimPost?.date}</p>
+                          <p><strong>Author:</strong> {currentSimPost?.author}</p>
+                          <p><strong>Strand Page:</strong> <span className="font-semibold text-emerald-400">/{currentSimPost?.strand || 'none'}/</span></p>
+                        </div>
+                      </div>
+
+                      {/* Middle: WordPress Editorial Metadata Meta Fields */}
+                      <div className="lg:col-span-2 bg-zinc-950 p-5 rounded-xl border border-zinc-850">
+                        <span className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-4 font-bold">
+                          2. Story Custom Meta Fields (Story Editorial Metadata)
+                        </span>
+
+                        <div className="space-y-4">
+                          {/* Option: Promote to Featured Story */}
+                          <div className="flex items-start gap-3 bg-zinc-900/50 p-3 rounded-lg border border-zinc-800/60 hover:bg-zinc-900 transition-all">
+                            <input 
+                              type="checkbox"
+                              id="meta_featured"
+                              checked={metaForm.featured}
+                              onChange={(e) => setMetaForm({ ...metaForm, featured: e.target.checked })}
+                              className="mt-1 w-4 h-4 text-emerald-600 border-zinc-750 bg-zinc-900 rounded focus:ring-emerald-500 cursor-pointer"
+                            />
+                            <label htmlFor="meta_featured" className="text-xs font-sans text-zinc-300 leading-normal cursor-pointer">
+                              <strong className="block text-white font-semibold text-sm">Promote to Featured Story</strong>
+                              When enabled, this story takes the prominent Spotlight position at the top of the Our Journal archive and Homepage grid, and is excluded from the main posts grid.
+                            </label>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* Option: Associated Programme Strand */}
+                            <div>
+                              <label className="block text-[11px] font-mono text-zinc-400 mb-1">Associated Programme Strand</label>
+                              <select
+                                value={metaForm.strand}
+                                onChange={(e) => setMetaForm({ ...metaForm, strand: e.target.value })}
+                                className="w-full bg-zinc-900 border border-zinc-750 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                              >
+                                <option value="">-- Select Strand --</option>
+                                <option value="cafe">Root & Branch Café</option>
+                                <option value="creative">Creative Arts</option>
+                                <option value="youth">Young People</option>
+                                <option value="roots-shoots">Roots & Shoots</option>
+                              </select>
+                            </div>
+
+                            {/* Option: Related Community Event */}
+                            <div>
+                              <label className="block text-[11px] font-mono text-zinc-400 mb-1">Related Community Event</label>
+                              <select
+                                value={metaForm.relatedEvent}
+                                onChange={(e) => setMetaForm({ ...metaForm, relatedEvent: e.target.value })}
+                                className="w-full bg-zinc-900 border border-zinc-750 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                              >
+                                <option value="">-- Select Event --</option>
+                                <option value="Summer Clay Sculpting">Summer Clay Sculpting</option>
+                                <option className="italic text-emerald-400 font-bold" value="Andy's Event">Andy's Event</option>
+                                <option value="Forest School: Tree Discovery">Forest School: Tree Discovery</option>
+                                <option value="Senior Soup & Story Exchange">Senior Soup & Story Exchange</option>
+                              </select>
+                            </div>
+
+                            {/* Option: Related Directory Listing */}
+                            <div>
+                              <label className="block text-[11px] font-mono text-zinc-400 mb-1">Related Directory Listing</label>
+                              <select
+                                value={metaForm.relatedDirectory}
+                                onChange={(e) => setMetaForm({ ...metaForm, relatedDirectory: e.target.value })}
+                                className="w-full bg-zinc-900 border border-zinc-750 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                              >
+                                <option value="">-- Select Directory Listing --</option>
+                                <option value="The Stanhope Artisan Bakery">The Stanhope Artisan Bakery</option>
+                                <option className="italic text-[#BA7D0C] font-bold" value="Weardale Creative Makers Guild">Weardale Creative Makers Guild</option>
+                                <option value="Upper Weardale Woodcarving Club">Upper Weardale Woodcarving Club</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Save & Output Block */}
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-2 gap-4 border-t border-zinc-800">
+                            <button 
+                              type="button"
+                              onClick={handleSaveMetaForm}
+                              className="px-5 py-2.5 rounded-full bg-emerald-500 text-black font-black text-xs hover:bg-emerald-400 transition-all flex items-center justify-center gap-1 cursor-pointer self-start sm:self-center"
+                            >
+                              Save Editorial Metadata
+                            </button>
+
+                            {saveSuccess && (
+                              <span className="text-[11px] font-mono text-emerald-400 font-semibold flex items-center gap-1 animate-pulse">
+                                ✓ Metadata saved! Database wp_postmeta updated & cached.
+                              </span>
+                            )}
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Simulation Console Trace logs for educational visualizer */}
+                    <div className="mt-6 border-t border-zinc-800/80 pt-4 font-mono text-[10px] text-zinc-500">
+                      <span className="text-zinc-400 block mb-1">WP_Query & Save Hooks execution trace:</span>
+                      <pre className="bg-zinc-950 p-3 rounded border border-zinc-850 text-emerald-400/80 leading-relaxed overflow-x-auto select-all max-h-[140px]">
+                        {consoleTraceLog || `// Waiting for metadata saves... Selecting 'A SONG for Weardale' and saving updates triggers the save_post PHP hooks and SQL single-active-featured constraint.`}
+                      </pre>
+                    </div>
+                  </div>
+
+                  {/* Spotlight Banner (Featured Story) */}
+                  {posts.find(p => p.featured) && (
+                    (() => {
+                      const featuredPost = posts.find(p => p.featured)!;
+                      return (
+                        <article className="bg-white border-2 border-[#C4B89A] rounded-2xl overflow-hidden shadow-sm p-8 mb-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center border-t-4 border-t-[#E8A020]">
+                          <div>
+                            <div className="flex gap-2 items-center mb-3">
+                              <span className="px-2.5 py-0.5 text-[10px] font-bold rounded bg-[#BA7D0C] text-white uppercase tracking-wider">
+                                Featured Story
+                              </span>
+                              {featuredPost.strand && (
+                                <span className="px-2.5 py-0.5 text-[10px] font-bold rounded bg-[#3B5C3A]/10 text-[#3B5C3A] uppercase tracking-wider">
+                                  {featuredPost.strand === 'creative' ? '🎨 Creative' : featuredPost.strand === 'cafe' ? '☕ Café' : featuredPost.strand === 'youth' ? '🌲 Youth' : '🧸 Playroom'}
+                                </span>
+                              )}
+                            </div>
+                            <h4 className="font-display text-3xl text-gray-900 mb-3 tracking-tight leading-snug">{featuredPost.title}</h4>
+                            <p className="text-sm text-gray-500 font-mono mb-4">{featuredPost.date} &bull; by {featuredPost.author}</p>
+                            <p className="text-gray-600 text-sm leading-relaxed mb-6">{featuredPost.excerpt}</p>
+                            
+                            <div className="space-y-2">
+                              {featuredPost.relatedEvent && (
+                                <div className="text-xs text-gray-600 flex items-center gap-1.5 bg-[#F5F0E8] px-3 py-1.5 rounded-lg border border-[#C4B89A]/40 self-start w-fit">
+                                  <span>📅 Related Activity:</span> <strong className="text-gray-800 font-bold">{featuredPost.relatedEvent}</strong>
+                                </div>
+                              )}
+                              {featuredPost.relatedDirectory && (
+                                <div className="text-xs text-gray-600 flex items-center gap-1.5 bg-[#F5F0E8] px-3 py-1.5 rounded-lg border border-[#C4B89A]/40 self-start w-fit">
+                                  <span>📁 Directory Listing:</span> <strong className="text-gray-800 font-bold">{featuredPost.relatedDirectory}</strong>
+                                </div>
+                              )}
+                            </div>
+                            
+                            <button 
+                              onClick={() => {
+                                let alertMsg = `Story: "${featuredPost.title}"\n\nContent:\n${featuredPost.content}`;
+                                if (featuredPost.relatedEvent) alertMsg += `\n\n[Community Connection: Event] ${featuredPost.relatedEvent}`;
+                                if (featuredPost.relatedDirectory) alertMsg += `\n[Community Connection: Directory] ${featuredPost.relatedDirectory}`;
+                                alert(alertMsg);
+                              }}
+                              className="mt-6 px-6 py-3 rounded-full bg-[#3B5C3A] text-white font-bold hover:bg-[#6B8F5E] transition-all text-xs cursor-pointer shadow-sm"
+                            >
+                              Read Spotlight Story &rarr;
+                            </button>
+                          </div>
+                          
+                          <div className="bg-[#F5F0E8] border border-[#C4B89A] rounded-xl p-8 text-center flex flex-col items-center justify-center min-h-[260px] relative">
+                            <span className="text-5xl mb-3">📰</span>
+                            <h5 className="font-display font-semibold text-gray-800 text-sm mb-1">Spotlight Editorial Feature</h5>
+                            <p className="text-xs text-gray-500 max-w-[240px]">This story is promoted across the homepage and journal archive with full related connections.</p>
+                            <span className="absolute bottom-3 text-[10px] font-mono text-gray-400">Template: home.php (Featured Story Query)</span>
+                          </div>
+                        </article>
+                      );
+                    })()
+                  )}
+
                   <div className="grid grid-1 md:grid-cols-3 gap-8">
-                    {posts.map((post) => (
+                    {posts.filter(p => !p.featured).map((post) => (
                       <article key={post.id} className="bg-white border border-[#C4B89A] rounded-xl overflow-hidden shadow-sm flex flex-col hover:-translate-y-1 transition-all">
                         <div className="p-6 flex-grow flex flex-col">
-                          <div className="text-xs text-gray-400 font-mono mb-2">{post.date} &bull; by {post.author}</div>
-                          <h4 className="font-display text-lg text-gray-900 mb-3 min-h-[44px]">{post.title}</h4>
+                          <div className="text-xs text-gray-400 font-mono mb-2 flex justify-between items-center">
+                            <span>{post.date} &bull; by {post.author}</span>
+                            {post.strand && (
+                              <span className="text-[10px] uppercase font-bold text-[#3B5C3A] bg-[#3B5C3A]/5 px-1.5 py-0.5 rounded">
+                                {post.strand}
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="font-display text-lg text-gray-900 mb-3 min-h-[44px] tracking-tight">{post.title}</h4>
                           <p className="text-sm text-gray-500 leading-relaxed mb-6 flex-grow">{post.excerpt}</p>
+                          
+                          <div className="space-y-1.5 mb-4">
+                            {post.relatedEvent && (
+                              <div className="text-[10px] text-gray-600 bg-amber-50 border border-amber-200/50 px-2 py-0.5 rounded w-fit">
+                                📅 {post.relatedEvent}
+                              </div>
+                            )}
+                            {post.relatedDirectory && (
+                              <div className="text-[10px] text-gray-600 bg-[#D4826A]/5 border border-[#D4826A]/10 px-2 py-0.5 rounded w-fit">
+                                📁 {post.relatedDirectory}
+                              </div>
+                            )}
+                          </div>
+
                           <button 
                             onClick={() => {
-                              alert(`Reading story: "${post.title}". In WordPress, this renders via single.php.`);
+                              let alertMsg = `Story: "${post.title}"\n\nContent:\n${post.content}`;
+                              if (post.relatedEvent) alertMsg += `\n\n[Community Connection: Event] ${post.relatedEvent}`;
+                              if (post.relatedDirectory) alertMsg += `\n[Community Connection: Directory] ${post.relatedDirectory}`;
+                              alert(alertMsg);
                             }}
                             className="text-sm font-bold text-[#3B5C3A] hover:text-[#6B8F5E] self-start flex items-center gap-1 cursor-pointer"
                           >
@@ -867,6 +1157,34 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                   </div>
                 </div>
 
+                {/* Related News & Stories */}
+                <div className="mt-12 pt-12 border-t border-[#C4B89A]/40">
+                  <h3 className="font-display text-2xl text-[#9E6B3E] mb-6 flex items-center gap-2">
+                    <span>📰</span> News & Updates from Root & Branch Café
+                  </h3>
+                  {posts.filter(p => p.strand === 'cafe').length === 0 ? (
+                    <p className="text-sm text-gray-500 italic">No news stories are currently associated with this strand.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {posts.filter(p => p.strand === 'cafe').map(p => (
+                        <div key={p.id} className="bg-white border border-[#C4B89A] rounded-xl p-6 shadow-sm flex flex-col justify-between">
+                          <div>
+                            <div className="text-[10px] font-mono text-gray-400 mb-1">{p.date} &bull; by {p.author}</div>
+                            <h4 className="font-display font-semibold text-[#9E6B3E] text-base mb-2">{p.title}</h4>
+                            <p className="text-xs text-gray-600 line-clamp-3 mb-4">{p.excerpt}</p>
+                          </div>
+                          <button 
+                            onClick={() => alert(`Story details:\n\n${p.content}`)}
+                            className="text-xs font-bold text-[#9E6B3E] hover:underline self-start"
+                          >
+                            Read full update &rarr;
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
               </div>
             </motion.div>
           )}
@@ -921,6 +1239,34 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                   </p>
                 </div>
 
+                {/* Related News & Stories */}
+                <div className="mt-12 pt-12 border-t border-[#C4B89A]/40">
+                  <h3 className="font-display text-2xl text-[#BA7D0C] mb-6 flex items-center gap-2">
+                    <span>📰</span> News & Stories from Creative Arts
+                  </h3>
+                  {posts.filter(p => p.strand === 'creative').length === 0 ? (
+                    <p className="text-sm text-gray-500 italic">No news stories are currently associated with this strand.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {posts.filter(p => p.strand === 'creative').map(p => (
+                        <div key={p.id} className="bg-white border border-[#C4B89A] rounded-xl p-6 shadow-sm flex flex-col justify-between">
+                          <div>
+                            <div className="text-[10px] font-mono text-gray-400 mb-1">{p.date} &bull; by {p.author}</div>
+                            <h4 className="font-display font-semibold text-[#BA7D0C] text-base mb-2">{p.title}</h4>
+                            <p className="text-xs text-gray-600 line-clamp-3 mb-4">{p.excerpt}</p>
+                          </div>
+                          <button 
+                            onClick={() => alert(`Story details:\n\n${p.content}`)}
+                            className="text-xs font-bold text-[#BA7D0C] hover:underline self-start"
+                          >
+                            Read full update &rarr;
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
               </div>
             </motion.div>
           )}
@@ -973,6 +1319,34 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                   </div>
                 </div>
 
+                {/* Related News & Stories */}
+                <div className="mt-12 pt-12 border-t border-black/15">
+                  <h3 className="font-display text-2xl text-[#E8962A] uppercase font-bold mb-6 flex items-center gap-2">
+                    <span>📰</span> Youth Club & Forest School Updates
+                  </h3>
+                  {posts.filter(p => p.strand === 'youth').length === 0 ? (
+                    <p className="text-sm text-gray-500 italic">No news stories are currently associated with this strand.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {posts.filter(p => p.strand === 'youth').map(p => (
+                        <div key={p.id} className="bg-white border-2 border-black p-6 shadow-[3px_3px_0_#2C2C2A] flex flex-col justify-between">
+                          <div>
+                            <div className="text-[10px] font-mono text-gray-500 mb-1">{p.date} &bull; by {p.author}</div>
+                            <h4 className="font-display font-bold text-[#E8962A] text-base mb-2">{p.title}</h4>
+                            <p className="text-xs text-gray-600 line-clamp-3 mb-4">{p.excerpt}</p>
+                          </div>
+                          <button 
+                            onClick={() => alert(`Story details:\n\n${p.content}`)}
+                            className="text-xs font-bold text-black hover:underline self-start uppercase tracking-wider"
+                          >
+                            Read update &rarr;
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
               </div>
             </motion.div>
           )}
@@ -1019,6 +1393,34 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                       Standard WCAG 2.2 safe-contrast colors
                     </div>
                   </div>
+                </div>
+
+                {/* Related News & Stories */}
+                <div className="mt-12 pt-12 border-t border-[#C4B89A]/40">
+                  <h3 className="font-display text-2xl text-[#B2583E] mb-6 flex items-center gap-2">
+                    <span>📰</span> Roots & Shoots Family Updates
+                  </h3>
+                  {posts.filter(p => p.strand === 'roots-shoots').length === 0 ? (
+                    <p className="text-sm text-gray-500 italic">No news stories are currently associated with this strand.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {posts.filter(p => p.strand === 'roots-shoots').map(p => (
+                        <div key={p.id} className="bg-white border border-[#C4B89A] rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                          <div>
+                            <div className="text-[10px] font-mono text-gray-400 mb-1">{p.date} &bull; by {p.author}</div>
+                            <h4 className="font-display font-semibold text-[#B2583E] text-base mb-2">{p.title}</h4>
+                            <p className="text-xs text-gray-600 line-clamp-3 mb-4">{p.excerpt}</p>
+                          </div>
+                          <button 
+                            onClick={() => alert(`Story details:\n\n${p.content}`)}
+                            className="text-xs font-bold text-[#B2583E] hover:underline self-start"
+                          >
+                            Read full update &rarr;
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
               </div>

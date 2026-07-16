@@ -41,16 +41,19 @@ export const starterPosts: WTPost[] = [
     content: 'Our latest craft workshops have seen over 40 residents gathering to share skills in printmaking, botanical illustration, and woodcarving. Designed especially for "people who do not think of themselves as creative," the summer program has generated dozens of handmade prints and wooden spoons. "It is not about perfect lines; it is about gathering, talking, and realizing you can make things with your hands," says Hollie, our Creative Director.',
     date: 'July 15, 2026',
     author: 'Hollie Clark',
-    strand: 'creative'
+    strand: 'creative',
+    featured: false
   },
   {
     id: 'p2',
-    title: 'Behind the Recipes: Food Ethos of Root & Branch',
-    excerpt: 'Our chef, Cheryl, shares the secrets of our seasonal local soup, sourdough breads, and why making food with true care can transform isolated days...',
-    content: 'Our chef, Cheryl, shares the secrets of our seasonal local soup, sourdough breads, and why making food with true care can transform isolated days. "We operate with a simple rule: if it isn\'t made with care, it doesn\'t leave our kitchen," Cheryl smiles. Every soup uses ingredients from Weardale growers, and our daily bread is fermented slowly over 24 hours. More than just food, the café serves as a safe space where isolated seniors, families, and hikers sit side-by-side.',
+    title: 'Frosterley Sourdough: Slicing into Community Baking',
+    excerpt: 'A look behind the flour at our weekly baking circles, where kneaded loaves build strong connections...',
+    content: 'There is a special quiet that falls over the Frosterley Village Hall kitchen on Wednesday evenings. Beneath the warmth of the lights, a dozen local residents stand side-by-side, their hands coated in stoneground flour, working together to shape traditional sourdough loaves. All loaves baked during the circle are either taken home by participants or donated directly to the Root & Branch Community Cafe for their Thursday pay-what-you-can lunch menu.',
     date: 'June 28, 2026',
     author: 'Cheryl Thompson',
-    strand: 'cafe'
+    strand: 'cafe',
+    featured: true,
+    relatedDirectory: 'The Stanhope Artisan Bakery'
   },
   {
     id: 'p3',
@@ -59,11 +62,186 @@ export const starterPosts: WTPost[] = [
     content: 'Armed with boots and muddy hands, our Youth Programme completed their first outdoor camp in Stanhope woods, building team spirit and tree shelters. Guided by our outdoor experts, 15 local kids spent the weekend learning safe knife work, campfire cooking, and plant identification. "Living in the Pennines is amazing, but we often miss out on structured group activities. This program gives our children a space to be loud, dirty, and confident," said a local parent.',
     date: 'May 12, 2026',
     author: 'Andy Clarke',
-    strand: 'youth'
+    strand: 'youth',
+    featured: false,
+    relatedEvent: "Young Rangers Forest Survival Camp"
+  },
+  {
+    id: 'p4',
+    title: 'A SONG for Weardale',
+    excerpt: 'A beautiful musical celebration echoing across our valleys, bringing local choir voices together to preserve Pennine song heritage.',
+    content: 'The old stone arches of the Stanhope Church resonated with choral harmony as residents from across Upper Weardale gathered for the first rehearsal of "A SONG for Weardale." This community-composed musical suite draws inspiration from 19th-century miners\' journals, regional hymns, and the seasonal sounds of wind over the heather. Organized by the Weardale Creative Makers Guild as part of our Creative Arts strand, the project aims to connect generations through shared song.',
+    date: 'August 1, 2026',
+    author: 'Andy Clarke',
+    strand: 'creative',
+    featured: false,
+    relatedEvent: "Andy's Event",
+    relatedDirectory: "Weardale Creative Makers Guild"
   }
 ];
 
 export const wordpressFiles: WPFile[] = [
+  {
+    name: 'news-meta.php',
+    path: 'plugins/weardale-platform/includes/news-meta.php',
+    type: 'plugin',
+    content: `<?php
+/**
+ * Story Editorial Metadata Management & Editor Interface
+ * Contains programme relationships, related event links, directory associations, and featured story flags.
+ */
+
+// Add Meta Box
+add_action( 'add_meta_boxes', function() {
+    add_meta_box( 'weardale_news_details', 'Story Editorial Metadata', 'weardale_platform_render_news_box', 'post', 'normal', 'high' );
+} );
+
+// Save Metadata securely
+add_action( 'save_post', function( $post_id ) {
+    if ( ! isset( $_POST['weardale_news_meta_nonce_field'] ) || ! wp_verify_nonce( $_POST['weardale_news_meta_nonce_field'], 'weardale_news_meta_nonce_action' ) ) return;
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
+
+    if ( isset( $_POST['weardale_post_programme'] ) ) {
+        update_post_meta( $post_id, '_weardale_post_programme', sanitize_text_field( $_POST['weardale_post_programme'] ) );
+    }
+    if ( isset( $_POST['weardale_related_event_id'] ) ) {
+        update_post_meta( $post_id, '_weardale_related_event_id', sanitize_text_field( $_POST['weardale_related_event_id'] ) );
+    }
+    if ( isset( $_POST['weardale_related_directory_id'] ) ) {
+        update_post_meta( $post_id, '_weardale_related_directory_id', sanitize_text_field( $_POST['weardale_related_directory_id'] ) );
+    }
+
+    // Toggle Featured Status
+    $featured = isset( $_POST['weardale_featured_post'] ) ? '1' : '0';
+    if ( '1' === $featured ) {
+        // Enforce single active featured story by un-featuring all other posts
+        global $wpdb;
+        $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->postmeta} SET meta_value = '0' WHERE meta_key = '_weardale_featured_post' AND post_id != %d", $post_id ) );
+    }
+    update_post_meta( $post_id, '_weardale_featured_post', $featured );
+} );`
+  },
+  {
+    name: 'content-strand.php',
+    path: 'themes/weardale-together/template-parts/content-strand.php',
+    type: 'theme',
+    content: `<?php
+/**
+ * Template part for displaying programme strand pages.
+ * Includes related Event Query + News & Stories Query linked via _weardale_post_programme.
+ */
+$strand = weardale_together_get_current_strand(); // "cafe", "creative", etc.
+?>
+<section class="strand-events-section">
+    <!-- Events query logic -->
+</section>
+
+<!-- Latest News & Stories Section -->
+<section class="strand-news-section" style="background-color: var(--color-cream); border-top: 1px solid var(--color-tan); padding: 4rem 0;">
+    <div class="container">
+        <h2 class="font-display" style="font-size: 2.25rem; color: var(--color-forest); margin-bottom: 2rem; text-align: center;">Latest News & Stories</h2>
+        <?php
+        $story_query = new WP_Query( array(
+            'post_type'      => 'post',
+            'posts_per_page' => 3,
+            'post_status'    => 'publish',
+            'meta_query'     => array(
+                array( 'key' => '_weardale_post_programme', 'value' => $strand, 'compare' => '=' )
+            )
+        ) );
+        if ( $story_query->have_posts() ) : ?>
+            <div class="grid grid-3">
+                <?php while ( $story_query->have_posts() ) : $story_query->the_post(); ?>
+                    <article class="card">
+                        <!-- Post thumbnail & details -->
+                        <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+                        <p><?php the_excerpt(); ?></p>
+                        <a href="<?php the_permalink(); ?>" class="btn btn-secondary">Read Story &rarr;</a>
+                    </article>
+                <?php endwhile; wp_reset_postdata(); ?>
+            </div>
+        <?php else : ?>
+            <p style="text-align: center; color: var(--text-light);">No published stories for this strand yet.</p>
+        <?php endif; ?>
+    </div>
+</section>`
+  },
+  {
+    name: 'homepage-news.php',
+    path: 'themes/weardale-together/template-parts/homepage/news.php',
+    type: 'theme',
+    content: `<?php
+/**
+ * Queries 1 Featured Spotlight Story + 3 Recent News Stories
+ */
+
+// 1. Query Featured Spotlight Story
+$featured_query = new WP_Query( array(
+    'post_type'      => 'post',
+    'posts_per_page' => 1,
+    'meta_key'       => '_weardale_featured_post',
+    'meta_value'     => '1',
+    'post_status'    => 'publish',
+) );
+$featured_id = 0;
+if ( $featured_query->have_posts() ) {
+    $featured_query->the_post();
+    $featured_id = get_the_ID();
+}
+wp_reset_postdata();
+
+// 2. Query 3 Latest Stories (excluding featured)
+$latest_query = new WP_Query( array(
+    'post_type'      => 'post',
+    'posts_per_page' => 3,
+    'post_status'    => 'publish',
+    'post__not_in'   => $featured_id ? array( $featured_id ) : array(),
+) );
+?>
+<section class="homepage-news">
+    <?php if ( $featured_id ) : ?>
+        <div class="featured-spotlight">
+            <!-- Featured Spotlight Banner UI -->
+        </div>
+    <?php endif; ?>
+
+    <div class="grid grid-3">
+        <?php while ( $latest_query->have_posts() ) : $latest_query->the_post(); ?>
+            <!-- Recent story cards -->
+        <?php endwhile; wp_reset_postdata(); ?>
+    </div>
+</section>`
+  },
+  {
+    name: 'single.php',
+    path: 'themes/weardale-together/single.php',
+    type: 'theme',
+    content: `<?php
+/**
+ * Single Post Template: Renders body + Community Connections metadata linkages
+ */
+get_header();
+while ( have_posts() ) : the_post(); ?>
+    <article>
+        <h1><?php the_title(); ?></h1>
+        <div class="entry-content"><?php the_content(); ?></div>
+
+        <?php
+        // Fetch linkages
+        $programme = get_post_meta( get_the_ID(), '_weardale_post_programme', true );
+        $event_id  = get_post_meta( get_the_ID(), '_weardale_related_event_id', true );
+        $dir_id    = get_post_meta( get_the_ID(), '_weardale_related_directory_id', true );
+        if ( $programme || $event_id || $dir_id ) : ?>
+            <div class="story-connections-block">
+                <h3>Community Connections</h3>
+                <!-- Display linked programme strand, events, directory listings -->
+            </div>
+        <?php endif; ?>
+    </article>
+<?php endwhile;
+get_footer();`
+  },
   {
     name: 'style.css',
     path: 'themes/weardale-together/style.css',
@@ -132,87 +310,7 @@ function weardale_together_setup() {
         'footer-menu'  => esc_html__( 'Footer Navigation Menu', 'weardale-together' ),
     ) );
 }
-add_action( 'after_setup_theme', 'weardale_together_setup' );
-
-function weardale_together_scripts() {
-    wp_enqueue_style( 'weardale-together-style', get_stylesheet_uri(), array(), '1.0.0' );
-    wp_enqueue_script( 'weardale-together-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '1.0.0', true );
-}
-add_action( 'wp_enqueue_scripts', 'weardale_together_scripts' );`
-  },
-  {
-    name: 'front-page.php',
-    path: 'themes/weardale-together/front-page.php',
-    type: 'theme',
-    content: `<?php
-/**
- * The template for displaying the front page.
- */
-get_header();
-?>
-<main id="primary-content" class="site-main" role="main">
-    <?php
-    get_template_part( 'template-parts/homepage/hero' );
-    get_template_part( 'template-parts/homepage/hub-and-spoke' );
-    get_template_part( 'template-parts/homepage/whats-happening' );
-    get_template_part( 'template-parts/homepage/programme-areas' );
-    get_template_part( 'template-parts/homepage/about' );
-    get_template_part( 'template-parts/homepage/news' );
-    get_template_part( 'template-parts/homepage/volunteer' );
-    get_template_part( 'template-parts/homepage/newsletter' );
-    ?>
-</main>
-<?php
-get_footer();`
-  },
-  {
-    name: 'hub-and-spoke.php',
-    path: 'themes/weardale-together/template-parts/homepage/hub-and-spoke.php',
-    type: 'theme',
-    content: `<?php
-/**
- * Template part for the priority Hub-and-Spoke interactive diagram.
- */
-?>
-<section id="hub-and-spoke-section" class="section-padding">
-    <div class="container">
-        <!-- Circular interactive diagram for desktop, vertical list for mobile -->
-        <div class="hub-spoke-desktop-only">
-            <!-- Central WT brand with 4 radiating nodes -->
-            <svg class="connecting-vectors">...</svg>
-            <ul class="nodes">
-                <li><a href="<?php echo esc_url(home_url('/cafe/')); ?>">☕ Root & Branch Café</a></li>
-                <li><a href="<?php echo esc_url(home_url('/creative-arts/')); ?>">🎨 Creative Arts</a></li>
-                <li><a href="<?php echo esc_url(home_url('/young-people/')); ?>">🌲 Young People</a></li>
-                <li><a href="<?php echo esc_url(home_url('/roots-shoots/')); ?>">🧸 Roots & Shoots</a></li>
-            </ul>
-        </div>
-    </div>
-</section>`
-  },
-  {
-    name: 'whats-happening.php',
-    path: 'themes/weardale-together/template-parts/homepage/whats-happening.php',
-    type: 'theme',
-    content: `<?php
-/**
- * Template part for displaying dynamic Weardale Together event listings.
- */
-$args = array(
-    'post_type'      => 'weardale_event',
-    'posts_per_page' => 3,
-    'meta_key'       => '_event_date',
-    'orderby'        => 'meta_value',
-    'order'          => 'ASC',
-);
-$events_query = new WP_Query( $args );
-if ( $events_query->have_posts() ) :
-    while ( $events_query->have_posts() ) : $events_query->the_post();
-        // Render custom post meta
-        $date = get_post_meta( get_the_ID(), '_event_date', true );
-        $time = get_post_meta( get_the_ID(), '_event_time', true );
-    endwhile;
-endif;`
+add_action( 'after_setup_theme', 'weardale_together_setup' );`
   },
   {
     name: 'weardale-platform.php',
@@ -222,8 +320,6 @@ endif;`
 /**
  * Plugin Name: Weardale Platform
  * Description: Core platform-specific logic (Custom Post Types & Taxonomies) for Weardale Together.
- * Version: 1.0.0
- * Text Domain: weardale-platform
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -234,53 +330,10 @@ function weardale_platform_init() {
     if ( file_exists( $includes_dir . 'editorial.php' ) ) {
         include_once $includes_dir . 'editorial.php';
     }
+    if ( file_exists( $includes_dir . 'news-meta.php' ) ) {
+        include_once $includes_dir . 'news-meta.php';
+    }
 }
 add_action( 'plugins_loaded', 'weardale_platform_init' );`
-  },
-  {
-    name: 'editorial.php',
-    path: 'plugins/weardale-platform/includes/editorial.php',
-    type: 'plugin',
-    content: `<?php
-/**
- * Registers Weardale Event CPT, Strand Taxonomy, and Meta Fields.
- */
-function weardale_platform_register_event_cpt() {
-    register_post_type( 'weardale_event', array(
-        'labels'      => array( 'name' => 'Events', 'singular_name' => 'Event' ),
-        'public'      => true,
-        'has_archive' => true,
-        'menu_icon'   => 'dashicons-calendar-alt',
-        'supports'    => array( 'title', 'editor', 'thumbnail', 'excerpt' ),
-        'show_in_rest'=> true,
-    ) );
-}
-add_action( 'init', 'weardale_platform_register_event_cpt' );
-
-function weardale_platform_register_strand_taxonomy() {
-    register_taxonomy( 'strand', array( 'post', 'page', 'weardale_event' ), array(
-        'hierarchical'      => true,
-        'show_admin_column' => true,
-        'show_in_rest'      => true,
-    ) );
-}
-add_action( 'init', 'weardale_platform_register_strand_taxonomy' );`
-  },
-  {
-    name: 'seed-db.sql',
-    path: 'scripts/seed-db.sql',
-    type: 'script',
-    content: `-- Insert Core Information Architecture Pages
-INSERT INTO \`wp_posts\` (\`post_author\`, \`post_title\`, \`post_name\`, \`post_type\`) VALUES
-(1, 'Root & Branch Café', 'cafe', 'page'),
-(1, 'Young People', 'young-people', 'page'),
-(1, 'Creative Arts', 'creative-arts', 'page'),
-(1, 'Roots & Shoots', 'roots-shoots', 'page');
-
--- Seed Event CPT metadata
-INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
-(100, '_event_date', '2026-08-10'),
-(100, '_event_time', '10:00 AM - 1:00 PM'),
-(100, '_event_location', 'Stanhope Hub Workshop Rooms');`
   }
 ];

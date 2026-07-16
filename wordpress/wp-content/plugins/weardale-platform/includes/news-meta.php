@@ -142,8 +142,6 @@ function weardale_platform_render_news_meta_box( $post ) {
                 <select id="weardale_related_directory_id" name="weardale_related_directory_id" class="postform">
                     <option value="" <?php selected( $related_directory, '' ); ?>><?php esc_html_e( '(None - No related directory listing)', 'weardale-platform' ); ?></option>
                     <?php if ( ! empty( $directory_listings ) ) : ?>
-                        <?php foreach ( $dl as $listing ) : // Fallback variable name in loop is $listing, using $directory_listings for array ?>
-                        <?php endforeach; // Open a cleaner native loop instead ?>
                         <?php foreach ( $directory_listings as $listing ) : ?>
                             <option value="<?php echo esc_attr( $listing->ID ); ?>" <?php selected( $related_directory, $listing->ID ); ?>>
                                 <?php echo esc_html( $listing->post_title ); ?>
@@ -197,6 +195,16 @@ function weardale_platform_save_news_metadata( $post_id ) {
 
     // Handle checkboxes
     $featured = isset( $_POST['weardale_featured_post'] ) ? '1' : '0';
+    if ( '1' === $featured ) {
+        // Enforce single active featured story by un-featuring all other posts
+        global $wpdb;
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE {$wpdb->postmeta} SET meta_value = '0' WHERE meta_key = '_weardale_featured_post' AND post_id != %d",
+                $post_id
+            )
+        );
+    }
     update_post_meta( $post_id, '_weardale_featured_post', $featured );
 }
 add_action( 'save_post', 'weardale_platform_save_news_metadata' );

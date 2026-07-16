@@ -242,3 +242,85 @@ switch ( $strand ) {
         <?php endif; ?>
     </div>
 </section>
+
+<!-- Related News & Stories Section -->
+<section class="strand-news-section" style="background-color: var(--color-cream); border-top: 1px solid var(--color-tan); padding: 4rem 0;">
+    <div class="container">
+        <h2 class="font-display" style="font-size: 2.25rem; color: var(--color-forest); margin-top: 0; margin-bottom: 2rem; text-align: center;">
+            <?php esc_html_e( 'Latest News & Stories', 'weardale-together' ); ?>
+        </h2>
+        
+        <?php
+        $story_args = array(
+            'post_type'      => 'post',
+            'posts_per_page' => 3,
+            'post_status'    => 'publish',
+            'meta_query'     => array(
+                array(
+                    'key'     => '_weardale_post_programme',
+                    'value'   => $strand,
+                    'compare' => '=',
+                ),
+            ),
+        );
+        $story_query = new WP_Query( $story_args );
+
+        if ( $story_query->have_posts() ) :
+            ?>
+            <div class="grid grid-3">
+                <?php
+                while ( $story_query->have_posts() ) :
+                    $story_query->the_post();
+                    ?>
+                    <article class="card" style="display: flex; flex-direction: column; background-color: var(--color-white); border: 1px solid var(--color-tan); border-radius: var(--border-radius-md); overflow: hidden; box-shadow: 0 4px 12px rgba(59,92,58,0.02); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                        
+                        <!-- Thumbnail -->
+                        <?php if ( has_post_thumbnail() ) : ?>
+                            <div class="post-thumbnail" style="border-bottom: 1px solid var(--color-tan); overflow: hidden; aspect-ratio: 16/10;">
+                                <?php the_post_thumbnail( 'medium_large', array( 'style' => 'width:100%; height:100%; object-fit:cover; display:block;' ) ); ?>
+                            </div>
+                        <?php else : ?>
+                            <div style="aspect-ratio: 16/10; background-color: var(--color-cream); border-bottom: 1px solid var(--color-tan); display: flex; align-items: center; justify-content: center; color: var(--text-light);">
+                                <span style="font-family: var(--font-mono); font-size: 0.85rem;"><?php esc_html_e( 'Weardale Together', 'weardale-together' ); ?></span>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Content Body -->
+                        <div style="padding: 1.75rem; flex-grow: 1; display: flex; flex-direction: column;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-light);">
+                                    <?php echo get_the_date(); ?>
+                                </span>
+                            </div>
+
+                            <h3 class="card-title font-display" style="font-size: 1.3rem; line-height: 1.25; margin-top: 0; margin-bottom: 1rem; font-weight: normal; min-height: 3.2rem;">
+                                <a href="<?php the_permalink(); ?>" style="text-decoration: none; color: var(--color-forest);">
+                                    <?php the_title(); ?>
+                                </a>
+                            </h3>
+
+                            <div style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">
+                                <?php the_excerpt(); ?>
+                            </div>
+
+                            <a href="<?php the_permalink(); ?>" class="btn btn-secondary" style="align-self: flex-start; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                                <?php esc_html_e( 'Read Story &rarr;', 'weardale-together' ); ?>
+                            </a>
+                        </div>
+
+                    </article>
+                    <?php
+                endwhile;
+                wp_reset_postdata();
+                ?>
+            </div>
+        <?php else : ?>
+            <div class="empty-state-notice" style="background-color: var(--color-white); border: 1px dashed var(--color-tan); padding: 3rem; text-align: center; border-radius: var(--border-radius-md); max-width: 600px; margin: 0 auto;">
+                <svg width="40" height="40" fill="none" stroke="var(--color-tan)" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto 1rem; display: block;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <p style="font-size: 1.05rem; color: var(--text-light); margin: 0;">
+                    <?php esc_html_e( 'There are currently no published stories for this programme strand. Please check back soon.', 'weardale-together' ); ?>
+                </p>
+            </div>
+        <?php endif; ?>
+    </div>
+</section>
