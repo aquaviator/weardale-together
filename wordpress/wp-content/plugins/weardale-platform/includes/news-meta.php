@@ -37,6 +37,9 @@ function weardale_platform_render_news_meta_box( $post ) {
     // Retrieve existing metadata
     $is_featured        = get_post_meta( $post->ID, '_weardale_featured_post', true ) === '1';
     $programme          = get_post_meta( $post->ID, '_weardale_post_programme', true );
+    if ( function_exists( 'weardale_platform_normalize_programme_key' ) ) {
+        $programme = weardale_platform_normalize_programme_key( $programme );
+    }
     $related_event      = get_post_meta( $post->ID, '_weardale_related_event_id', true );
     $related_directory  = get_post_meta( $post->ID, '_weardale_related_directory_id', true );
 
@@ -108,10 +111,10 @@ function weardale_platform_render_news_meta_box( $post ) {
             <div>
                 <select id="weardale_post_programme" name="weardale_post_programme" class="postform">
                     <option value="" <?php selected( $programme, '' ); ?>><?php esc_html_e( '(No associated programme)', 'weardale-platform' ); ?></option>
-                    <option value="cafe" <?php selected( $programme, 'cafe' ); ?>><?php esc_html_e( 'Root & Branch Café', 'weardale-platform' ); ?></option>
-                    <option value="youth" <?php selected( $programme, 'youth' ); ?>><?php esc_html_e( 'Young People & Forest School', 'weardale-platform' ); ?></option>
-                    <option value="creative" <?php selected( $programme, 'creative' ); ?>><?php esc_html_e( 'Creative Arts', 'weardale-platform' ); ?></option>
-                    <option value="shoots" <?php selected( $programme, 'shoots' ); ?>><?php esc_html_e( 'Roots & Shoots Early Years', 'weardale-platform' ); ?></option>
+                    <option value="root-branch-cafe" <?php selected( $programme, 'root-branch-cafe' ); ?>><?php esc_html_e( 'Root & Branch Café', 'weardale-platform' ); ?></option>
+                    <option value="young-people" <?php selected( $programme, 'young-people' ); ?>><?php esc_html_e( 'Young People & Forest School', 'weardale-platform' ); ?></option>
+                    <option value="creative-arts" <?php selected( $programme, 'creative-arts' ); ?>><?php esc_html_e( 'Creative Arts', 'weardale-platform' ); ?></option>
+                    <option value="roots-shoots" <?php selected( $programme, 'roots-shoots' ); ?>><?php esc_html_e( 'Roots & Shoots Early Years', 'weardale-platform' ); ?></option>
                 </select>
                 <p class="wd-news-help-desc"><?php esc_html_e( 'Connect this article to a main community strand. This will help group content visually.', 'weardale-platform' ); ?></p>
             </div>
@@ -180,7 +183,11 @@ function weardale_platform_save_news_metadata( $post_id ) {
 
     // 4. Save fields
     if ( isset( $_POST['weardale_post_programme'] ) ) {
-        update_post_meta( $post_id, '_weardale_post_programme', sanitize_text_field( $_POST['weardale_post_programme'] ) );
+        $programme_value = sanitize_text_field( $_POST['weardale_post_programme'] );
+        if ( function_exists( 'weardale_platform_normalize_programme_key' ) ) {
+            $programme_value = weardale_platform_normalize_programme_key( $programme_value );
+        }
+        update_post_meta( $post_id, '_weardale_post_programme', $programme_value );
     }
 
     if ( isset( $_POST['weardale_related_event_id'] ) ) {

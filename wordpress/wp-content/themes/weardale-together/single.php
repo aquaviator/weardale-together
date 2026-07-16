@@ -82,18 +82,22 @@ get_header();
                                     $prog_url = '';
                                     switch ( $post_programme ) {
                                         case 'cafe':
+                                        case 'root-branch-cafe':
                                             $prog_title = 'Root & Branch Café';
                                             $prog_url = home_url( '/cafe/' );
                                             break;
                                         case 'youth':
+                                        case 'young-people':
                                             $prog_title = 'Young People & Forest School';
                                             $prog_url = home_url( '/young-people/' );
                                             break;
                                         case 'creative':
+                                        case 'creative-arts':
                                             $prog_title = 'Creative Arts';
                                             $prog_url = home_url( '/creative-arts/' );
                                             break;
                                         case 'shoots':
+                                        case 'roots-shoots':
                                             $prog_title = 'Roots & Shoots Early Years';
                                             $prog_url = home_url( '/roots-shoots/' );
                                             break;

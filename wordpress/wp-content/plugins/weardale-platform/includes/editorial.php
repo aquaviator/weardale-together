@@ -147,3 +147,68 @@ function weardale_platform_flush_rules_on_init() {
     }
 }
 add_action( 'init', 'weardale_platform_flush_rules_on_init', 99 );
+
+/**
+ * Normalize display-driven or legacy keys to canonical programme area identifiers.
+ *
+ * Supported Canonical Keys:
+ * - root-branch-cafe
+ * - young-people
+ * - creative-arts
+ * - roots-shoots
+ *
+ * @param string $value The raw input value.
+ * @return string The normalized canonical identifier.
+ */
+function weardale_platform_normalize_programme_key( $value ) {
+    $normalized = trim( strtolower( $value ) );
+    
+    $mapping = array(
+        'cafe'             => 'root-branch-cafe',
+        'root-branch-cafe' => 'root-branch-cafe',
+        'root-branch-café' => 'root-branch-cafe',
+        'root & branch'    => 'root-branch-cafe',
+        
+        'youth'            => 'young-people',
+        'young-people'     => 'young-people',
+        'young people'     => 'young-people',
+        'forest-school'    => 'young-people',
+        
+        'creative'         => 'creative-arts',
+        'creative-arts'    => 'creative-arts',
+        'creative arts'    => 'creative-arts',
+        
+        'shoots'           => 'roots-shoots',
+        'roots-shoots'     => 'roots-shoots',
+        'roots & shoots'   => 'roots-shoots',
+    );
+    
+    if ( isset( $mapping[$normalized] ) ) {
+        return $mapping[$normalized];
+    }
+    
+    return $normalized;
+}
+
+/**
+ * Retrieve all potential search variants (canonical and legacy keys) for a given programme area.
+ *
+ * @param string $value The input key or slug.
+ * @return array List of valid identifiers for DB querying.
+ */
+function weardale_platform_get_programme_variants( $value ) {
+    $canonical = weardale_platform_normalize_programme_key( $value );
+    
+    $variants_map = array(
+        'root-branch-cafe' => array( 'root-branch-cafe', 'cafe' ),
+        'young-people'     => array( 'young-people', 'youth', 'forest-school' ),
+        'creative-arts'    => array( 'creative-arts', 'creative' ),
+        'roots-shoots'     => array( 'roots-shoots', 'shoots' ),
+    );
+    
+    if ( isset( $variants_map[$canonical] ) ) {
+        return $variants_map[$canonical];
+    }
+    
+    return array( $canonical, $value );
+}

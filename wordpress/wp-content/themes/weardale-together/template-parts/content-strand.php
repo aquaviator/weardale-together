@@ -251,6 +251,10 @@ switch ( $strand ) {
         </h2>
         
         <?php
+        $strand_variants = function_exists( 'weardale_platform_get_programme_variants' )
+            ? weardale_platform_get_programme_variants( $strand )
+            : array( $strand );
+
         $story_args = array(
             'post_type'      => 'post',
             'posts_per_page' => 3,
@@ -258,8 +262,8 @@ switch ( $strand ) {
             'meta_query'     => array(
                 array(
                     'key'     => '_weardale_post_programme',
-                    'value'   => $strand,
-                    'compare' => '=',
+                    'value'   => $strand_variants,
+                    'compare' => 'IN',
                 ),
             ),
         );

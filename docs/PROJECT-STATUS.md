@@ -173,6 +173,11 @@ The local development environment baseline has been established. The following c
     - *archive.php & search.php*: Oversaw identical editorial designs for category archives, tags, and keyword results with beautiful empty-state notices.
     - *single.php*: Structured the single post view to display publishing metadata and a "Community Connections" panel dynamically linking related programmes, events, and facilities.
   - **Homepage Spotlight Integration**: Updated `template-parts/homepage/news.php` to present 1 prominent Featured Story followed by 3 Latest Stories in a responsive bento layout, preventing any duplicate post display.
+- [x] **Programme Story Relationship Runtime Fix (Sprint 11.1B)**:
+  - **Central Normalization Helper**: Programmed a central mapping layer `weardale_platform_normalize_programme_key()` and variant generator `weardale_platform_get_programme_variants()` inside `editorial.php`. This maps display-driven or legacy keys (e.g. `'creative'`, `'cafe'`) to their corresponding canonical identifiers (e.g. `'creative-arts'`, `'root-branch-cafe'`).
+  - **Robust Frontend Queries**: Updated `content-strand.php` to fetch variants for the active strand and use `compare => 'IN'` in the `meta_query` of `WP_Query`, allowing posts to appear on strand pages regardless of whether they have a legacy or canonical identifier stored in database metadata.
+  - **Clean Plugin Integration**: Modified `news-meta.php` to normalize metadata on retrieval and use canonical keys in the "Associated Programme Strand" dropdown, while standardizing saving pathways to guarantee all future updates are persisted strictly as canonical identifiers.
+  - **Single Post Connection Badges**: Standardized the post connection badges in `single.php` to handle both canonical and legacy identifiers seamlessly, preventing broken badge displays or links.
 
 ---
 
