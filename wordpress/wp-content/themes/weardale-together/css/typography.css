@@ -4,22 +4,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Yeseva+One&display=swap');
 
 body {
-    font-family: var(--font-body);
-    font-size: 1.125rem; /* 18px */
+    font-family: var(--wt-font-family-body);
+    font-size: var(--wt-font-size-md); /* 1.125rem / 18px */
     line-height: 1.625;
-    color: var(--text-primary);
+    color: var(--wt-color-near-black);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6,
 .font-display {
-    font-family: var(--font-headings);
-    color: var(--color-forest);
+    font-family: var(--wt-font-family-headings);
+    color: var(--wt-color-forest);
     line-height: 1.2;
     margin-top: 0;
     margin-bottom: 1.25rem;
-    font-weight: normal; /* Yeseva One is heavy by default */
+    font-weight: var(--wt-font-weight-normal); /* Yeseva One is heavy by default */
 }
 
 h1 { font-size: 2.75rem; }
@@ -27,12 +27,12 @@ h2 { font-size: 2.25rem; }
 h3 { font-size: 1.75rem; }
 h4 { font-size: 1.4rem; }
 h5 { font-size: 1.2rem; }
-h6 { font-size: 1rem; }
+h6 { font-size: var(--wt-font-size-base); } /* 1rem */
 
 @media (max-width: 768px) {
     h1 { font-size: 2.25rem; }
     h2 { font-size: 1.85rem; }
-    h3 { font-size: 1.5rem; }
+    h3 { font-size: var(--wt-font-size-xl); } /* 1.5rem */
 }
 
 p {
@@ -43,7 +43,7 @@ p {
 
 /* Editorial content constraints for high-end readability (Kinfolk/National Trust style) */
 .entry-content {
-    color: var(--color-black);
+    color: var(--wt-color-near-black);
 }
 
 .entry-content > p,
@@ -63,14 +63,14 @@ p {
 .entry-content h2,
 .entry-content h3,
 .entry-content h4 {
-    color: var(--color-forest);
-    font-family: var(--font-headings);
+    color: var(--wt-color-forest);
+    font-family: var(--wt-font-family-headings);
     margin-top: 2.5rem;
     margin-bottom: 1.25rem;
     line-height: 1.25;
 }
 
-.entry-content h2 { font-size: 2rem; }
+.entry-content h2 { font-size: var(--wt-font-size-2xl); } /* 2rem */
 .entry-content h3 { font-size: 1.6rem; }
 .entry-content h4 { font-size: 1.3rem; }
 
@@ -78,7 +78,7 @@ p {
 .entry-content ul,
 .entry-content ol {
     margin-top: 0;
-    margin-bottom: 2rem;
+    margin-bottom: var(--wt-space-6); /* 2rem */
     padding-left: 1.75rem;
 }
 
@@ -93,15 +93,15 @@ p {
 
 /* Beautiful blockquote styling */
 blockquote {
-    font-family: var(--font-headings);
+    font-family: var(--wt-font-family-headings);
     font-size: 1.35rem;
     line-height: 1.5;
-    color: var(--color-forest);
-    border-left: 4px solid var(--color-tan);
+    color: var(--wt-color-forest);
+    border-left: 4px solid var(--wt-color-tan);
     margin: 2.5rem auto;
-    padding: 1rem 0 1rem 2rem;
+    padding: var(--wt-space-4) 0 var(--wt-space-4) var(--wt-space-6); /* 1rem 0 1rem 2rem */
     background-color: rgba(245, 240, 232, 0.45);
-    border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+    border-radius: 0 var(--wt-radius-md) var(--wt-radius-md) 0;
     font-style: italic;
     border-top: 1px solid rgba(196, 184, 154, 0.15);
     border-right: 1px solid rgba(196, 184, 154, 0.15);
@@ -110,38 +110,38 @@ blockquote {
 }
 
 a {
-    color: var(--color-forest);
+    color: var(--wt-color-forest);
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 4px;
-    transition: var(--transition-smooth);
+    transition: var(--wt-transition-smooth);
 }
 
 a:hover {
-    color: var(--color-sage);
+    color: var(--wt-color-sage);
     text-decoration-thickness: 2px;
 }
 
 blockquote {
-    font-family: var(--font-headings);
+    font-family: var(--wt-font-family-headings);
     font-size: 1.35rem;
     line-height: 1.5;
-    color: var(--color-forest);
-    border-left: 4px solid var(--color-tan);
-    margin: 2rem 0;
-    padding: 0.5rem 0 0.5rem 1.5rem;
+    color: var(--wt-color-forest);
+    border-left: 4px solid var(--wt-color-tan);
+    margin: var(--wt-space-6) 0; /* 2rem */
+    padding: var(--wt-space-2) 0 var(--wt-space-2) var(--wt-space-5); /* 0.5rem 0 0.5rem 1.5rem */
     background-color: rgba(196, 184, 154, 0.1);
-    border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+    border-radius: 0 var(--wt-radius-md) var(--wt-radius-md) 0;
 }
 
 cite {
     display: block;
-    font-family: var(--font-body);
+    font-family: var(--wt-font-family-body);
     font-size: 0.95rem;
     font-style: normal;
-    font-weight: 600;
-    margin-top: 0.5rem;
-    color: var(--text-secondary);
+    font-weight: var(--wt-font-weight-semibold); /* 600 */
+    margin-top: var(--wt-space-2); /* 0.5rem */
+    color: var(--wt-color-text-secondary);
 }
 
 cite::before {
@@ -149,16 +149,17 @@ cite::before {
 }
 
 code, pre {
-    font-family: var(--font-mono);
+    font-family: var(--wt-font-family-mono);
     font-size: 0.9rem;
     background-color: rgba(0, 0, 0, 0.05);
     padding: 2px 6px;
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--wt-radius-sm);
 }
 
 pre {
     display: block;
     padding: 1.25rem;
     overflow-x: auto;
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--wt-space-5); /* 1.5rem */
 }
+
