@@ -27,11 +27,12 @@
             } else {
                 $logo_url = get_template_directory_uri() . '/assets/branding/wt-monogram-standard-forestgreen.svg';
                 ?>
-                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" style="text-decoration: none; display: flex; align-items: center; gap: 0.75rem;">
-                    <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php bloginfo( 'name' ); ?> Monogram" style="width: 42px; height: 42px; display: inline-block; transition: var(--transition-smooth); filter: drop-shadow(0 2px 4px rgba(59, 92, 58, 0.1));" class="custom-logo-fallback-svg">
-                    <p class="site-title" style="margin: 0; color: var(--color-forest); font-family: var(--font-headings); font-size: 1.5rem; line-height: 1; font-weight: normal;">
-                        <?php bloginfo( 'name' ); ?>
-                    </p>
+                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-branding-link">
+                    <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php bloginfo( 'name' ); ?> Monogram" class="custom-logo-fallback-svg">
+                    <div class="site-title-container">
+                        <p class="site-title"><?php bloginfo( 'name' ); ?></p>
+                        <p class="site-description"><?php esc_html_e( 'Community Interest Company', 'weardale-together' ); ?></p>
+                    </div>
                 </a>
                 <?php
             }
