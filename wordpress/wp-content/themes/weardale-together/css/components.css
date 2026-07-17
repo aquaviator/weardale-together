@@ -492,33 +492,51 @@ input[type="submit"]:hover,
     box-shadow: 0 4px 12px rgba(44, 44, 42, 0.1);
 }
 
-/* Cards */
+/* Shared Card & Content Container Foundation
+   Consolidates core container layout, relative positioning, and sizing across Weardale modules */
+.card,
+.feature-card,
+.wp-block-group.is-style-feature-card,
+.editorial-callout,
+.wp-block-group.is-style-editorial-callout,
+.info-panel,
+.wp-block-group.is-style-info-panel,
+.highlight-box,
+.wp-block-group.is-style-highlight-box,
+.programme-banner {
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* 1. Generic Card Component */
 .card {
-    background-color: var(--color-white);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    padding: 2rem;
-    transition: var(--transition-smooth);
+    background-color: var(--wt-color-white);
+    border: 1px solid var(--wt-color-tan);
+    border-radius: var(--wt-radius-md);
+    padding: var(--wt-space-6);
+    transition: var(--wt-transition-smooth);
     display: flex;
     flex-direction: column;
 }
 
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(196, 184, 154, 0.2);
-    border-color: var(--color-sage);
+    box-shadow: var(--wt-shadow-lg);
+    border-color: var(--wt-color-sage);
 }
 
 .card-title {
-    font-size: 1.5rem;
-    margin-bottom: 0.75rem;
+    font-size: var(--wt-font-size-xl);
+    margin-bottom: var(--wt-space-3);
+    font-family: var(--wt-font-family-headings);
+    color: var(--wt-color-near-black);
 }
 
 .card-meta {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin-bottom: 1rem;
-    font-family: var(--font-mono);
+    font-size: var(--wt-font-size-sm);
+    color: var(--wt-color-text-light);
+    margin-bottom: var(--wt-space-4);
+    font-family: var(--wt-font-family-mono);
 }
 
 /* Forms */
@@ -562,34 +580,33 @@ textarea.form-control {
     padding: 0.25rem 0.75rem;
     font-size: 0.85rem;
     font-weight: 700;
-    border-radius: var(--border-radius-pill);
+    border-radius: var(--wt-radius-pill);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     line-height: 1;
 }
 
-.badge-cafe { background-color: rgba(196, 149, 106, 0.15); color: var(--color-strand-cafe); }
-.badge-creative { background-color: rgba(232, 160, 32, 0.15); color: var(--color-strand-creative); }
-.badge-youth { background-color: rgba(232, 150, 42, 0.15); color: var(--color-strand-youth); }
-.badge-shoots { background-color: rgba(212, 130, 106, 0.15); color: var(--color-strand-shoots); }
+.badge-cafe { background-color: rgba(196, 149, 106, 0.15); color: var(--wt-color-strand-cafe); }
+.badge-creative { background-color: rgba(232, 160, 32, 0.15); color: var(--wt-color-strand-creative); }
+.badge-youth { background-color: rgba(232, 150, 42, 0.15); color: var(--wt-color-strand-youth); }
+.badge-shoots { background-color: rgba(212, 130, 106, 0.15); color: var(--wt-color-strand-shoots); }
 
 /* ==========================================================================
    REUSABLE EDITORIAL COMPONENTS (No raw HTML required for editors)
    ========================================================================== */
 
-/* 1. Editorial Callout (.editorial-callout or as a block style) */
+/* 2. Editorial Callout (.editorial-callout or as a block style) */
 .editorial-callout,
 .wp-block-group.is-style-editorial-callout {
-    background-color: var(--color-cream);
-    border-left: 5px solid var(--color-forest);
-    border-right: 1px solid var(--color-tan);
-    border-top: 1px solid var(--color-tan);
-    border-bottom: 1px solid var(--color-tan);
+    background-color: var(--wt-color-cream);
+    border-left: 5px solid var(--wt-color-forest);
+    border-right: 1px solid var(--wt-color-tan);
+    border-top: 1px solid var(--wt-color-tan);
+    border-bottom: 1px solid var(--wt-color-tan);
     padding: 2.5rem;
-    border-radius: var(--border-radius-md);
+    border-radius: var(--wt-radius-md);
     margin: 2.5rem 0;
-    position: relative;
-    box-shadow: 0 6px 16px rgba(196, 184, 154, 0.08);
+    box-shadow: var(--wt-shadow-md);
 }
 
 .editorial-callout::before,
@@ -598,11 +615,11 @@ textarea.form-control {
     position: absolute;
     top: -12px;
     left: 20px;
-    background-color: var(--color-white);
-    color: var(--color-forest);
+    background-color: var(--wt-color-white);
+    color: var(--wt-color-forest);
     width: 24px;
     height: 24px;
-    border: 1px solid var(--color-tan);
+    border: 1px solid var(--wt-color-tan);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -610,37 +627,37 @@ textarea.form-control {
     font-size: 0.75rem;
 }
 
-/* 2. Feature Card (.feature-card or as a block style) */
+/* 3. Feature Card (.feature-card or as a block style) */
 .feature-card,
 .wp-block-group.is-style-feature-card {
-    background-color: var(--color-white);
-    border: 1.5px solid var(--color-tan);
-    border-radius: var(--border-radius-md);
+    background-color: var(--wt-color-white);
+    border: 1.5px solid var(--wt-color-tan);
+    border-radius: var(--wt-radius-md);
     padding: 2.5rem;
-    box-shadow: 0 4px 15px rgba(196, 184, 154, 0.06);
-    transition: var(--transition-bounce);
+    box-shadow: var(--wt-shadow-md);
+    transition: var(--wt-transition-bounce);
 }
 
 .feature-card:hover,
 .wp-block-group.is-style-feature-card:hover {
     transform: translateY(-4px);
-    border-color: var(--color-sage);
-    box-shadow: 0 10px 25px rgba(107, 143, 94, 0.12);
+    border-color: var(--wt-color-sage);
+    box-shadow: var(--wt-shadow-lg);
 }
 
-/* 3. Quote Block / Testimonials (Sophisticated blockquote) */
+/* 4. Quote Block / Testimonials (Sophisticated blockquote) */
 .quote-block,
 .wp-block-quote {
     position: relative;
-    font-family: var(--font-headings);
+    font-family: var(--wt-font-family-headings);
     font-size: 1.4rem;
     line-height: 1.5;
-    color: var(--color-forest);
-    padding: 3rem 2.5rem 2.5rem 2.5rem;
-    background-color: rgba(245, 240, 232, 0.4);
-    border: 1px solid rgba(196, 184, 154, 0.3);
-    border-radius: var(--border-radius-md);
-    margin: 3rem 0;
+    color: var(--wt-color-forest);
+    padding: var(--wt-space-7) 2.5rem 2.5rem 2.5rem;
+    background-color: rgba(245, 240, 232, 0.4); /* Based on wt-color-cream */
+    border: 1px solid rgba(196, 184, 154, 0.3); /* Based on wt-color-tan */
+    border-radius: var(--wt-radius-md);
+    margin: var(--wt-space-7) 0;
     box-shadow: inset 0 2px 4px rgba(196, 184, 154, 0.05);
 }
 
@@ -651,7 +668,7 @@ textarea.form-control {
     top: -15px;
     left: 25px;
     font-size: 5rem;
-    color: var(--color-tan);
+    color: var(--wt-color-tan);
     font-family: Georgia, serif;
     line-height: 1;
 }
@@ -659,72 +676,72 @@ textarea.form-control {
 .quote-block cite,
 .wp-block-quote cite {
     display: block;
-    margin-top: 1rem;
-    font-family: var(--font-body);
+    margin-top: var(--wt-space-4);
+    font-family: var(--wt-font-family-body);
     font-size: 0.95rem;
     font-style: normal;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--text-secondary);
+    color: var(--wt-color-text-secondary);
 }
 
-/* 4. Information Panel (.info-panel) */
+/* 5. Information Panel (.info-panel) */
 .info-panel,
 .wp-block-group.is-style-info-panel {
-    background-color: var(--color-white);
-    border: 3px double var(--color-tan);
-    border-radius: var(--border-radius-sm);
+    background-color: var(--wt-color-white);
+    border: 3px double var(--wt-color-tan);
+    border-radius: var(--wt-radius-sm);
     padding: 2.25rem;
-    margin: 2rem 0;
+    margin: var(--wt-space-6) 0;
 }
 
 .info-panel-title {
-    font-family: var(--font-headings);
+    font-family: var(--wt-font-family-headings);
     font-size: 1.35rem;
-    color: var(--color-forest);
+    color: var(--wt-color-forest);
     margin-top: 0;
-    margin-bottom: 0.75rem;
-    border-bottom: 1px dashed var(--color-tan);
-    padding-bottom: 0.5rem;
+    margin-bottom: var(--wt-space-3);
+    border-bottom: 1px dashed var(--wt-color-tan);
+    padding-bottom: var(--wt-space-2);
 }
 
-/* 5. Highlight Box (.highlight-box) */
+/* 6. Highlight Box (.highlight-box) */
 .highlight-box,
 .wp-block-group.is-style-highlight-box {
-    background-color: rgba(107, 143, 94, 0.06);
-    border-radius: var(--border-radius-lg);
-    padding: 3rem;
-    margin: 3rem 0;
+    background-color: rgba(107, 143, 94, 0.06); /* Based on wt-color-sage */
+    border-radius: var(--wt-radius-lg);
+    padding: var(--wt-space-7);
+    margin: var(--wt-space-7) 0;
     border: 1px solid rgba(107, 143, 94, 0.1);
 }
 
-/* 6. Image Captions (.wp-block-image figcaption, Image Captions) */
+/* 7. Image Captions (.wp-block-image figcaption, Image Captions) */
 .wp-block-image figcaption,
 figcaption {
-    font-family: var(--font-body);
-    font-size: 0.9rem;
+    font-family: var(--wt-font-family-body);
+    font-size: var(--wt-font-size-sm);
     font-style: italic;
-    color: var(--text-light);
+    color: var(--wt-color-text-light);
     text-align: center;
-    margin-top: 0.75rem;
+    margin-top: var(--wt-space-3);
     line-height: 1.4;
-    padding: 0 1rem;
+    padding: 0 var(--wt-space-4);
 }
 
-/* 7. Programme Banner (.programme-banner) */
+/* 8. Programme Banner (.programme-banner) */
 .programme-banner {
-    background-color: var(--color-white);
-    border: 1px solid var(--color-tan);
-    border-radius: var(--border-radius-md);
-    padding: 3rem;
+    background-color: var(--wt-color-white);
+    border: 1px solid var(--wt-color-tan);
+    border-radius: var(--wt-radius-md);
+    padding: var(--wt-space-7);
     margin: 3.5rem 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 2rem;
-    box-shadow: 0 4px 15px rgba(196, 184, 154, 0.06);
+    gap: var(--wt-space-6);
+    box-shadow: var(--wt-shadow-md);
 }
 
 .programme-banner-content {
@@ -733,7 +750,7 @@ figcaption {
 
 @media (max-width: 768px) {
     .programme-banner {
-        padding: 2rem;
+        padding: var(--wt-space-6);
         flex-direction: column;
         align-items: stretch;
     }
