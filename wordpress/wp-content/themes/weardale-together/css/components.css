@@ -540,38 +540,253 @@ input[type="submit"]:hover,
 }
 
 /* Forms */
-.form-group {
-    margin-bottom: 1.5rem;
+
+/* 1. Shared Form Control Foundation */
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="number"],
+select,
+textarea {
+    box-sizing: border-box;
+    width: 100%;
+    font-family: var(--wt-font-family-body);
+    font-size: var(--wt-font-size-base);
+    padding: 0.75rem var(--wt-space-4);
+    border: 1px solid var(--wt-color-tan);
+    background-color: var(--wt-color-white);
+    border-radius: var(--wt-radius-sm);
+    color: var(--wt-color-near-black);
+    transition: var(--wt-transition-smooth);
+    line-height: 1.5;
+}
+
+/* 2. Form Control Interactions & States */
+.form-control:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--wt-color-forest);
+    box-shadow: 0 0 0 3px rgba(59, 92, 58, 0.1);
+    outline: none;
+}
+
+/* Placeholders */
+.form-control::placeholder,
+input::placeholder,
+textarea::placeholder {
+    color: var(--wt-color-text-light);
+    opacity: 0.85;
+}
+
+/* Disabled States */
+.form-control:disabled,
+input[type="text"]:disabled,
+input[type="email"]:disabled,
+input[type="password"]:disabled,
+input[type="search"]:disabled,
+input[type="tel"]:disabled,
+input[type="url"]:disabled,
+input[type="number"]:disabled,
+select:disabled,
+textarea:disabled {
+    background-color: var(--wt-color-cream);
+    color: var(--wt-color-text-light);
+    border-color: var(--wt-color-tan);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* 3. Textarea Specific Styling */
+textarea,
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* 4. Form Labels & Headings */
+label,
+.form-label {
+    font-family: var(--wt-font-family-body);
+    font-weight: var(--wt-font-weight-bold);
+    color: var(--wt-color-forest);
+    font-size: var(--wt-font-size-base);
 }
 
 .form-label {
     display: block;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    color: var(--color-forest);
-    font-size: 1rem;
+    margin-bottom: var(--wt-space-2);
 }
 
-.form-control {
-    width: 100%;
-    font-family: var(--font-body);
-    font-size: 1rem;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border-color);
-    background-color: var(--color-white);
-    border-radius: var(--border-radius-sm);
-    color: var(--text-primary);
-    transition: var(--transition-smooth);
+/* 5. Checkboxes & Radio Buttons */
+input[type="checkbox"],
+input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--wt-color-tan);
+    border-radius: var(--wt-radius-sm);
+    background-color: var(--wt-color-white);
+    margin: 0;
+    cursor: pointer;
+    transition: var(--wt-transition-smooth);
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
-.form-control:focus {
-    border-color: var(--color-forest);
-    box-shadow: 0 0 0 3px rgba(59, 92, 58, 0.1);
+input[type="radio"] {
+    border-radius: var(--wt-radius-pill);
 }
 
-textarea.form-control {
-    min-height: 120px;
-    resize: vertical;
+input[type="checkbox"]:focus,
+input[type="radio"]:focus {
+    outline: 2px solid var(--wt-color-sage);
+    outline-offset: 2px;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+    background-color: var(--wt-color-forest);
+    border-color: var(--wt-color-forest);
+}
+
+input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 11px;
+    border: solid var(--wt-color-white);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+input[type="radio"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--wt-color-white);
+    border-radius: 50%;
+}
+
+input[type="checkbox"] + label,
+input[type="radio"] + label,
+.checkbox-label,
+.radio-label {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: var(--wt-space-2);
+    margin-bottom: 0;
+    font-weight: var(--wt-font-weight-normal);
+    color: var(--wt-color-near-black);
+    cursor: pointer;
+}
+
+/* 6. Fieldsets & Legends */
+fieldset {
+    border: 1px solid var(--wt-color-tan);
+    border-radius: var(--wt-radius-md);
+    padding: var(--wt-space-5);
+    margin-bottom: var(--wt-space-5);
+}
+
+legend {
+    font-family: var(--wt-font-family-headings);
+    font-size: var(--wt-font-size-md);
+    font-weight: var(--wt-font-weight-bold);
+    color: var(--wt-color-forest);
+    padding: 0 var(--wt-space-2);
+}
+
+/* 7. Layout & Spacing */
+.form-group {
+    margin-bottom: var(--wt-space-5);
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+/* 8. Helper Text & Validation Messages */
+.form-helper {
+    display: block;
+    font-size: var(--wt-font-size-sm);
+    color: var(--wt-color-text-secondary);
+    margin-top: var(--wt-space-2);
+    font-family: var(--wt-font-family-body);
+}
+
+.form-error-message,
+.validation-message.error {
+    display: block;
+    font-size: var(--wt-font-size-sm);
+    color: #C0392B;
+    margin-top: var(--wt-space-2);
+    font-weight: var(--wt-font-weight-semibold);
+}
+
+/* Input Error States */
+.form-control.is-invalid,
+input.is-invalid,
+textarea.is-invalid,
+select.is-invalid {
+    border-color: #C0392B;
+    background-color: rgba(192, 57, 43, 0.02);
+}
+
+.form-control.is-invalid:focus,
+input.is-invalid:focus,
+textarea.is-invalid:focus,
+select.is-invalid:focus {
+    border-color: #C0392B;
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.15);
+}
+
+/* WordPress / Contact Form 7 Compatibility */
+.wpcf7-not-valid-tip,
+.wpcf7-validation-errors {
+    font-size: var(--wt-font-size-sm);
+    color: #C0392B;
+    margin-top: var(--wt-space-2);
+    font-weight: var(--wt-font-weight-semibold);
+}
+
+.wpcf7-response-output {
+    border-radius: var(--wt-radius-sm) !important;
+    padding: var(--wt-space-3) var(--wt-space-4) !important;
+    margin: var(--wt-space-4) 0 !important;
+    font-size: var(--wt-font-size-sm) !important;
+    border: 1px solid var(--wt-color-tan) !important;
+    background-color: var(--wt-color-white) !important;
+}
+
+.wpcf7-response-output.wpcf7-validation-errors {
+    border-color: #C0392B !important;
+    background-color: rgba(192, 57, 43, 0.05) !important;
+    color: #C0392B !important;
+}
+
+.wpcf7-response-output.wpcf7-mail-sent-ok {
+    border-color: var(--wt-color-forest) !important;
+    background-color: rgba(59, 92, 58, 0.05) !important;
+    color: var(--wt-color-forest) !important;
 }
 
 /* Badges / Tags */
