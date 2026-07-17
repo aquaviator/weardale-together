@@ -165,30 +165,30 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
     <div className="min-h-screen flex flex-col bg-[#F5F0E8] text-[#2C2C2A] antialiased">
       
       {/* 1. Header Navigation */}
-      <header className="sticky top-0 z-50 bg-white border-b border-[#C4B89A] shadow-sm">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#C4B89A]/40 shadow-[0_2px_12px_rgba(44,44,42,0.02)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 lg:h-20">
+          <div className="flex justify-between items-center h-14 lg:h-16">
             
             {/* Branding Logo */}
             <div 
               onClick={() => { setActiveTab('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-              className="flex items-center gap-2 lg:gap-3 cursor-pointer group"
+              className="flex items-center gap-2 lg:gap-2.5 cursor-pointer group"
               id="header_branding"
             >
-              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#3B5C3A] flex items-center justify-center text-white font-display text-base lg:text-lg font-bold shadow-md transition-transform group-hover:scale-105">
+              <div className="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-[#3B5C3A] flex items-center justify-center text-white font-display text-xs lg:text-sm font-bold shadow-sm transition-transform group-hover:scale-105">
                 WT
               </div>
-              <div>
-                <h1 className="font-display text-base lg:text-xl text-[#3B5C3A] tracking-tight leading-none font-semibold">Weardale Together</h1>
-                <p className="text-[10px] lg:text-xs text-gray-500 font-sans mt-0.5">Community Interest Company</p>
+              <div className="flex flex-col justify-center">
+                <h1 className="font-display text-sm lg:text-base text-[#3B5C3A] tracking-tight leading-none font-semibold">Weardale Together</h1>
+                <p className="text-[9px] lg:text-[10px] text-gray-500 font-sans mt-0.5 leading-none">Community Interest Company</p>
               </div>
             </div>
 
             {/* Desktop Navigation links */}
-            <nav className="hidden lg:flex items-center gap-1 sm:gap-1.5">
+            <nav className="hidden lg:flex items-center gap-1 lg:gap-1.5">
               <button 
                 onClick={() => { setActiveTab('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-                className={`px-3 py-2 rounded-md font-semibold text-sm transition-all ${activeTab === 'home' ? 'text-[#3B5C3A] border-b-2 border-[#6B8F5E]' : 'text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#3B5C3A]'}`}
+                className={`px-3 py-1.5 rounded-md font-semibold text-sm transition-all ${activeTab === 'home' ? 'text-[#3B5C3A] bg-[#3B5C3A]/5 font-semibold' : 'text-[#2C2C2A] hover:bg-[#F5F0E8]/40 hover:text-[#3B5C3A]'}`}
                 id="nav_home"
               >
                 Home
@@ -201,39 +201,39 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                 onMouseLeave={() => setProgrammesOpen(false)}
               >
                 <button 
-                  className={`px-3 py-2 rounded-md font-semibold text-sm flex items-center gap-1 transition-all text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#3B5C3A] ${['cafe', 'creative', 'youth', 'roots-shoots'].includes(activeTab) ? 'text-[#3B5C3A] border-b-2 border-[#6B8F5E]' : ''}`}
+                  className={`px-3 py-1.5 rounded-md font-semibold text-sm flex items-center gap-1 transition-all text-[#2C2C2A] hover:bg-[#F5F0E8]/40 hover:text-[#3B5C3A] ${['cafe', 'creative', 'youth', 'roots-shoots'].includes(activeTab) ? 'text-[#3B5C3A] bg-[#3B5C3A]/5 font-semibold' : ''}`}
                 >
-                  Our Programmes <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${programmesOpen ? 'rotate-180' : ''}`} />
+                  Our Programmes <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${programmesOpen ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence>
                   {programmesOpen && (
                     <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute left-1/2 -translate-x-1/2 mt-1 w-56 bg-white border border-[#C4B89A] rounded-lg shadow-xl py-2 z-50"
+                      exit={{ opacity: 0, y: 6 }}
+                      className="absolute left-1/2 -translate-x-1/2 mt-1 w-52 bg-white border border-[#C4B89A]/60 rounded-lg shadow-xl py-1.5 z-50"
                     >
                       <button 
                         onClick={() => { setActiveTab('cafe'); setProgrammesOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8]/50 hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
                       >
                         ☕ Root & Branch Café
                       </button>
                       <button 
                         onClick={() => { setActiveTab('youth'); setProgrammesOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8]/50 hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
                       >
                         🌲 Young People
                       </button>
                       <button 
                         onClick={() => { setActiveTab('creative'); setProgrammesOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8]/50 hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
                       >
                         🎨 Creative Arts
                       </button>
                       <button 
                         onClick={() => { setActiveTab('roots-shoots'); setProgrammesOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8]/50 hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
                       >
                         🧸 Roots & Shoots
                       </button>
@@ -250,7 +250,7 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                     document.getElementById('whats-happening')?.scrollIntoView({ behavior: 'smooth' });
                   }, 150);
                 }} 
-                className="px-4 py-1.5 bg-[#3B5C3A] text-[#F5F0E8] hover:bg-[#6B8F5E] hover:text-white rounded-full font-bold text-sm shadow-sm hover:shadow-md transition-all ml-1"
+                className="px-3.5 py-1.5 bg-[#3B5C3A] text-white hover:bg-[#4A7249] rounded-full font-semibold text-xs tracking-wide uppercase transition-all ml-1 shadow-sm"
                 id="nav_whats_on"
               >
                 What’s On
@@ -258,7 +258,7 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
 
               <button 
                 onClick={() => setShowDirectoryModal(true)} 
-                className="px-3 py-2 rounded-md font-semibold text-sm text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-all"
+                className="px-3 py-1.5 rounded-md font-semibold text-sm text-[#2C2C2A] hover:bg-[#F5F0E8]/40 hover:text-[#3B5C3A] transition-all"
                 id="nav_directory"
               >
                 Community Directory
@@ -266,7 +266,7 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
 
               <button 
                 onClick={() => setShowAboutModal(true)} 
-                className="px-3 py-2 rounded-md font-semibold text-sm text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-all"
+                className="px-3 py-1.5 rounded-md font-semibold text-sm text-[#2C2C2A] hover:bg-[#F5F0E8]/40 hover:text-[#3B5C3A] transition-all"
                 id="nav_about"
               >
                 About WT
@@ -279,17 +279,17 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                 onMouseLeave={() => setInvolvedOpen(false)}
               >
                 <button 
-                  className="px-3 py-2 rounded-md font-semibold text-sm flex items-center gap-1 transition-all text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#3B5C3A]"
+                  className="px-3 py-1.5 rounded-md font-semibold text-sm flex items-center gap-1 transition-all text-[#2C2C2A] hover:bg-[#F5F0E8]/40 hover:text-[#3B5C3A]"
                 >
-                  Get Involved <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${involvedOpen ? 'rotate-180' : ''}`} />
+                  Get Involved <ChevronDown className="w-3.5 h-3.5 transition-transform duration-200" />
                 </button>
                 <AnimatePresence>
                   {involvedOpen && (
                     <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute left-1/2 -translate-x-1/2 mt-1 w-52 bg-white border border-[#C4B89A] rounded-lg shadow-xl py-2 z-50"
+                      exit={{ opacity: 0, y: 6 }}
+                      className="absolute left-1/2 -translate-x-1/2 mt-1 w-48 bg-white border border-[#C4B89A]/60 rounded-lg shadow-xl py-1.5 z-50"
                     >
                       <button 
                         onClick={() => {
@@ -299,7 +299,7 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                             document.getElementById('volunteer-form-section')?.scrollIntoView({ behavior: 'smooth' });
                           }, 150);
                         }}
-                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors"
+                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8]/50 hover:text-[#3B5C3A] transition-colors"
                       >
                         Volunteer with Us
                       </button>
@@ -311,7 +311,7 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                             document.getElementById('newsletter-section')?.scrollIntoView({ behavior: 'smooth' });
                           }, 150);
                         }}
-                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors"
+                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8]/50 hover:text-[#3B5C3A] transition-colors"
                       >
                         Newsletter
                       </button>
@@ -323,7 +323,7 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                             document.getElementById('contact-form-section')?.scrollIntoView({ behavior: 'smooth' });
                           }, 150);
                         }}
-                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors"
+                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8]/50 hover:text-[#3B5C3A] transition-colors"
                       >
                         Contact Us
                       </button>
@@ -332,14 +332,14 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                 </AnimatePresence>
               </div>
               
-              <div className="w-[1px] h-6 bg-gray-300 mx-2"></div>
+              <div className="w-[1px] h-4 bg-gray-200 mx-2"></div>
               
               <button 
                 onClick={() => { setActiveTab('console'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-                className={`px-4 py-1.5 rounded-full font-bold text-sm flex items-center gap-1.5 border transition-all ${activeTab === 'console' ? 'bg-zinc-800 text-zinc-100 border-zinc-800' : 'bg-transparent text-zinc-700 border-zinc-300 hover:bg-zinc-100'}`}
+                className={`px-3.5 py-1.5 rounded-full font-semibold text-xs tracking-wide uppercase flex items-center gap-1.5 border transition-all ${activeTab === 'console' ? 'bg-zinc-800 text-zinc-100 border-zinc-800' : 'bg-transparent text-gray-600 border-[#C4B89A]/60 hover:bg-[#F5F0E8]/50 hover:text-[#3B5C3A]'}`}
                 id="nav_console"
               >
-                <Code className="w-4 h-4" />
+                <Code className="w-3.5 h-3.5" />
                 WordPress Console
               </button>
             </nav>
@@ -523,21 +523,21 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
             >
               
               {/* Hero Banner Section */}
-              <section className="relative overflow-hidden bg-white py-16 sm:py-24 border-b border-[#C4B89A]">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-[#6B8F5E]/5 -mr-48 -mt-48 pointer-events-none"></div>
+              <section className="relative overflow-hidden bg-gradient-to-b from-white to-[#F5F0E8]/20 py-20 sm:py-24 lg:py-28 border-b border-[#C4B89A]/30">
+                <div className="absolute top-0 right-0 w-[450px] h-[450px] rounded-full bg-[#6B8F5E]/3 -mr-32 -mt-32 blur-3xl pointer-events-none"></div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                  <div className="max-w-3xl mx-auto text-center">
-                    <span className="inline-block px-4 py-1.5 rounded-full bg-[#3B5C3A]/10 text-[#3B5C3A] text-sm font-bold tracking-tight mb-6">
+                  <div className="max-w-4xl mx-auto text-center">
+                    <span className="inline-block px-3.5 py-1 rounded-full bg-[#3B5C3A]/10 text-[#3B5C3A] text-xs font-semibold uppercase tracking-wider mb-6">
                       Community at the heart
                     </span>
-                    <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl text-[#3B5C3A] leading-tight tracking-tight mb-6">
-                      Living rurally shouldn't mean living without access to creativity, community, and connection.
+                    <h2 className="font-display text-3xl sm:text-4xl lg:text-[46px] lg:leading-[1.15] text-[#3B5C3A] tracking-tight mb-6 max-w-3xl mx-auto">
+                      Living rurally shouldn't mean living without access <br className="hidden lg:inline" /> to creativity, community, and connection.
                     </h2>
-                    <p className="text-lg text-gray-600 leading-relaxed mb-10 max-w-2xl mx-auto">
+                    <p className="text-base lg:text-lg text-gray-600 leading-relaxed mb-10 max-w-2xl mx-auto">
                       Weardale Together is a grassroots Community Interest Company (CIC) founded in Stanhope, serving over 500 individuals annually across the North Pennines. Through food, arts, play, and outdoor adventure, we connect hearts and homes.
                     </p>
-                    <div className="flex gap-4 justify-center flex-wrap">
-                      <a href="#interactive-hub" className="px-6 py-3 rounded-full font-bold bg-[#3B5C3A] text-white shadow-md hover:bg-[#6B8F5E] transition-all">
+                    <div className="flex gap-4 sm:gap-5 justify-center flex-wrap items-center">
+                      <a href="#interactive-hub" className="px-5.5 py-2.5 bg-[#3B5C3A] hover:bg-[#4A7249] text-white hover:text-white rounded-full font-semibold text-sm transition-all duration-200 shadow-sm hover:shadow">
                         Explore Our Strands
                       </a>
                       <button 
@@ -545,7 +545,7 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
                           const contactBlock = document.getElementById('contact-form-section');
                           contactBlock?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        className="px-6 py-3 rounded-full font-semibold border-2 border-[#3B5C3A] text-[#3B5C3A] hover:bg-[#3B5C3A]/5 transition-all"
+                        className="px-5.5 py-2.5 bg-transparent border border-[#3B5C3A]/40 hover:border-[#3B5C3A] text-[#3B5C3A] hover:bg-[#3B5C3A]/5 rounded-full font-semibold text-sm transition-all duration-200"
                       >
                         Visit Stanhope Hub
                       </button>
