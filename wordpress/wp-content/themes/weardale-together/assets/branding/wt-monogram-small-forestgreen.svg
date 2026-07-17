@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+    <!-- Hand-inked Organic Circle Boundary (Thicker stroke for low resolutions) -->
+    <path d="M50 8 C72.5 7.5, 92.5 25.8, 92 50 C91.5 73.2, 72.5 91.5, 50 91 C27.5 90.5, 8.5 73.2, 9 50 C9.5 25.8, 27.5 8.5, 50 8 Z" fill="none" stroke="#3B5C3A" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- Medium-weight W (Stroke-width 4.0, slightly shifted for better low-res pixel grid alignment) -->
+    <path d="M20 36 L26.5 66 L33 46 L39.5 66 L46 36" fill="none" stroke="#3B5C3A" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- Bold T (Stroke-width 8.0, clean and prominent at 16px/32px) -->
+    <path d="M51.5 36 H76.5 M64 36 V66" fill="none" stroke="#3B5C3A" stroke-width="8.0" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
