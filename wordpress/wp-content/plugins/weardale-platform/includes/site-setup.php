@@ -336,6 +336,7 @@ function weardale_platform_render_site_setup_page() {
     if ( isset( $_POST['wt_settings_nonce'] ) && wp_verify_nonce( $_POST['wt_settings_nonce'], 'wt_settings_action' ) ) {
         update_option( 'weardale_enquiry_enabled', sanitize_text_field( $_POST['weardale_enquiry_enabled'] ) );
         update_option( 'weardale_enquiry_recipient', sanitize_email( $_POST['weardale_enquiry_recipient'] ) );
+        update_option( 'weardale_volunteer_email', sanitize_email( $_POST['weardale_volunteer_email'] ) );
         update_option( 'weardale_enquiry_reply_to', sanitize_text_field( $_POST['weardale_enquiry_reply_to'] ) );
         update_option( 'weardale_enquiry_confirmation', sanitize_textarea_field( $_POST['weardale_enquiry_confirmation'] ) );
         update_option( 'weardale_mailchimp_url', esc_url_raw( $_POST['weardale_mailchimp_url'] ) );
@@ -372,6 +373,7 @@ function weardale_platform_render_site_setup_page() {
     // Retrieve settings
     $enquiry_enabled      = get_option( 'weardale_enquiry_enabled', 'yes' );
     $enquiry_recipient    = get_option( 'weardale_enquiry_recipient', get_option( 'admin_email' ) );
+    $volunteer_email      = get_option( 'weardale_volunteer_email', 'volunteers@weardaletogether.org.uk' );
     $enquiry_reply_to     = get_option( 'weardale_enquiry_reply_to', 'yes' );
     $enquiry_confirmation = get_option( 'weardale_enquiry_confirmation', __( 'Thank you for contacting Weardale Together. Your message has been received, and our team of volunteers and local staff will read it shortly. As a small, grassroots community organization, we appreciate your patience and will get back to you as soon as possible.', 'weardale-platform' ) );
     $mailchimp_url        = get_option( 'weardale_mailchimp_url' );
@@ -471,6 +473,13 @@ function weardale_platform_render_site_setup_page() {
                                     <td>
                                         <input type="email" id="weardale_enquiry_recipient" name="weardale_enquiry_recipient" class="regular-text" required value="<?php echo esc_attr( $enquiry_recipient ); ?>">
                                         <p class="description"><?php esc_html_e( 'All form submissions from visitors are validated, formatted, and emailed here.', 'weardale-platform' ); ?></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="weardale_volunteer_email"><?php esc_html_e( 'Volunteer Coordinator Email', 'weardale-platform' ); ?></label></th>
+                                    <td>
+                                        <input type="email" id="weardale_volunteer_email" name="weardale_volunteer_email" class="regular-text" value="<?php echo esc_attr( $volunteer_email ); ?>">
+                                        <p class="description"><?php esc_html_e( 'Recipient email address for volunteer registrations and enquiries.', 'weardale-platform' ); ?></p>
                                     </td>
                                 </tr>
                                 <tr>
@@ -682,6 +691,17 @@ function weardale_platform_render_site_setup_page() {
                                 echo '<li style="background: #fff8e1; border-left: 4px solid #ffb300; padding: 10px; font-size: 0.9rem; color: #5d4037; border-radius: 4px;">';
                                 echo '<strong>⚠️ ' . esc_html__( 'Contact Email Missing', 'weardale-platform' ) . ':</strong> ' . esc_html__( 'Public contact email address has not been set. Direct email triggers will fallback to hello@weardaletogether.org.uk.', 'weardale-platform' );
                                 echo '</li>';
+                            }
+
+                            // 6. Volunteer email missing check
+                            $volunteer_email_check = get_option( 'weardale_volunteer_email' );
+                            if ( empty( $volunteer_email_check ) ) {
+                                echo '<li style="background: #fde8e8; border-left: 4px solid #f8b4b4; padding: 10px; font-size: 0.9rem; color: #9b1c1c; border-radius: 4px;">';
+                                echo '<strong>⚠️ ' . esc_html__( 'Volunteer Email Missing', 'weardale-platform' ) . ':</strong> ' . esc_html__( 'Volunteer Coordinator email address has not been set. The on-site volunteer enquiry form will be disabled or in fallback mode.', 'weardale-platform' );
+                                echo '</li>';
+                            } else {
+                                echo '<li style="background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 10px; font-size: 0.9rem; color: #1b5e20; border-radius: 4px;">';
+                                echo '<strong>✅ ' . esc_html__( 'Volunteer Email Configured', 'weardale-platform' ) . ':</strong> ' . sprintf( esc_html__( 'Volunteer enquiries successfully route to %s.', 'weardale-platform' ), esc_html( $volunteer_email_check ) ) . '</li>';
                             }
                             ?>
                         </ul>

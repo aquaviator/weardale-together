@@ -87,6 +87,11 @@ function weardale_platform_validate_enquiry_context( $type, $id ) {
                 return $validated;
             }
             break;
+
+        case 'volunteer':
+            $validated['title'] = __( 'Volunteer Registration', 'weardale-platform' );
+            $validated['url']   = home_url( '/volunteer-with-us/' );
+            return $validated;
     }
 
     return null;
@@ -125,6 +130,12 @@ function weardale_platform_handle_enquiry_submission() {
     $context_type = isset( $_POST['wt_context_type'] ) ? sanitize_text_field( $_POST['wt_context_type'] ) : '';
     $context_id   = isset( $_POST['wt_context_id'] ) ? sanitize_text_field( $_POST['wt_context_id'] ) : '';
 
+    $interests    = isset( $_POST['wt_interests'] ) ? (array) $_POST['wt_interests'] : array();
+    $availability = isset( $_POST['wt_availability'] ) ? (array) $_POST['wt_availability'] : array();
+
+    $interests    = array_map( 'sanitize_text_field', $interests );
+    $availability = array_map( 'sanitize_text_field', $availability );
+
     // 4. Input validation
     $errors = array();
     if ( empty( $name ) ) {
@@ -134,10 +145,18 @@ function weardale_platform_handle_enquiry_submission() {
         $errors['wt_email'] = __( 'Please enter a valid email address.', 'weardale-platform' );
     }
     if ( empty( trim( $message ) ) ) {
-        $errors['wt_message'] = __( 'Please enter your message or enquiry details.', 'weardale-platform' );
+        if ( $context_type === 'volunteer' ) {
+            $errors['wt_message'] = __( 'Please tell us a little about yourself or your interests.', 'weardale-platform' );
+        } else {
+            $errors['wt_message'] = __( 'Please enter your message or enquiry details.', 'weardale-platform' );
+        }
     }
     if ( empty( $consent ) ) {
-        $errors['wt_consent'] = __( 'You must consent to our privacy terms to submit your message.', 'weardale-platform' );
+        if ( $context_type === 'volunteer' ) {
+            $errors['wt_consent'] = __( 'You must agree that Weardale Together may contact you regarding volunteering opportunities.', 'weardale-platform' );
+        } else {
+            $errors['wt_consent'] = __( 'You must consent to our privacy terms to submit your message.', 'weardale-platform' );
+        }
     }
 
     // Validate Context if supplied
@@ -146,8 +165,15 @@ function weardale_platform_handle_enquiry_submission() {
     }
 
     // 5. Check if contact/enquiry system is disabled or unconfigured
-    $recipient       = get_option( 'weardale_enquiry_recipient' );
     $enquiry_enabled = get_option( 'weardale_enquiry_enabled', 'yes' );
+    if ( $context_type === 'volunteer' ) {
+        $recipient = get_option( 'weardale_volunteer_email' );
+        if ( empty( $recipient ) ) {
+            $recipient = get_option( 'weardale_enquiry_recipient' );
+        }
+    } else {
+        $recipient = get_option( 'weardale_enquiry_recipient' );
+    }
 
     if ( $enquiry_enabled !== 'yes' || empty( $recipient ) || ! is_email( $recipient ) ) {
         $errors['general'] = __( 'Enquiries are temporarily disabled or unconfigured on this site. Please try calling or visiting in person.', 'weardale-platform' );
@@ -165,6 +191,8 @@ function weardale_platform_handle_enquiry_submission() {
                 'message'      => $message,
                 'context_type' => $context_type,
                 'context_id'   => $context_id,
+                'interests'    => $interests,
+                'availability' => $availability,
             ),
         );
         set_transient( 'weardale_feedback_' . $feedback_token, $feedback_data, 300 ); // 5 minutes expiry
@@ -192,6 +220,8 @@ function weardale_platform_handle_enquiry_submission() {
                     'message'      => $message,
                     'context_type' => $context_type,
                     'context_id'   => $context_id,
+                    'interests'    => $interests,
+                    'availability' => $availability,
                 ),
             );
             set_transient( 'weardale_feedback_' . $feedback_token, $feedback_data, 300 );
@@ -202,15 +232,19 @@ function weardale_platform_handle_enquiry_submission() {
     }
 
     // 7. Compose Email Message
-    $subject = sprintf( '[Weardale Together] New %s Enquiry', ucfirst( $context_type ?: 'General' ) );
-    
-    $resolved_context = weardale_platform_validate_enquiry_context( $context_type, $context_id );
-    $context_text     = 'General Website Enquiry / Contact';
-    if ( $resolved_context ) {
-        $context_text = sprintf( '%s (Type: %s, ID/Slug: %s)', $resolved_context['title'], ucfirst( $context_type ), $context_id );
+    if ( $context_type === 'volunteer' ) {
+        $subject = __( '[Weardale Together] New Volunteer Enquiry', 'weardale-platform' );
+        $context_text = __( 'Volunteer Registration Form Submission', 'weardale-platform' );
+    } else {
+        $subject = sprintf( '[Weardale Together] New %s Enquiry', ucfirst( $context_type ?: 'General' ) );
+        $resolved_context = weardale_platform_validate_enquiry_context( $context_type, $context_id );
+        $context_text     = 'General Website Enquiry / Contact';
+        if ( $resolved_context ) {
+            $context_text = sprintf( '%s (Type: %s, ID/Slug: %s)', $resolved_context['title'], ucfirst( $context_type ), $context_id );
+        }
     }
 
-    $body  = "Weardale Together - New Website Enquiry Received\n";
+    $body  = "Weardale Together - New Website Submission Received\n";
     $body .= "========================================================\n\n";
     $body .= "Enquiry Context: " . esc_html( $context_text ) . "\n";
     $body .= "Name:            " . esc_html( $name ) . "\n";
@@ -218,7 +252,21 @@ function weardale_platform_handle_enquiry_submission() {
     if ( ! empty( $phone ) ) {
         $body .= "Telephone:       " . esc_html( $phone ) . "\n";
     }
-    $body .= "Message Body:\n";
+
+    if ( $context_type === 'volunteer' ) {
+        if ( ! empty( $interests ) ) {
+            $body .= "Volunteering Interests:\n - " . implode( "\n - ", $interests ) . "\n\n";
+        } else {
+            $body .= "Volunteering Interests: None specified\n\n";
+        }
+        if ( ! empty( $availability ) ) {
+            $body .= "Availability:\n - " . implode( "\n - ", $availability ) . "\n\n";
+        } else {
+            $body .= "Availability: None specified\n\n";
+        }
+    }
+
+    $body .= "Message Body / About Yourself:\n";
     $body .= "--------------------------------------------------------\n";
     $body .= $message . "\n";
     $body .= "--------------------------------------------------------\n\n";
@@ -254,6 +302,8 @@ function weardale_platform_handle_enquiry_submission() {
                 'message'      => $message,
                 'context_type' => $context_type,
                 'context_id'   => $context_id,
+                'interests'    => $interests,
+                'availability' => $availability,
             ),
         );
         set_transient( 'weardale_feedback_' . $feedback_token, $feedback_data, 300 );
@@ -267,7 +317,19 @@ add_action( 'admin_post_weardale_submit_enquiry', 'weardale_platform_handle_enqu
 /**
  * Render inner enquiry form with active errors and old inputs
  */
-function weardale_platform_render_contact_form() {
+function weardale_platform_render_contact_form( $atts = array() ) {
+    // Parse attributes if called as a shortcode or direct helper
+    $args = array();
+    if ( is_array( $atts ) ) {
+        $args = shortcode_atts( array(
+            'type' => 'general',
+        ), $atts, 'weardale_contact_form' );
+    } else {
+        $args = array( 'type' => 'general' );
+    }
+
+    $form_type = $args['type'];
+
     $errors = array();
     $input  = array();
 
@@ -283,30 +345,60 @@ function weardale_platform_render_contact_form() {
 
     $is_success = isset( $_GET['enquiry_success'] ) && $_GET['enquiry_success'] === '1';
 
-    $recipient       = get_option( 'weardale_enquiry_recipient' );
+    // Determine delivery recipient to verify configuration
+    if ( $form_type === 'volunteer' ) {
+        $recipient = get_option( 'weardale_volunteer_email' );
+        if ( empty( $recipient ) ) {
+            $recipient = get_option( 'weardale_enquiry_recipient' );
+        }
+    } else {
+        $recipient = get_option( 'weardale_enquiry_recipient' );
+    }
     $enquiry_enabled = get_option( 'weardale_enquiry_enabled', 'yes' );
 
     ob_start();
 
     // Check if configuration exists
     if ( $enquiry_enabled !== 'yes' || empty( $recipient ) || ! is_email( $recipient ) ) {
-        ?>
-        <div class="card" style="background-color: var(--color-cream); border: 2px dashed var(--color-tan); padding: 2.5rem; border-radius: var(--border-radius-md); text-align: center; max-width: 600px; margin: 0 auto;">
-            <span style="font-size: 2.5rem; display: block; margin-bottom: 1rem;" role="img" aria-label="Maintenance">🕒</span>
-            <h3 class="font-display" style="font-size: 1.5rem; color: var(--color-forest); margin: 0 0 0.5rem 0; font-weight: normal;">
-                <?php esc_html_e( 'Online Enquiries Temporarily Offline', 'weardale-platform' ); ?>
-            </h3>
-            <p style="margin: 0; line-height: 1.5; color: var(--text-secondary); font-size: 1rem;">
-                <?php esc_html_e( 'Our online enquiry system is currently undergoing standard maintenance. Please reach out to us by phone or visit us in person at the Stanhope Hub. We appreciate your patience!', 'weardale-platform' ); ?>
-            </p>
-        </div>
-        <?php
+        if ( $form_type === 'volunteer' ) {
+            $fallback_email = $recipient ?: get_option( 'weardale_contact_email', 'hello@weardaletogether.org.uk' );
+            ?>
+            <div class="card" style="background-color: var(--color-cream); border: 2px dashed var(--color-tan); padding: 2.5rem; border-radius: var(--border-radius-md); text-align: center; max-width: 600px; margin: 0 auto;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 1rem;" role="img" aria-label="Maintenance">🕒</span>
+                <h3 class="font-display" style="font-size: 1.5rem; color: var(--color-forest); margin: 0 0 0.5rem 0; font-weight: normal;">
+                    <?php esc_html_e( 'Online Volunteer Enquiries Offline', 'weardale-platform' ); ?>
+                </h3>
+                <p style="margin: 0 0 1.5rem 0; line-height: 1.5; color: var(--text-secondary); font-size: 1rem;">
+                    <?php esc_html_e( 'Our online volunteer enquiry system is currently unavailable. However, we are always eager to welcome new volunteers into the Weardale Together family!', 'weardale-platform' ); ?>
+                </p>
+                <p style="margin: 0; line-height: 1.5; color: var(--text-primary); font-size: 1.05rem; font-weight: bold;">
+                    <?php printf( esc_html__( 'Please contact us directly by email at: %s', 'weardale-platform' ), '<a href="mailto:' . esc_attr( $fallback_email ) . '" style="color: var(--color-forest); text-decoration: underline;">' . esc_html( $fallback_email ) . '</a>' ); ?>
+                </p>
+            </div>
+            <?php
+        } else {
+            ?>
+            <div class="card" style="background-color: var(--color-cream); border: 2px dashed var(--color-tan); padding: 2.5rem; border-radius: var(--border-radius-md); text-align: center; max-width: 600px; margin: 0 auto;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 1rem;" role="img" aria-label="Maintenance">🕒</span>
+                <h3 class="font-display" style="font-size: 1.5rem; color: var(--color-forest); margin: 0 0 0.5rem 0; font-weight: normal;">
+                    <?php esc_html_e( 'Online Enquiries Temporarily Offline', 'weardale-platform' ); ?>
+                </h3>
+                <p style="margin: 0; line-height: 1.5; color: var(--text-secondary); font-size: 1rem;">
+                    <?php esc_html_e( 'Our online enquiry system is currently undergoing standard maintenance. Please reach out to us by phone or visit us in person at the Stanhope Hub. We appreciate your patience!', 'weardale-platform' ); ?>
+                </p>
+            </div>
+            <?php
+        }
         return ob_get_clean();
     }
 
     // Success State
     if ( $is_success ) {
-        $conf_message = get_option( 'weardale_enquiry_confirmation', __( 'Thank you for contacting Weardale Together. Your message has been received, and our team of volunteers and local staff will read it shortly. As a small, grassroots community organization, we appreciate your patience and will get back to you as soon as possible.', 'weardale-platform' ) );
+        if ( $form_type === 'volunteer' ) {
+            $conf_message = __( 'Thank you for getting in touch. A member of the Weardale Together team will contact you soon to discuss volunteering opportunities.', 'weardale-platform' );
+        } else {
+            $conf_message = get_option( 'weardale_enquiry_confirmation', __( 'Thank you for contacting Weardale Together. Your message has been received, and our team of volunteers and local staff will read it shortly. As a small, grassroots community organization, we appreciate your patience and will get back to you as soon as possible.', 'weardale-platform' ) );
+        }
         ?>
         <div id="enquiry-success-message" role="status" class="card" style="background-color: #f0fdf4; border: 2px solid #16a34a; padding: 2.5rem; border-radius: var(--border-radius-md); text-align: center; max-width: 600px; margin: 0 auto; box-shadow: var(--shadow-sm);" tabindex="-1">
             <span style="font-size: 2.5rem; display: block; margin-bottom: 1rem;" role="img" aria-label="Success">💚</span>
@@ -328,11 +420,16 @@ function weardale_platform_render_contact_form() {
     }
 
     // Extract Context
-    $type = isset( $input['context_type'] ) ? $input['context_type'] : ( isset( $_GET['enquiry_type'] ) ? sanitize_text_field( $_GET['enquiry_type'] ) : '' );
-    $id   = isset( $input['context_id'] ) ? $input['context_id'] : ( isset( $_GET['enquiry_id'] ) ? sanitize_text_field( $_GET['enquiry_id'] ) : '' );
+    if ( $form_type === 'volunteer' ) {
+        $type = 'volunteer';
+        $id   = 'general';
+    } else {
+        $type = isset( $input['context_type'] ) ? $input['context_type'] : ( isset( $_GET['enquiry_type'] ) ? sanitize_text_field( $_GET['enquiry_type'] ) : '' );
+        $id   = isset( $input['context_id'] ) ? $input['context_id'] : ( isset( $_GET['enquiry_id'] ) ? sanitize_text_field( $_GET['enquiry_id'] ) : '' );
+    }
 
     $validated             = weardale_platform_validate_enquiry_context( $type, $id );
-    $display_context_title = $validated ? $validated['title'] : '';
+    $display_context_title = ( $validated && $form_type !== 'volunteer' ) ? $validated['title'] : '';
 
     $old_name    = isset( $input['name'] ) ? esc_attr( $input['name'] ) : '';
     $old_email   = isset( $input['email'] ) ? esc_attr( $input['email'] ) : '';
@@ -435,11 +532,93 @@ function weardale_platform_render_contact_form() {
                        style="padding: 0.75rem 1rem; border: 1px solid var(--color-tan); border-radius: var(--border-radius-sm); font-size: 1rem; width: 100%; background-color: var(--color-white);">
             </div>
 
+            <?php if ( $form_type === 'volunteer' ) : ?>
+                <!-- Volunteering Interests -->
+                <?php
+                $default_interests = array(
+                    'cafe'         => __( 'Café Support', 'weardale-platform' ),
+                    'arts'         => __( 'Creative Arts', 'weardale-platform' ),
+                    'youth'        => __( 'Young People', 'weardale-platform' ),
+                    'events'       => __( 'Events', 'weardale-platform' ),
+                    'gardening'    => __( 'Gardening', 'weardale-platform' ),
+                    'admin'        => __( 'Administration', 'weardale-platform' ),
+                    'transport'    => __( 'Driving / Transport', 'weardale-platform' ),
+                    'community'    => __( 'General Community Support', 'weardale-platform' ),
+                    'discuss'      => __( 'Happy to discuss opportunities', 'weardale-platform' ),
+                );
+                $interests_options = apply_filters( 'weardale_volunteer_interests', $default_interests );
+                $old_interests = isset( $input['interests'] ) ? (array) $input['interests'] : array();
+                ?>
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <span id="wt_interests_label" style="font-weight: 600; font-family: var(--font-headings); color: var(--color-forest); font-size: 1.05rem; display: block;">
+                        <?php esc_html_e( 'Volunteering Interests', 'weardale-platform' ); ?>
+                    </span>
+                    <div class="checkbox-grid" style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;" role="group" aria-labelledby="wt_interests_label">
+                        <style>
+                            @media (min-width: 640px) {
+                                .checkbox-grid {
+                                    grid-template-columns: 1fr 1fr !important;
+                                }
+                            }
+                        </style>
+                        <?php foreach ( $interests_options as $key => $label ) : ?>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; cursor: pointer; color: var(--text-primary);">
+                                <input type="checkbox" name="wt_interests[]" value="<?php echo esc_attr( $label ); ?>" <?php checked( in_array( $label, $old_interests ) ); ?>>
+                                <span><?php echo esc_html( $label ); ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- Availability -->
+                <?php
+                $default_availability = array(
+                    'weekdays' => __( 'Weekdays', 'weardale-platform' ),
+                    'evenings' => __( 'Evenings', 'weardale-platform' ),
+                    'weekends' => __( 'Weekends', 'weardale-platform' ),
+                    'flexible' => __( 'Flexible', 'weardale-platform' ),
+                );
+                $availability_options = apply_filters( 'weardale_volunteer_availability', $default_availability );
+                $old_availability = isset( $input['availability'] ) ? (array) $input['availability'] : array();
+                ?>
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <span id="wt_availability_label" style="font-weight: 600; font-family: var(--font-headings); color: var(--color-forest); font-size: 1.05rem; display: block;">
+                        <?php esc_html_e( 'Availability', 'weardale-platform' ); ?>
+                    </span>
+                    <div class="availability-grid" style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;" role="group" aria-labelledby="wt_availability_label">
+                        <style>
+                            @media (min-width: 640px) {
+                                .availability-grid {
+                                    grid-template-columns: 1fr 1fr 1fr 1fr !important;
+                                }
+                            }
+                        </style>
+                        <?php foreach ( $availability_options as $key => $label ) : ?>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; cursor: pointer; color: var(--text-primary);">
+                                <input type="checkbox" name="wt_availability[]" value="<?php echo esc_attr( $label ); ?>" <?php checked( in_array( $label, $old_availability ) ); ?>>
+                                <span><?php echo esc_html( $label ); ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+
             <!-- Message -->
             <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
                 <label for="wt_message" style="font-weight: 600; font-family: var(--font-headings); color: var(--color-forest); font-size: 1.05rem;">
-                    <?php esc_html_e( 'Your Message', 'weardale-platform' ); ?> <span style="color: #b91c1c;" aria-hidden="true">*</span>
+                    <?php 
+                    if ( $form_type === 'volunteer' ) {
+                        esc_html_e( 'Tell us about yourself', 'weardale-platform' );
+                    } else {
+                        esc_html_e( 'Your Message', 'weardale-platform' );
+                    }
+                    ?> <span style="color: #b91c1c;" aria-hidden="true">*</span>
                 </label>
+                <?php if ( $form_type === 'volunteer' ) : ?>
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.4;">
+                        <?php esc_html_e( "Tell us a little about yourself, your interests, or any experience you'd like to share.", 'weardale-platform' ); ?>
+                    </p>
+                <?php endif; ?>
                 <textarea name="wt_message" id="wt_message" rows="5" class="input-textarea" required
                           style="padding: 0.75rem 1rem; border: 1px solid var(--color-tan); border-radius: var(--border-radius-sm); font-size: 1rem; width: 100%; font-family: inherit; line-height: 1.5; background-color: var(--color-white);"
                           <?php echo isset( $errors['wt_message'] ) ? 'aria-invalid="true" aria-describedby="wt_message_error"' : ''; ?>><?php echo $old_message; ?></textarea>
@@ -459,14 +638,18 @@ function weardale_platform_render_contact_form() {
                         <strong><?php esc_html_e( 'Consent to Contact', 'weardale-platform' ); ?></strong> <span style="color: #b91c1c;" aria-hidden="true">*</span><br>
                         <span style="color: var(--text-secondary);">
                             <?php 
-                            $privacy_link = weardale_platform_get_legal_page_url( 'weardale_legal_privacy_page' );
-                            printf(
-                                wp_kses(
-                                    __( 'I agree that Weardale Together may use the details submitted in this form to respond to my enquiry, in accordance with the <a href="%s" target="_blank" style="color: var(--color-forest); text-decoration: underline;">Privacy Notice</a>. (Subject to client/legal approval)', 'weardale-platform' ),
-                                    array( 'a' => array( 'href' => array(), 'target' => array(), 'style' => array() ) )
-                                ),
-                                esc_url( $privacy_link )
-                            ); 
+                            if ( $form_type === 'volunteer' ) {
+                                esc_html_e( 'I agree that Weardale Together may contact me regarding volunteering opportunities.', 'weardale-platform' );
+                            } else {
+                                $privacy_link = weardale_platform_get_legal_page_url( 'weardale_legal_privacy_page' );
+                                printf(
+                                    wp_kses(
+                                        __( 'I agree that Weardale Together may use the details submitted in this form to respond to my enquiry, in accordance with the <a href="%s" target="_blank" style="color: var(--color-forest); text-decoration: underline;">Privacy Notice</a>. (Subject to client/legal approval)', 'weardale-platform' ),
+                                        array( 'a' => array( 'href' => array(), 'target' => array(), 'style' => array() ) )
+                                    ),
+                                    esc_url( $privacy_link )
+                                ); 
+                            }
                             ?>
                         </span>
                     </div>
@@ -751,7 +934,7 @@ function weardale_platform_render_volunteer_page() {
         </div>
 
         <!-- Enquiry Form block -->
-        <div style="background-color: var(--color-cream); border: 1px solid var(--color-tan); border-radius: var(--border-radius-md); padding: 3rem 2rem;">
+        <div id="volunteer-enquiry" style="background-color: var(--color-cream); border: 1px solid var(--color-tan); border-radius: var(--border-radius-md); padding: 3rem 2rem;">
             <h2 class="font-display" style="font-size: 1.85rem; color: var(--color-forest); margin-top: 0; margin-bottom: 0.5rem; text-align: center; font-weight: normal;">
                 🙋‍♀️ <?php esc_html_e( 'Volunteer Enquiry Form', 'weardale-platform' ); ?>
             </h2>
@@ -759,12 +942,7 @@ function weardale_platform_render_volunteer_page() {
                 <?php esc_html_e( 'Interested in helping? Fill out this short, confidential enquiry. We gather minimal data and will never share your details.', 'weardale-platform' ); ?>
             </p>
             <?php
-            // Temporarily flag a programme context on the form render
-            $_GET['enquiry_type'] = 'programme';
-            $_GET['enquiry_id']   = 'young-people';
-            echo weardale_platform_render_contact_form();
-            unset( $_GET['enquiry_type'] );
-            unset( $_GET['enquiry_id'] );
+            echo weardale_platform_render_contact_form( array( 'type' => 'volunteer' ) );
             ?>
         </div>
 
