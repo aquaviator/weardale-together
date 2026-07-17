@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 20" width="100%" height="20" role="img" aria-label="Organic section break">
-  <title>Handcrafted Section Divider</title>
-  <!-- A gently waving, imperfect horizontal line in Warm Tan -->
-  <path d="M 10,10 Q 80,15 150,8 T 300,12 T 420,7 T 490,10" fill="none" stroke="#C4B89A" stroke-width="2" stroke-linecap="round" stroke-dasharray="8 4 20 6 12 4" />
-  <!-- Three central organic dots (seeds/pebbles motif) in Forest Green -->
-  <circle cx="235" cy="10" r="2.5" fill="#3B5C3A" />
-  <circle cx="250" cy="9" r="3.5" fill="#3B5C3A" />
-  <circle cx="265" cy="11" r="2" fill="#3B5C3A" />
-</svg>

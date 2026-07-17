@@ -9,22 +9,35 @@
     --color-tan: #C4B89A;
     --color-black: #2C2C2A;
     --color-white: #FFFFFF;
+
+    /* Mandatory Brand CSS Design Tokens */
+    --wt-cream: #F5F0E8;       /* Primary page backgrounds */
+    --wt-forest-green: #3B5C3A; /* Primary headers, key UI, primary branding */
+    --wt-sage-green: #6B8F5E;   /* Secondary accents, hover states, subtle borders */
+    --wt-tan: #C4B89A;          /* Tertiary accents, UI borders, section dividers */
+    --wt-near-black: #2C2C2A;   /* Body text, high-contrast readability (Never use #000000) */
     
-    /* Strand Accent Colors */
+    /* Strand Accent Colors (Pre-existing mappings) */
     --color-strand-cafe: #C4956A;        /* Sandy warm */
     --color-strand-creative: #E8A020;    /* Golden amber */
     --color-strand-youth: #E8962A;       /* Bold amber */
     --color-strand-shoots: #D4826A;      /* Soft terracotta */
+
+    /* Mandatory Strand-Specific Accent Colors */
+    --strand-cafe: #C4956A;          /* Root & Branch Café: Warm, sandy, informal */
+    --strand-creative: #E8A020;      /* Creative Roots: Golden amber base (seasonal wash system) */
+    --strand-youth: #E8962A;         /* Young People: High-energy bold amber, vivid yellow/green */
+    --strand-roots-shoots: #D4826A;  /* Roots & Shoots: Gentle soft terracotta, pink/sage tints */
     
     /* Functional Colors */
-    --bg-primary: var(--color-cream);
-    --text-primary: var(--color-black);
+    --bg-primary: var(--wt-cream);
+    --text-primary: var(--wt-near-black);
     --text-secondary: #55534F;
     --text-light: #7E7B74;
-    --border-color: var(--color-tan);
+    --border-color: var(--wt-tan);
     
     /* Typography */
-    --font-headings: "Yeseva One", Georgia, serif;
+    --font-headings: "Playfair Display", "Yeseva One", Georgia, serif;
     --font-body: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
     --font-mono: "Courier New", Courier, monospace;
     
