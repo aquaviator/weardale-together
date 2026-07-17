@@ -2,54 +2,196 @@
  * Design System Variables for Weardale Together
  */
 :root {
-    /* Core Color Palette */
-    --color-cream: #F5F0E8;
-    --color-forest: #3B5C3A;
-    --color-sage: #6B8F5E;
-    --color-tan: #C4B89A;
-    --color-black: #2C2C2A;
-    --color-white: #FFFFFF;
+    /* ==========================================================================
+       PRODUCTION DESIGN TOKENS (--wt-*)
+       ========================================================================== */
 
-    /* Mandatory Brand CSS Design Tokens */
-    --wt-cream: #F5F0E8;       /* Primary page backgrounds */
-    --wt-forest-green: #3B5C3A; /* Primary headers, key UI, primary branding */
-    --wt-sage-green: #6B8F5E;   /* Secondary accents, hover states, subtle borders */
-    --wt-tan: #C4B89A;          /* Tertiary accents, UI borders, section dividers */
-    --wt-near-black: #2C2C2A;   /* Body text, high-contrast readability (Never use #000000) */
-    
+    /* 
+     * 1. CORE COLOURS
+     * Purpose: Primary brand identity for Weardale Together.
+     * Usage: Used for primary brand presence, key headers, organizational structures.
+     */
+    --wt-color-forest: #3B5C3A; /* Forest Green - Primary organization identity, headers, main branding */
+    --wt-color-sage: #6B8F5E;   /* Sage Green - Secondary accents, active states, hover indicators, subtle borders */
+    --wt-color-tan: #C4B89A;    /* Tan - Structural bounds, tactile dividers, secondary borders */
+    --wt-color-cream: #F5F0E8;  /* Cream - Dominant page/section background, warmth indicator */
+
+    /* 
+     * 2. NEUTRAL COLOURS
+     * Purpose: High-contrast legible typographic scales and standard functional UI bases.
+     * Usage: Typography, high-contrast states, white containment backgrounds.
+     */
+    --wt-color-white: #FFFFFF;          /* Pure White - Container surfaces, inputs, structural blocks */
+    --wt-color-near-black: #2C2C2A;     /* Off-Black/Charcoal - Maximum contrast body typography and main heading color */
+    --wt-color-text-secondary: #55534F; /* Mid-Gray - Standard description texts, sub-headers, meta-info */
+    --wt-color-text-light: #7E7B74;     /* Light-Gray - Disabled input labels, captions, metadata tags */
+
+    /* 
+     * 3. PROGRAMME COLOURS (STRANDS)
+     * Purpose: Captures the individual personality of each Weardale community program (the "rooms").
+     * Usage: Apply as color accents, labels, and themed backgrounds to strand-specific pages or cards.
+     */
+    --wt-color-strand-cafe: #C4956A;       /* Warm Sand - Root & Branch Café: Cozy, warm, informal, hospitable */
+    --wt-color-strand-creative: #E8A020;   /* Golden Amber - Creative Roots: Bright, cultural, expressive */
+    --wt-color-strand-youth: #E8962A;      /* Bold Amber - Young People: Vibrant, high-energy, active */
+    --wt-color-strand-shoots: #D4826A;     /* Soft Terracotta - Roots & Shoots: Gentle, botanical, grounded */
+
+    /* 
+     * 4. TYPOGRAPHY
+     * Purpose: Editorial and body font families paired for an elegant, warm, rural, handcrafted feel.
+     * Usage: --wt-font-family-headings for storytelling typography, --wt-font-family-body for high-readability copy.
+     */
+    --wt-font-family-headings: "Playfair Display", "Yeseva One", Georgia, serif;
+    --wt-font-family-body: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    --wt-font-family-mono: "Courier New", Courier, monospace;
+
+    /* Typographic Scales (Standard proportional hierarchy) */
+    --wt-font-size-xs: 0.75rem;    /* 12px - Captions, status badges */
+    --wt-font-size-sm: 0.875rem;   /* 14px - Meta details, buttons, small labels */
+    --wt-font-size-base: 1rem;     /* 16px - Base body copy */
+    --wt-font-size-md: 1.125rem;   /* 18px - Lead paragraphs, quote accents */
+    --wt-font-size-lg: 1.25rem;    /* 20px - Subsections, card titles */
+    --wt-font-size-xl: 1.5rem;     /* 24px - Section headers */
+    --wt-font-size-2xl: 2rem;      /* 32px - Module titles */
+    --wt-font-size-3xl: 2.5rem;    /* 40px - Main Hero / Page Titles */
+
+    /* Typographic Weights */
+    --wt-font-weight-normal: 400;
+    --wt-font-weight-medium: 500;
+    --wt-font-weight-semibold: 600;
+    --wt-font-weight-bold: 700;
+
+    /* 
+     * 5. SPACING
+     * Purpose: Tactile spatial rhythm system based on standard modular increments.
+     * Usage: Margin, padding, gap, absolute positional offsets.
+     */
+    --wt-space-1: 0.25rem;  /* 4px - Micro-adjustments, button-icon gaps */
+    --wt-space-2: 0.5rem;   /* 8px - Secondary gaps, tight vertical structures */
+    --wt-space-3: 0.75rem;  /* 12px - Card/block internal text groupings */
+    --wt-space-4: 1rem;     /* 16px - Default gutters, standard margins & paddings */
+    --wt-space-5: 1.5rem;   /* 24px - Generous padding inside cards & components */
+    --wt-space-6: 2rem;     /* 32px - Layout blocks, section column gaps */
+    --wt-space-7: 3rem;     /* 48px - Generous structural margins, module breaks */
+    --wt-space-8: 4rem;     /* 64px - Deep section separators */
+
+    /* 
+     * 6. BORDER RADIUS
+     * Purpose: Rounded boundaries accentuating a warm, organic, hand-crafted feel.
+     * Usage: Borders, container edges, input rounded outlines.
+     */
+    --wt-radius-sm: 4px;      /* Sharp - Form inputs, action tabs, tag badges */
+    --wt-radius-md: 12px;     /* Organic - Standard cards, block containers, buttons */
+    --wt-radius-lg: 24px;     /* Highly rounded - Large content blocks, promo modules, banners */
+    --wt-radius-pill: 9999px; /* Circle - Badges, round avatars, pill shapes */
+
+    /* 
+     * 7. SHADOWS
+     * Purpose: Warm, low-contrast ambient shadows to replace default cold gray styling.
+     * Usage: Overlay elevation, hover depth on interactive cards.
+     */
+    --wt-shadow-sm: 0 1px 3px rgba(44, 44, 42, 0.05);   /* Structural border replacement */
+    --wt-shadow-md: 0 4px 12px rgba(44, 44, 42, 0.08);  /* Interactive cards and headers */
+    --wt-shadow-lg: 0 12px 24px rgba(44, 44, 42, 0.12); /* Interactive overlays, drawers, flyouts */
+
+    /* 
+     * 8. TRANSITIONS & MOTION
+     * Purpose: Standard ease-in-out and playful curves for responsive interaction.
+     * Usage: Hover effects, active state animations.
+     */
+    --wt-transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --wt-transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* 
+     * 9. LAYOUT
+     * Purpose: Structural bounds of major page grids.
+     * Usage: Restricting administrative panels, column systems.
+     */
+    --wt-layout-sidebar-width: 280px;
+    --wt-layout-header-height: 80px;
+
+    /* 
+     * 10. CONTAINER WIDTHS
+     * Purpose: Content reading-width layout boundaries.
+     * Usage: Centered sections, single column layouts.
+     */
+    --wt-container-max: 1200px;
+    --wt-container-narrow: 800px;
+
+    /* 
+     * 11. Z-INDEX
+     * Purpose: Maintain an ordered layout stacking order.
+     * Usage: Ensuring overlays, dropdowns, sticky components render in priority.
+     */
+    --wt-z-below: -1;
+    --wt-z-base: 1;
+    --wt-z-dropdown: 100;
+    --wt-z-sticky: 200;
+    --wt-z-overlay: 300;
+    --wt-z-modal: 400;
+
+    /* 
+     * 12. MOTION DURATIONS
+     * Purpose: Timing guidelines for transitions.
+     * Usage: Timing classes, animation animations.
+     */
+    --wt-motion-duration-fast: 150ms;
+    --wt-motion-duration-normal: 300ms;
+    --wt-motion-duration-slow: 500ms;
+
+
+    /* ==========================================================================
+       BACKWARDS COMPATIBILITY MAPPINGS
+       ========================================================================== */
+
+    /* Core Color Palette Mappings */
+    --color-cream: var(--wt-color-cream);
+    --color-forest: var(--wt-color-forest);
+    --color-sage: var(--wt-color-sage);
+    --color-tan: var(--wt-color-tan);
+    --color-black: var(--wt-color-near-black);
+    --color-white: var(--wt-color-white);
+
+    /* Brand Tokens Mappings */
+    --wt-cream: var(--wt-color-cream);
+    --wt-forest-green: var(--wt-color-forest);
+    --wt-sage-green: var(--wt-color-sage);
+    --wt-tan: var(--wt-color-tan);
+    --wt-near-black: var(--wt-color-near-black);
+
     /* Strand Accent Colors (Pre-existing mappings) */
-    --color-strand-cafe: #C4956A;        /* Sandy warm */
-    --color-strand-creative: #E8A020;    /* Golden amber */
-    --color-strand-youth: #E8962A;       /* Bold amber */
-    --color-strand-shoots: #D4826A;      /* Soft terracotta */
+    --color-strand-cafe: var(--wt-color-strand-cafe);
+    --color-strand-creative: var(--wt-color-strand-creative);
+    --color-strand-youth: var(--wt-color-strand-youth);
+    --color-strand-shoots: var(--wt-color-strand-shoots);
 
     /* Mandatory Strand-Specific Accent Colors */
-    --strand-cafe: #C4956A;          /* Root & Branch Café: Warm, sandy, informal */
-    --strand-creative: #E8A020;      /* Creative Roots: Golden amber base (seasonal wash system) */
-    --strand-youth: #E8962A;         /* Young People: High-energy bold amber, vivid yellow/green */
-    --strand-roots-shoots: #D4826A;  /* Roots & Shoots: Gentle soft terracotta, pink/sage tints */
-    
-    /* Functional Colors */
+    --strand-cafe: var(--wt-color-strand-cafe);
+    --strand-creative: var(--wt-color-strand-creative);
+    --strand-youth: var(--wt-color-strand-youth);
+    --strand-roots-shoots: var(--wt-color-strand-shoots);
+
+    /* Functional Colors Mappings */
     --bg-primary: var(--wt-cream);
     --text-primary: var(--wt-near-black);
-    --text-secondary: #55534F;
-    --text-light: #7E7B74;
+    --text-secondary: var(--wt-color-text-secondary);
+    --text-light: var(--wt-color-text-light);
     --border-color: var(--wt-tan);
-    
-    /* Typography */
-    --font-headings: "Playfair Display", "Yeseva One", Georgia, serif;
-    --font-body: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-    --font-mono: "Courier New", Courier, monospace;
-    
-    /* Transitions & Borders */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --border-radius-sm: 4px;
-    --border-radius-md: 12px;
-    --border-radius-lg: 24px;
-    --border-radius-pill: 9999px;
-    
-    /* Spacing & Widths */
-    --container-max-width: 1200px;
-    --container-narrow-width: 800px;
+
+    /* Typography Mappings */
+    --font-headings: var(--wt-font-family-headings);
+    --font-body: var(--wt-font-family-body);
+    --font-mono: var(--wt-font-family-mono);
+
+    /* Transitions & Borders Mappings */
+    --transition-smooth: var(--wt-transition-smooth);
+    --transition-bounce: var(--wt-transition-bounce);
+    --border-radius-sm: var(--wt-radius-sm);
+    --border-radius-md: var(--wt-radius-md);
+    --border-radius-lg: var(--wt-radius-lg);
+    --border-radius-pill: var(--wt-radius-pill);
+
+    /* Spacing & Widths Mappings */
+    --container-max-width: var(--wt-container-max);
+    --container-narrow-width: var(--wt-container-narrow);
 }
