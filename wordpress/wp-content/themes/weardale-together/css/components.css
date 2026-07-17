@@ -45,6 +45,50 @@
     border-radius: var(--border-radius-sm);
 }
 
+/* Styling for "What's On" high-contrast CTA on Desktop */
+@media (min-width: 1121px) {
+    .main-navigation li.cta-nav > a,
+    .main-navigation a[href*="whats-on"],
+    .main-navigation a[href*="whats-happening"],
+    .main-navigation a[href*="weardale_event"] {
+        background-color: var(--color-forest) !important;
+        color: var(--color-cream) !important;
+        padding: 0.45rem 1.25rem !important;
+        border-radius: 9999px !important;
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        border-bottom: none !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        margin-left: 0.25rem;
+        transition: all 0.2s ease !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        line-height: 1.2 !important;
+    }
+
+    .main-navigation li.cta-nav > a::after,
+    .main-navigation a[href*="whats-on"]::after,
+    .main-navigation a[href*="whats-happening"]::after,
+    .main-navigation a[href*="weardale_event"]::after {
+        display: none !important;
+    }
+
+    .main-navigation li.cta-nav > a:hover,
+    .main-navigation li.cta-nav > a:focus,
+    .main-navigation a[href*="whats-on"]:hover,
+    .main-navigation a[href*="whats-on"]:focus,
+    .main-navigation a[href*="whats-happening"]:hover,
+    .main-navigation a[href*="whats-happening"]:focus,
+    .main-navigation a[href*="weardale_event"]:hover,
+    .main-navigation a[href*="weardale_event"]:focus {
+        background-color: #6B8F5E !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border-bottom: none !important;
+        text-decoration: none !important;
+    }
+}
+
 /* Dropdown Indicators for Desktop (CSS-only Chevron) */
 .main-navigation .menu-item-has-children > a::after {
     content: "";
@@ -76,7 +120,8 @@
     border: 1px solid var(--color-tan);
     border-radius: var(--border-radius-md);
     box-shadow: 0 10px 30px rgba(59, 92, 58, 0.1);
-    padding: 0.5rem 0;
+    padding: 0.5rem 0 !important;
+    margin: 0 !important;
     min-width: 200px;
     display: none;
     flex-direction: column;
@@ -86,6 +131,8 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    list-style: none !important;
+    list-style-type: none !important;
 }
 
 /* Show Sub-menu on Hover/Focus */
@@ -100,6 +147,16 @@
 /* Sub-menu Item Styling */
 .main-navigation .sub-menu li {
     width: 100%;
+    list-style: none !important;
+    list-style-type: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.main-navigation .sub-menu li::before,
+.main-navigation .sub-menu li::after {
+    content: none !important;
+    display: none !important;
 }
 
 .main-navigation .sub-menu a {
