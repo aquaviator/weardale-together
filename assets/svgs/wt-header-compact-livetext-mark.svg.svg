@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="48" height="48" role="img" aria-label="Weardale Together circular mark for live text header">
+  <title>Header Live-Text Icon Mark</title>
+  <!-- Main Deep Forest Green watercolour-style circular wash -->
+  <path d="M 30,3 C 47,2 58,15 57,31 C 56,47 44,58 28,57 C 12,56 2,45 3,29 C 4,13 14,4 30,3 Z" fill="#3B5C3A" />
+  <!-- Secondary inner Sage Green ring for handcrafted texture -->
+  <path d="M 30,7 C 44,6 53,16 52,31 C 51,45 41,53 28,52 C 15,51 7,41 8,28 C 9,15 17,8 30,7 Z" fill="#6B8F5E" opacity="0.4" />
+  <!-- Subtle central Warm Cream intersecting rings symbolizing "Together" -->
+  <circle cx="25" cy="30" r="10" fill="none" stroke="#F5F0E8" stroke-width="1.8" opacity="0.8" />
+  <circle cx="35" cy="30" r="10" fill="none" stroke="#F5F0E8" stroke-width="1.8" opacity="0.8" />
+</svg>

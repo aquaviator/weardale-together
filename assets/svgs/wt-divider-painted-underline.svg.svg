@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 16" width="100%" height="16" role="img" aria-label="Weardale Together organic painted underline">
+  <title>Painted Underline Divider</title>
+  <!-- Main organic brush sweep in Deep Forest Green -->
+  <path d="M 3,10 Q 50,4 120,8 T 240,6 Q 280,5 297,8 Q 298,11 294,12 Q 250,14 180,11 T 60,13 Q 20,14 3,12 Z" fill="#3B5C3A" opacity="0.9" />
+  <!-- Secondary Sage Green tonal variation layer to simulate watercolour depth -->
+  <path d="M 8,8 Q 70,5 150,9 T 285,7 Q 290,9 285,10 Q 200,12 120,9 T 10,10 Z" fill="#6B8F5E" opacity="0.6" />
+</svg>
