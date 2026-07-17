@@ -1,8 +1,11 @@
-/**
- * Typography and Text Formatting
- */
+/* ==========================================================================
+   1. FONT IMPORTS
+   ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Yeseva+One&display=swap');
 
+/* ==========================================================================
+   2. BASE TYPOGRAPHY
+   ========================================================================== */
 body {
     font-family: var(--wt-font-family-body);
     font-size: var(--wt-font-size-md); /* 1.125rem / 18px */
@@ -12,6 +15,15 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+p {
+    margin-top: 0;
+    margin-bottom: 1.6rem;
+    line-height: 1.7;
+}
+
+/* ==========================================================================
+   3. HEADINGS
+   ========================================================================== */
 h1, h2, h3, h4, h5, h6,
 .font-display {
     font-family: var(--wt-font-family-headings);
@@ -29,18 +41,9 @@ h4 { font-size: 1.4rem; }
 h5 { font-size: 1.2rem; }
 h6 { font-size: var(--wt-font-size-base); } /* 1rem */
 
-@media (max-width: 768px) {
-    h1 { font-size: 2.25rem; }
-    h2 { font-size: 1.85rem; }
-    h3 { font-size: var(--wt-font-size-xl); } /* 1.5rem */
-}
-
-p {
-    margin-top: 0;
-    margin-bottom: 1.6rem;
-    line-height: 1.7;
-}
-
+/* ==========================================================================
+   4. EDITORIAL CONTENT
+   ========================================================================== */
 /* Editorial content constraints for high-end readability (Kinfolk/National Trust style) */
 .entry-content {
     color: var(--wt-color-near-black);
@@ -74,6 +77,9 @@ p {
 .entry-content h3 { font-size: 1.6rem; }
 .entry-content h4 { font-size: 1.3rem; }
 
+/* ==========================================================================
+   5. LISTS
+   ========================================================================== */
 /* Elegant lists inside editorial columns */
 .entry-content ul,
 .entry-content ol {
@@ -91,24 +97,9 @@ p {
     list-style-type: square; /* Handcrafted rustic style bullet */
 }
 
-/* Beautiful blockquote styling */
-blockquote {
-    font-family: var(--wt-font-family-headings);
-    font-size: 1.35rem;
-    line-height: 1.5;
-    color: var(--wt-color-forest);
-    border-left: 4px solid var(--wt-color-tan);
-    margin: 2.5rem auto;
-    padding: var(--wt-space-4) 0 var(--wt-space-4) var(--wt-space-6); /* 1rem 0 1rem 2rem */
-    background-color: rgba(245, 240, 232, 0.45);
-    border-radius: 0 var(--wt-radius-md) var(--wt-radius-md) 0;
-    font-style: italic;
-    border-top: 1px solid rgba(196, 184, 154, 0.15);
-    border-right: 1px solid rgba(196, 184, 154, 0.15);
-    border-bottom: 1px solid rgba(196, 184, 154, 0.15);
-    box-shadow: 0 4px 12px rgba(196, 184, 154, 0.04);
-}
-
+/* ==========================================================================
+   6. LINKS
+   ========================================================================== */
 a {
     color: var(--wt-color-forest);
     text-decoration: underline;
@@ -122,16 +113,25 @@ a:hover {
     text-decoration-thickness: 2px;
 }
 
+/* ==========================================================================
+   7. BLOCKQUOTES
+   ========================================================================== */
+/* Beautiful consolidated blockquote styling */
 blockquote {
     font-family: var(--wt-font-family-headings);
     font-size: 1.35rem;
     line-height: 1.5;
     color: var(--wt-color-forest);
+    font-style: italic;
     border-left: 4px solid var(--wt-color-tan);
+    border-top: 1px solid rgba(196, 184, 154, 0.15);
+    border-right: 1px solid rgba(196, 184, 154, 0.15);
+    border-bottom: 1px solid rgba(196, 184, 154, 0.15);
+    border-radius: 0 var(--wt-radius-md) var(--wt-radius-md) 0;
+    background-color: rgba(196, 184, 154, 0.1);
+    box-shadow: 0 4px 12px rgba(196, 184, 154, 0.04);
     margin: var(--wt-space-6) 0; /* 2rem */
     padding: var(--wt-space-2) 0 var(--wt-space-2) var(--wt-space-5); /* 0.5rem 0 0.5rem 1.5rem */
-    background-color: rgba(196, 184, 154, 0.1);
-    border-radius: 0 var(--wt-radius-md) var(--wt-radius-md) 0;
 }
 
 cite {
@@ -148,6 +148,9 @@ cite::before {
     content: "— ";
 }
 
+/* ==========================================================================
+   8. CODE & PREFORMATTED
+   ========================================================================== */
 code, pre {
     font-family: var(--wt-font-family-mono);
     font-size: 0.9rem;
@@ -162,4 +165,19 @@ pre {
     overflow-x: auto;
     margin-bottom: var(--wt-space-5); /* 1.5rem */
 }
+
+/* ==========================================================================
+   9. UTILITIES
+   ========================================================================== */
+/* Note: Utility class '.font-display' is mapped alongside headings above */
+
+/* ==========================================================================
+   10. RESPONSIVE TYPOGRAPHY
+   ========================================================================== */
+@media (max-width: 768px) {
+    h1 { font-size: 2.25rem; }
+    h2 { font-size: 1.85rem; }
+    h3 { font-size: var(--wt-font-size-xl); } /* 1.5rem */
+}
+
 
