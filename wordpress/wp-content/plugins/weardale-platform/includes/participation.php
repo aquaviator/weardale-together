@@ -1151,6 +1151,47 @@ function weardale_platform_render_newsletter_page() {
 add_shortcode( 'weardale_newsletter_page', 'weardale_platform_render_newsletter_page' );
 
 /**
+ * Automatically inject contact and volunteer form shortcodes into pages
+ * if the content does not already contain them, to ensure they render on the frontend.
+ */
+function weardale_platform_auto_inject_forms( $content ) {
+    if ( ! is_page() ) {
+        return $content;
+    }
+
+    global $post;
+    if ( ! $post ) {
+        return $content;
+    }
+
+    $slug = $post->post_name;
+
+    // Contact Us page: slug might be 'contact-us' or 'contact'
+    if ( in_array( $slug, array( 'contact-us', 'contact' ), true ) ) {
+        if ( ! has_shortcode( $content, 'weardale_contact_page_layout' ) && ! has_shortcode( $content, 'weardale_contact_form' ) ) {
+            $content .= "\n\n" . do_shortcode( '[weardale_contact_page_layout]' );
+        }
+    }
+
+    // Volunteer page: slug might be 'volunteer-with-us', 'volunteer'
+    if ( in_array( $slug, array( 'volunteer-with-us', 'volunteer' ), true ) ) {
+        if ( ! has_shortcode( $content, 'weardale_volunteer_page' ) ) {
+            $content .= "\n\n" . do_shortcode( '[weardale_volunteer_page]' );
+        }
+    }
+
+    // Newsletter page: slug might be 'newsletter', 'newsletter-signup'
+    if ( in_array( $slug, array( 'newsletter', 'newsletter-signup' ), true ) ) {
+        if ( ! has_shortcode( $content, 'weardale_newsletter_page' ) ) {
+            $content .= "\n\n" . do_shortcode( '[weardale_newsletter_page]' );
+        }
+    }
+
+    return $content;
+}
+add_filter( 'the_content', 'weardale_platform_auto_inject_forms', 20 );
+
+/**
  * Repeat-Safe Development Seeder for Participation & Engagement Data
  */
 function weardale_platform_seed_participation_data() {
@@ -1376,7 +1417,19 @@ function weardale_platform_seed_participation_data() {
                 $results['skipped']++;
             }
         } else {
-            $results['skipped']++;
+            // Ensure the shortcode exists in the page content
+            $current_content = $existing_page->post_content;
+            $shortcode = $page_data['content'];
+            $clean_shortcode = substr($shortcode, 1, -1); // e.g. "weardale_volunteer_page"
+            if ( strpos( $current_content, $clean_shortcode ) === false ) {
+                wp_update_post( array(
+                    'ID'           => $existing_page->ID,
+                    'post_content' => $current_content . "\n\n" . $shortcode,
+                ) );
+                $results['created']++;
+            } else {
+                $results['skipped']++;
+            }
         }
     }
 

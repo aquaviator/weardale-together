@@ -11,8 +11,8 @@ INSERT INTO `wp_posts` (`post_author`, `post_date`, `post_date_gmt`, `post_conte
 (1, NOW(), NOW(), 'Connecting our community through creative roots. We host ink drawing, botanical prints, and woodcarving workshops.', 'Creative Arts', '', 'publish', 'closed', 'closed', 'creative-arts', NOW(), NOW(), 'page'),
 (1, NOW(), NOW(), 'An unhurried early years family playroom with soft terracotta vibes, pink clays, and sage greens. For toddlers and carers.', 'Roots & Shoots', '', 'publish', 'closed', 'closed', 'roots-shoots', NOW(), NOW(), 'page'),
 (1, NOW(), NOW(), 'Who we are, our team, our mission, and our generous funders and local partners.', 'About Weardale Together', '', 'publish', 'closed', 'closed', 'about', NOW(), NOW(), 'page'),
-(1, NOW(), NOW(), 'Fill out our secure form below to enquire about volunteering with us. We have roles in kitchen help, driver support, and crafting.', 'Volunteer with Us', '', 'publish', 'closed', 'closed', 'volunteer', NOW(), NOW(), 'page'),
-(1, NOW(), NOW(), 'Get in touch with us. We are based in Stanhope, County Durham.', 'Contact Us', '', 'publish', 'closed', 'closed', 'contact-us', NOW(), NOW(), 'page');
+(1, NOW(), NOW(), 'Fill out our secure form below to enquire about volunteering with us. We have roles in kitchen help, driver support, and crafting.\n\n[weardale_volunteer_page]', 'Volunteer with Us', '', 'publish', 'closed', 'closed', 'volunteer', NOW(), NOW(), 'page'),
+(1, NOW(), NOW(), 'Get in touch with us. We are based in Stanhope, County Durham.\n\n[weardale_contact_page_layout]', 'Contact Us', '', 'publish', 'closed', 'closed', 'contact-us', NOW(), NOW(), 'page');
 
 -- 2. Insert Custom WP Events (weardale_event)
 INSERT INTO `wp_posts` (`post_author`, `post_date`, `post_date_gmt`, `post_content`, `post_title`, `post_excerpt`, `post_status`, `comment_status`, `ping_status`, `post_name`, `post_modified`, `post_modified_gmt`, `post_type`) VALUES
