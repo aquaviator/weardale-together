@@ -3,7 +3,8 @@
  */
 
 /* Navigation Menu */
-.main-navigation ul {
+.main-navigation > ul,
+.main-navigation > div > ul {
     list-style: none;
     margin: 0;
     padding: 0;
