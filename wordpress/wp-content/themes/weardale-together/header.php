@@ -63,13 +63,27 @@ function weardale_together_fallback_menu() {
     $events_url    = get_post_type_archive_link( 'weardale_event' ) ?: home_url( '/whats-on/' );
     echo '<ul>';
     echo '<li><a href="' . esc_url( home_url( '/' ) ) . '">Home</a></li>';
-    echo '<li><a href="' . esc_url( home_url( '/cafe/' ) ) . '">Root & Branch Café</a></li>';
-    echo '<li><a href="' . esc_url( home_url( '/young-people/' ) ) . '">Young People</a></li>';
-    echo '<li><a href="' . esc_url( home_url( '/creative-arts/' ) ) . '">Creative Arts</a></li>';
-    echo '<li><a href="' . esc_url( home_url( '/roots-shoots/' ) ) . '">Roots & Shoots</a></li>';
-    echo '<li><a href="' . esc_url( $events_url ) . '">What\'s On</a></li>';
-    echo '<li><a href="' . esc_url( $directory_url ) . '">Directory</a></li>';
+    
+    echo '<li class="menu-item-has-children"><a href="#">Our Programmes</a>';
+    echo '  <ul class="sub-menu">';
+    echo '    <li><a href="' . esc_url( home_url( '/cafe/' ) ) . '">Root & Branch Café</a></li>';
+    echo '    <li><a href="' . esc_url( home_url( '/young-people/' ) ) . '">Young People</a></li>';
+    echo '    <li><a href="' . esc_url( home_url( '/creative-arts/' ) ) . '">Creative Arts</a></li>';
+    echo '    <li><a href="' . esc_url( home_url( '/roots-shoots/' ) ) . '">Roots & Shoots</a></li>';
+    echo '  </ul>';
+    echo '</li>';
+    
+    echo '<li class="cta-nav"><a href="' . esc_url( $events_url ) . '">What\'s On</a></li>';
+    echo '<li><a href="' . esc_url( $directory_url ) . '">Community Directory</a></li>';
     echo '<li><a href="' . esc_url( home_url( '/about/' ) ) . '">About WT</a></li>';
+    
+    echo '<li class="menu-item-has-children"><a href="#">Get Involved</a>';
+    echo '  <ul class="sub-menu">';
+    echo '    <li><a href="' . esc_url( home_url( '/volunteer/' ) ) . '">Volunteer with Us</a></li>';
+    echo '    <li><a href="' . esc_url( home_url( '/newsletter/' ) ) . '">Newsletter</a></li>';
+    echo '    <li><a href="' . esc_url( home_url( '/contact-us/' ) ) . '">Contact Us</a></li>';
+    echo '  </ul>';
+    echo '</li>';
     echo '</ul>';
 }
 ?>

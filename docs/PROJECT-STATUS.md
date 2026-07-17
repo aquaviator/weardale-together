@@ -18,7 +18,7 @@ Weardale Together is a grassroots Community Interest Company (CIC) serving remot
 
 | Parameter | Value / Status |
 | :--- | :--- |
-| **Current Milestone** | Milestone 14: Editorial Experience & Production Readiness Completed |
+| **Current Milestone** | Sprint 14.2 – Primary Navigation Modernisation Completed |
 | **Project Health** | Excellent, featuring fully audited editorial journeys, native WordPress roles compliance, robust accessibility/WCAG compliance, and complete production readiness. |
 | **Development Phase** | Production Release Confirmed & Final Launch Readiness Handoff |
 | **Repository** | `https://github.com/aquaviator/weardale-together` |
@@ -198,6 +198,14 @@ The local development environment baseline has been established. The following c
   - **Comprehensive Frontend Content Audit**: Reviewed all public templates—including Homepage, Programme pages, Events lists, Stories, Directories, Volunteer views, and the dynamic Footer—verifying responsive design integrity, typography, and graceful fallback empty states.
   - **Strict WCAG 2.2 AA Compliance**: Validated and updated heading hierarchies, keyboard focus indicators, explicit form-label associations, dynamic ARIA announcements, and high color contrasts, delivering a completely accessible public and administrative platform.
   - **Query & Performance Verification**: Confirmed efficient asset loading, optimized lazy-loading on images, and streamlined database queries. Removed all hardcoded client coordinate fallbacks and verified they are fully configurable via the WP admin interface.
+- [x] **Primary Navigation Modernisation (Sprint 14.2)**:
+  - **Clean Header Restyling**: Streamlined `.header-container` to use a compact `0.65rem` vertical padding, lowering header visual weight and aligning the brand logo and main-navigation links perfectly on one visual line. Adjusted logo max-height to `44px` for elegant proportions.
+  - **Simplified Menu Structure**: Designed and implemented support for a streamlined, clutter-free menu structure containing Home, Our Programmes (Dropdown), What's On (CTA), Community Directory, About WT, and Get Involved (Dropdown).
+  - **Dynamic Dropdowns & Keyboard Accessibility**: Programmed responsive `.sub-menu` styling featuring fluid fade-ins, beautiful borders, and soft shadows. Integrated keyboard accessibility in `navigation.js` allowing parent items to open on hover or keyboard focus (`:focus-within` and `.focus` toggling) and close elegantly with the `Escape` key.
+  - **High-Contrast CTA button**: Highlighted the "What's On" link as a visual CTA button styled in standard brand forest green (`#3B5C3A`) and warm cream (`#F5F0E8`), with a high-contrast AA compliant hover/focus state in sage green (`#6B8F5E`) and white.
+  - **Touch-Friendly Mobile Accordion**: Reworked mobile layout (widths <= 1120px) to serve indubitable 44px+ tap targets, collapsible accordion menus with distinct chevron transition indicators, and clean layout state resets on viewport resizing.
+  - **Robust Programmatic Seeding**: Upgraded the Site Setup seeder in `site-setup.php` to build the exact hierarchical parent-child relationships using WordPress native parameters (`menu-item-parent-id`), alongside custom classes (`cta-nav`) for seamless out-of-the-box installation.
+  - **Clean Fallback Integration**: Refactored `weardale_together_fallback_menu()` inside `header.php` to render identical hierarchical dropdowns and CTA styles, ensuring consistent performance if no menu is assigned in the admin area.
 
 ---
 

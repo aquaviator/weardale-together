@@ -109,30 +109,54 @@ function weardale_platform_bootstrap_navigation() {
             // Only populate if the menu has no items to prevent duplicate addition
             if ( empty( $menu_items ) ) {
                 $candidates = array(
-                    array( 'title' => 'Home', 'url' => home_url( '/' ) ),
-                    array( 'title' => 'Root & Branch Café', 'url' => home_url( '/cafe/' ) ),
-                    array( 'title' => 'Young People', 'url' => home_url( '/young-people/' ) ),
-                    array( 'title' => 'Creative Arts', 'url' => home_url( '/creative-arts/' ) ),
-                    array( 'title' => 'Roots & Shoots', 'url' => home_url( '/roots-shoots/' ) ),
-                    array( 'title' => 'What’s On', 'url' => get_post_type_archive_link( 'weardale_event' ) ?: home_url( '/whats-on/' ) ),
-                    array( 'title' => 'Directory', 'url' => get_post_type_archive_link( 'weardale_directory' ) ?: home_url( '/directory/' ) ),
-                    array( 'title' => 'About WT', 'url' => home_url( '/about/' ) ),
+                    'home'       => array( 'title' => 'Home', 'url' => home_url( '/' ) ),
+                    'programmes' => array( 'title' => 'Our Programmes', 'url' => '#' ),
+                    'cafe'       => array( 'title' => 'Root & Branch Café', 'url' => home_url( '/cafe/' ), 'parent' => 'programmes' ),
+                    'youth'      => array( 'title' => 'Young People', 'url' => home_url( '/young-people/' ), 'parent' => 'programmes' ),
+                    'creative'   => array( 'title' => 'Creative Arts', 'url' => home_url( '/creative-arts/' ), 'parent' => 'programmes' ),
+                    'shoots'     => array( 'title' => 'Roots & Shoots', 'url' => home_url( '/roots-shoots/' ), 'parent' => 'programmes' ),
+                    'whats-on'   => array( 'title' => 'What’s On', 'url' => get_post_type_archive_link( 'weardale_event' ) ?: home_url( '/whats-on/' ), 'classes' => 'cta-nav' ),
+                    'directory'  => array( 'title' => 'Community Directory', 'url' => get_post_type_archive_link( 'weardale_directory' ) ?: home_url( '/directory/' ) ),
+                    'about'      => array( 'title' => 'About WT', 'url' => home_url( '/about/' ) ),
+                    'involved'   => array( 'title' => 'Get Involved', 'url' => '#' ),
+                    'volunteer'  => array( 'title' => 'Volunteer with Us', 'url' => home_url( '/volunteer/' ), 'parent' => 'involved' ),
+                    'newsletter' => array( 'title' => 'Newsletter', 'url' => home_url( '/newsletter/' ), 'parent' => 'involved' ),
+                    'contact'    => array( 'title' => 'Contact Us', 'url' => home_url( '/contact-us/' ), 'parent' => 'involved' ),
                 );
 
                 $created = 0;
                 $skipped = 0;
                 $position = 1;
+                $item_ids = array();
 
-                foreach ( $candidates as $item ) {
-                    if ( weardale_platform_destination_exists( $item['url'] ) ) {
-                        wp_update_nav_menu_item( $primary_menu_id, 0, array(
+                foreach ( $candidates as $key => $item ) {
+                    $parent_id = 0;
+                    if ( isset( $item['parent'] ) && isset( $item_ids[ $item['parent'] ] ) ) {
+                        $parent_id = $item_ids[ $item['parent'] ];
+                    }
+
+                    if ( $item['url'] === '#' || weardale_platform_destination_exists( $item['url'] ) ) {
+                        $menu_item_args = array(
                             'menu-item-title'    => $item['title'],
                             'menu-item-url'      => $item['url'],
                             'menu-item-status'   => 'publish',
                             'menu-item-type'     => 'custom',
                             'menu-item-position' => $position++,
-                        ) );
-                        $created++;
+                        );
+                        if ( $parent_id ) {
+                            $menu_item_args['menu-item-parent-id'] = $parent_id;
+                        }
+                        if ( isset( $item['classes'] ) ) {
+                            $menu_item_args['menu-item-classes'] = $item['classes'];
+                        }
+
+                        $menu_item_id = wp_update_nav_menu_item( $primary_menu_id, 0, $menu_item_args );
+                        if ( ! is_wp_error( $menu_item_id ) && $menu_item_id ) {
+                            $item_ids[ $key ] = $menu_item_id;
+                            $created++;
+                        } else {
+                            $skipped++;
+                        }
                     } else {
                         $skipped++;
                     }

@@ -98,8 +98,8 @@ select:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 1.25rem;
-    padding-bottom: 1.25rem;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
     transition: var(--transition-smooth);
 }
 
@@ -118,7 +118,7 @@ select:focus {
 
 .custom-logo-link img,
 .custom-logo {
-    max-height: 52px;
+    max-height: 44px;
     width: auto;
     height: auto;
     display: block;
