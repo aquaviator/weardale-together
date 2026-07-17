@@ -12,6 +12,9 @@ import {
   MapPin, 
   Phone, 
   ChevronRight, 
+  ChevronDown,
+  Menu,
+  X,
   Clock, 
   DollarSign, 
   Check, 
@@ -31,6 +34,17 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
   const [events, setEvents] = useState<WTEvent[]>(starterEvents);
   const [posts, setPosts] = useState<WTPost[]>(starterPosts);
+
+  // Navigation states
+  const [programmesOpen, setProgrammesOpen] = useState(false);
+  const [involvedOpen, setInvolvedOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileProgrammesOpen, setMobileProgrammesOpen] = useState(false);
+  const [mobileInvolvedOpen, setMobileInvolvedOpen] = useState(false);
+
+  // Modals for About and Directory
+  const [showAboutModal, setShowAboutModal] = useState(false);
+  const [showDirectoryModal, setShowDirectoryModal] = useState(false);
   
   // Simulation Story Editorial Metadata States
   const [selectedSimPostId, setSelectedSimPostId] = useState<string>('p4'); // Default to 'A SONG for Weardale'
@@ -153,66 +167,176 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
       {/* 1. Header Navigation */}
       <header className="sticky top-0 z-50 bg-white border-b border-[#C4B89A] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-16 lg:h-20">
             
             {/* Branding Logo */}
             <div 
-              onClick={() => setActiveTab('home')} 
-              className="flex items-center gap-3 cursor-pointer group"
+              onClick={() => { setActiveTab('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+              className="flex items-center gap-2 lg:gap-3 cursor-pointer group"
               id="header_branding"
             >
-              <div className="w-12 h-12 rounded-full bg-[#3B5C3A] flex items-center justify-center text-white font-display text-lg font-bold shadow-md transition-transform group-hover:scale-105">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#3B5C3A] flex items-center justify-center text-white font-display text-base lg:text-lg font-bold shadow-md transition-transform group-hover:scale-105">
                 WT
               </div>
               <div>
-                <h1 className="font-display text-xl text-[#3B5C3A] tracking-tight leading-none">Weardale Together</h1>
-                <p className="text-xs text-gray-500 font-sans mt-1">Community Interest Company</p>
+                <h1 className="font-display text-base lg:text-xl text-[#3B5C3A] tracking-tight leading-none font-semibold">Weardale Together</h1>
+                <p className="text-[10px] lg:text-xs text-gray-500 font-sans mt-0.5">Community Interest Company</p>
               </div>
             </div>
 
             {/* Desktop Navigation links */}
-            <nav className="hidden lg:flex items-center gap-1 sm:gap-2">
+            <nav className="hidden lg:flex items-center gap-1 sm:gap-1.5">
               <button 
-                onClick={() => { setActiveTab('home'); window.scrollTo(0, 0); }} 
-                className={`px-3 py-2 rounded-full font-medium text-sm transition-all ${activeTab === 'home' ? 'bg-[#3B5C3A] text-[#F5F0E8]' : 'text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#3B5C3A]'}`}
+                onClick={() => { setActiveTab('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+                className={`px-3 py-2 rounded-md font-semibold text-sm transition-all ${activeTab === 'home' ? 'text-[#3B5C3A] border-b-2 border-[#6B8F5E]' : 'text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#3B5C3A]'}`}
                 id="nav_home"
               >
                 Home
               </button>
-              <button 
-                onClick={() => { setActiveTab('cafe'); window.scrollTo(0, 0); }} 
-                className={`px-3 py-2 rounded-full font-medium text-sm transition-all ${activeTab === 'cafe' ? 'bg-[#C4956A] text-white' : 'text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#C4956A]'}`}
-                id="nav_cafe"
+
+              {/* Our Programmes Dropdown */}
+              <div 
+                className="relative"
+                onMouseEnter={() => setProgrammesOpen(true)}
+                onMouseLeave={() => setProgrammesOpen(false)}
               >
-                ☕ Café
-              </button>
+                <button 
+                  className={`px-3 py-2 rounded-md font-semibold text-sm flex items-center gap-1 transition-all text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#3B5C3A] ${['cafe', 'creative', 'youth', 'roots-shoots'].includes(activeTab) ? 'text-[#3B5C3A] border-b-2 border-[#6B8F5E]' : ''}`}
+                >
+                  Our Programmes <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${programmesOpen ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {programmesOpen && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute left-1/2 -translate-x-1/2 mt-1 w-56 bg-white border border-[#C4B89A] rounded-lg shadow-xl py-2 z-50"
+                    >
+                      <button 
+                        onClick={() => { setActiveTab('cafe'); setProgrammesOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                        className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
+                      >
+                        ☕ Root & Branch Café
+                      </button>
+                      <button 
+                        onClick={() => { setActiveTab('youth'); setProgrammesOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                        className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
+                      >
+                        🌲 Young People
+                      </button>
+                      <button 
+                        onClick={() => { setActiveTab('creative'); setProgrammesOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                        className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
+                      >
+                        🎨 Creative Arts
+                      </button>
+                      <button 
+                        onClick={() => { setActiveTab('roots-shoots'); setProgrammesOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                        className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors flex items-center gap-2"
+                      >
+                        🧸 Roots & Shoots
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* High-Contrast What's On CTA */}
               <button 
-                onClick={() => { setActiveTab('creative'); window.scrollTo(0, 0); }} 
-                className={`px-3 py-2 rounded-full font-medium text-sm transition-all ${activeTab === 'creative' ? 'bg-[#E8A020] text-white' : 'text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#E8A020]'}`}
-                id="nav_creative"
+                onClick={() => {
+                  setActiveTab('home');
+                  setTimeout(() => {
+                    document.getElementById('whats-happening')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 150);
+                }} 
+                className="px-4 py-1.5 bg-[#3B5C3A] text-[#F5F0E8] hover:bg-[#6B8F5E] hover:text-white rounded-full font-bold text-sm shadow-sm hover:shadow-md transition-all ml-1"
+                id="nav_whats_on"
               >
-                🎨 Creative Arts
+                What’s On
               </button>
+
               <button 
-                onClick={() => { setActiveTab('youth'); window.scrollTo(0, 0); }} 
-                className={`px-3 py-2 rounded-full font-medium text-sm transition-all ${activeTab === 'youth' ? 'bg-[#E8962A] text-white' : 'text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#E8962A]'}`}
-                id="nav_youth"
+                onClick={() => setShowDirectoryModal(true)} 
+                className="px-3 py-2 rounded-md font-semibold text-sm text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-all"
+                id="nav_directory"
               >
-                🌲 Young People
+                Community Directory
               </button>
+
               <button 
-                onClick={() => { setActiveTab('roots-shoots'); window.scrollTo(0, 0); }} 
-                className={`px-3 py-2 rounded-full font-medium text-sm transition-all ${activeTab === 'roots-shoots' ? 'bg-[#D4826A] text-white' : 'text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#D4826A]'}`}
-                id="nav_shoots"
+                onClick={() => setShowAboutModal(true)} 
+                className="px-3 py-2 rounded-md font-semibold text-sm text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-all"
+                id="nav_about"
               >
-                🧸 Roots & Shoots
+                About WT
               </button>
+
+              {/* Get Involved Dropdown */}
+              <div 
+                className="relative"
+                onMouseEnter={() => setInvolvedOpen(true)}
+                onMouseLeave={() => setInvolvedOpen(false)}
+              >
+                <button 
+                  className="px-3 py-2 rounded-md font-semibold text-sm flex items-center gap-1 transition-all text-[#2C2C2A] hover:bg-[#F5F0E8] hover:text-[#3B5C3A]"
+                >
+                  Get Involved <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${involvedOpen ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {involvedOpen && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute left-1/2 -translate-x-1/2 mt-1 w-52 bg-white border border-[#C4B89A] rounded-lg shadow-xl py-2 z-50"
+                    >
+                      <button 
+                        onClick={() => {
+                          setInvolvedOpen(false);
+                          setActiveTab('home');
+                          setTimeout(() => {
+                            document.getElementById('volunteer-form-section')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 150);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors"
+                      >
+                        Volunteer with Us
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setInvolvedOpen(false);
+                          setActiveTab('home');
+                          setTimeout(() => {
+                            document.getElementById('newsletter-section')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 150);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors"
+                      >
+                        Newsletter
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setInvolvedOpen(false);
+                          setActiveTab('home');
+                          setTimeout(() => {
+                            document.getElementById('contact-form-section')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 150);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-[#F5F0E8] hover:text-[#3B5C3A] transition-colors"
+                      >
+                        Contact Us
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
               
               <div className="w-[1px] h-6 bg-gray-300 mx-2"></div>
               
               <button 
-                onClick={() => { setActiveTab('console'); window.scrollTo(0, 0); }} 
-                className={`px-4 py-2 rounded-full font-bold text-sm flex items-center gap-1.5 border transition-all ${activeTab === 'console' ? 'bg-zinc-800 text-zinc-100 border-zinc-800' : 'bg-transparent text-zinc-700 border-zinc-300 hover:bg-zinc-100'}`}
+                onClick={() => { setActiveTab('console'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+                className={`px-4 py-1.5 rounded-full font-bold text-sm flex items-center gap-1.5 border transition-all ${activeTab === 'console' ? 'bg-zinc-800 text-zinc-100 border-zinc-800' : 'bg-transparent text-zinc-700 border-zinc-300 hover:bg-zinc-100'}`}
                 id="nav_console"
               >
                 <Code className="w-4 h-4" />
@@ -220,8 +344,166 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
               </button>
             </nav>
 
+            {/* Mobile Menu Toggle button */}
+            <div className="flex lg:hidden items-center gap-2">
+              <button 
+                onClick={() => { setActiveTab('console'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+                className={`p-2 rounded-full border transition-all ${activeTab === 'console' ? 'bg-zinc-800 text-zinc-100 border-zinc-800' : 'bg-transparent text-zinc-700 border-[#C4B89A] hover:bg-zinc-100'}`}
+                title="WordPress Console"
+              >
+                <Code className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-md border border-[#C4B89A] text-[#2C2C2A] hover:bg-[#F5F0E8]"
+                aria-label="Toggle navigation menu"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
+
           </div>
         </div>
+
+        {/* Mobile Navigation Dropdown Panel */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="lg:hidden border-t border-[#C4B89A] bg-white overflow-hidden"
+            >
+              <div className="px-4 py-4 space-y-2 flex flex-col">
+                <button
+                  onClick={() => { setActiveTab('home'); setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  className={`w-full text-left px-3 py-2.5 rounded-md font-semibold text-sm ${activeTab === 'home' ? 'bg-[#F5F0E8] text-[#3B5C3A]' : 'text-[#2C2C2A]'}`}
+                >
+                  Home
+                </button>
+
+                {/* Mobile Programmes Accordion */}
+                <div>
+                  <button
+                    onClick={() => setMobileProgrammesOpen(!mobileProgrammesOpen)}
+                    className="w-full text-left px-3 py-2.5 rounded-md font-semibold text-sm flex justify-between items-center text-[#2C2C2A]"
+                  >
+                    <span>Our Programmes</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${mobileProgrammesOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {mobileProgrammesOpen && (
+                    <div className="pl-6 pr-3 py-1 space-y-1 bg-[#F5F0E8]/50 border-l-2 border-[#C4B89A] ml-3">
+                      <button
+                        onClick={() => { setActiveTab('cafe'); setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                        className="w-full text-left py-2 text-sm font-medium text-[#2C2C2A] hover:text-[#3B5C3A]"
+                      >
+                        ☕ Root & Branch Café
+                      </button>
+                      <button
+                        onClick={() => { setActiveTab('youth'); setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                        className="w-full text-left py-2 text-sm font-medium text-[#2C2C2A] hover:text-[#3B5C3A]"
+                      >
+                        🌲 Young People
+                      </button>
+                      <button
+                        onClick={() => { setActiveTab('creative'); setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                        className="w-full text-left py-2 text-sm font-medium text-[#2C2C2A] hover:text-[#3B5C3A]"
+                      >
+                        🎨 Creative Arts
+                      </button>
+                      <button
+                        onClick={() => { setActiveTab('roots-shoots'); setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                        className="w-full text-left py-2 text-sm font-medium text-[#2C2C2A] hover:text-[#3B5C3A]"
+                      >
+                        🧸 Roots & Shoots
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile What's On CTA */}
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setActiveTab('home');
+                    setTimeout(() => {
+                      document.getElementById('whats-happening')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 200);
+                  }}
+                  className="w-full text-center py-2.5 bg-[#3B5C3A] text-white rounded-md font-bold text-sm hover:bg-[#6B8F5E] transition-colors"
+                >
+                  What’s On
+                </button>
+
+                <button
+                  onClick={() => { setMobileMenuOpen(false); setShowDirectoryModal(true); }}
+                  className="w-full text-left px-3 py-2.5 rounded-md font-semibold text-sm text-[#2C2C2A]"
+                >
+                  Community Directory
+                </button>
+
+                <button
+                  onClick={() => { setMobileMenuOpen(false); setShowAboutModal(true); }}
+                  className="w-full text-left px-3 py-2.5 rounded-md font-semibold text-sm text-[#2C2C2A]"
+                >
+                  About WT
+                </button>
+
+                {/* Mobile Get Involved Accordion */}
+                <div>
+                  <button
+                    onClick={() => setMobileInvolvedOpen(!mobileInvolvedOpen)}
+                    className="w-full text-left px-3 py-2.5 rounded-md font-semibold text-sm flex justify-between items-center text-[#2C2C2A]"
+                  >
+                    <span>Get Involved</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${mobileInvolvedOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {mobileInvolvedOpen && (
+                    <div className="pl-6 pr-3 py-1 space-y-1 bg-[#F5F0E8]/50 border-l-2 border-[#C4B89A] ml-3">
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          setActiveTab('home');
+                          setTimeout(() => {
+                            document.getElementById('volunteer-form-section')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 200);
+                        }}
+                        className="w-full text-left py-2 text-sm font-medium text-[#2C2C2A]"
+                      >
+                        Volunteer with Us
+                      </button>
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          setActiveTab('home');
+                          setTimeout(() => {
+                            document.getElementById('newsletter-section')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 200);
+                        }}
+                        className="w-full text-left py-2 text-sm font-medium text-[#2C2C2A]"
+                      >
+                        Newsletter
+                      </button>
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          setActiveTab('home');
+                          setTimeout(() => {
+                            document.getElementById('contact-form-section')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 200);
+                        }}
+                        className="w-full text-left py-2 text-sm font-medium text-[#2C2C2A]"
+                      >
+                        Contact Us
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* Main Container with AnimatePresence */}
@@ -1751,6 +2033,148 @@ INSERT INTO \`wp_postmeta\` (\`post_id\`, \`meta_key\`, \`meta_value\`) VALUES
           </div>
         </div>
       </footer>
+
+      {/* About WT Modal */}
+      <AnimatePresence>
+        {showAboutModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl border border-[#C4B89A]"
+            >
+              <div className="bg-[#3B5C3A] text-[#F5F0E8] p-6">
+                <h3 className="font-display text-2xl font-bold leading-none">About Weardale Together</h3>
+                <p className="text-xs text-[#F5F0E8]/80 mt-2 uppercase tracking-wider font-semibold">Community Interest Company (CIC) • Stanhope</p>
+              </div>
+              <div className="p-6 md:p-8 space-y-4 max-h-[60vh] overflow-y-auto">
+                <p className="text-base leading-relaxed text-gray-700">
+                  Established in 2019, <strong>Weardale Together</strong> is a grassroots community initiative dedicated to ensuring that living in rural, isolated parts of the North Pennines doesn't mean living without access to creativity, warmth, and supportive networks.
+                </p>
+                
+                <h4 className="font-display text-lg text-[#3B5C3A] font-semibold pt-2 border-b border-[#C4B89A]/40 pb-1">Our Core Mission</h4>
+                <p className="text-sm leading-relaxed text-gray-600">
+                  We operate a Hub-and-Spoke community model from our main Stanhope base, offering direct outreach and physical transport assistance to connecting villages including Wolsingham, St John’s Chapel, Rookhope, and Frosterley.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3">
+                  <div className="p-3 bg-[#F5F0E8]/40 border border-[#C4B89A]/30 rounded-lg">
+                    <strong className="text-[#3B5C3A] block text-sm">☕ Root & Branch Café</strong>
+                    <span className="text-xs text-gray-600">Volunteer-led community kitchen & food hub training space.</span>
+                  </div>
+                  <div className="p-3 bg-[#F5F0E8]/40 border border-[#C4B89A]/30 rounded-lg">
+                    <strong className="text-[#3B5C3A] block text-sm">🎨 Creative Arts</strong>
+                    <span className="text-xs text-gray-600">Handcrafted workshops, weaving, poetry, and storytelling.</span>
+                  </div>
+                  <div className="p-3 bg-[#F5F0E8]/40 border border-[#C4B89A]/30 rounded-lg">
+                    <strong className="text-[#3B5C3A] block text-sm">🌲 Young People</strong>
+                    <span className="text-xs text-gray-600">Weekly youth fellowships and Pennines trail exploration.</span>
+                  </div>
+                  <div className="p-3 bg-[#F5F0E8]/40 border border-[#C4B89A]/30 rounded-lg">
+                    <strong className="text-[#3B5C3A] block text-sm">🧸 Roots & Shoots</strong>
+                    <span className="text-xs text-gray-600">Safe, nature-integrated early play development for children.</span>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-[#F5F0E8]/50 px-6 py-4 border-t border-[#C4B89A]/30 flex justify-end">
+                <button 
+                  onClick={() => setShowAboutModal(false)}
+                  className="px-5 py-2 bg-[#3B5C3A] text-white rounded-lg hover:bg-[#6B8F5E] font-bold text-sm transition-all"
+                >
+                  Close & Explore
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Community Directory Modal */}
+      <AnimatePresence>
+        {showDirectoryModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl border border-[#C4B89A]"
+            >
+              <div className="bg-[#3B5C3A] text-[#F5F0E8] p-6">
+                <h3 className="font-display text-2xl font-bold leading-none">Weardale Community Directory</h3>
+                <p className="text-xs text-[#F5F0E8]/80 mt-2 uppercase tracking-wider font-semibold">Active listings of local makers, venues, and support networks</p>
+              </div>
+              <div className="p-6 md:p-8 space-y-4 max-h-[60vh] overflow-y-auto">
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Below is an interactive view of verified listings that are dynamically linked inside our custom WordPress taxomony metadata system:
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Listing 1 */}
+                  <div className="p-4 bg-[#F5F0E8]/30 rounded-xl border border-[#C4B89A]/40 flex flex-col justify-between">
+                    <div>
+                      <span className="inline-block px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-wider mb-2">Food & Drink</span>
+                      <h4 className="font-display font-bold text-base text-[#3B5C3A]">The Stanhope Artisan Bakery</h4>
+                      <p className="text-xs text-gray-600 mt-2">Organic handcrafted sourdough, locally sourced Durham jams, and a warm workspace for remote rural workers.</p>
+                    </div>
+                    <div className="border-t border-[#C4B89A]/20 pt-3 mt-4 flex justify-between items-center text-[11px] text-gray-500 font-semibold">
+                      <span>📍 Stanhope, DL13</span>
+                      <span className="text-emerald-600">● Verified Active</span>
+                    </div>
+                  </div>
+
+                  {/* Listing 2 */}
+                  <div className="p-4 bg-[#F5F0E8]/30 rounded-xl border border-[#C4B89A]/40 flex flex-col justify-between">
+                    <div>
+                      <span className="inline-block px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-bold uppercase tracking-wider mb-2">Creative Arts</span>
+                      <h4 className="font-display font-bold text-base text-[#3B5C3A]">Weardale Creative Makers Guild</h4>
+                      <p className="text-xs text-gray-600 mt-2">Collective of weavers, potters, painters, and blacksmiths offering monthly local workshops and heritage exhibitions.</p>
+                    </div>
+                    <div className="border-t border-[#C4B89A]/20 pt-3 mt-4 flex justify-between items-center text-[11px] text-gray-500 font-semibold">
+                      <span>📍 Wolsingham, DL13</span>
+                      <span className="text-emerald-600">● Verified Active</span>
+                    </div>
+                  </div>
+
+                  {/* Listing 3 */}
+                  <div className="p-4 bg-[#F5F0E8]/30 rounded-xl border border-[#C4B89A]/40 flex flex-col justify-between">
+                    <div>
+                      <span className="inline-block px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-800 text-[10px] font-bold uppercase tracking-wider mb-2">Young People</span>
+                      <h4 className="font-display font-bold text-base text-[#3B5C3A]">Upper Weardale Youth Fellowship</h4>
+                      <p className="text-xs text-gray-600 mt-2">Structured sports activities, outdoor trails, and mentorship for teenagers connecting rural Upper Weardale schools.</p>
+                    </div>
+                    <div className="border-t border-[#C4B89A]/20 pt-3 mt-4 flex justify-between items-center text-[11px] text-gray-500 font-semibold">
+                      <span>📍 St John’s Chapel, DL13</span>
+                      <span className="text-emerald-600">● Verified Active</span>
+                    </div>
+                  </div>
+
+                  {/* Listing 4 */}
+                  <div className="p-4 bg-[#F5F0E8]/30 rounded-xl border border-[#C4B89A]/40 flex flex-col justify-between">
+                    <div>
+                      <span className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider mb-2">Community Cafe</span>
+                      <h4 className="font-display font-bold text-base text-[#3B5C3A]">Root & Branch Community Cafe</h4>
+                      <p className="text-xs text-gray-600 mt-2">Volunteer-led warm hub. Nutritious home-cooked meals served daily on a pay-as-you-can basis with dedicated training schemes.</p>
+                    </div>
+                    <div className="border-t border-[#C4B89A]/20 pt-3 mt-4 flex justify-between items-center text-[11px] text-gray-500 font-semibold">
+                      <span>📍 Stanhope Hub, DL13</span>
+                      <span className="text-emerald-600">● Verified Active</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-[#F5F0E8]/50 px-6 py-4 border-t border-[#C4B89A]/30 flex justify-end">
+                <button 
+                  onClick={() => setShowDirectoryModal(false)}
+                  className="px-5 py-2 bg-[#3B5C3A] text-white rounded-lg hover:bg-[#6B8F5E] font-bold text-sm transition-all"
+                >
+                  Close Directory
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

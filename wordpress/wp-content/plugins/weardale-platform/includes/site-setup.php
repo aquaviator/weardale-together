@@ -79,9 +79,10 @@ function weardale_platform_destination_exists( $url ) {
  * Creates Primary, Footer, and Legal menus if unassigned or missing,
  * and populates them with Approved Information Architecture links if they exist.
  *
+ * @param bool $force_rebuild Optional. Whether to clear existing items and rebuild Primary navigation.
  * @return array Detailed results of the bootstrap execution.
  */
-function weardale_platform_bootstrap_navigation() {
+function weardale_platform_bootstrap_navigation( $force_rebuild = false ) {
     $results = array(
         'primary' => array( 'status' => 'skipped', 'message' => '' ),
         'footer'  => array( 'status' => 'skipped', 'message' => '' ),
@@ -92,6 +93,22 @@ function weardale_platform_bootstrap_navigation() {
     $locations = get_theme_mod( 'nav_menu_locations' );
     if ( ! is_array( $locations ) ) {
         $locations = array();
+    }
+
+    if ( $force_rebuild ) {
+        // Clear existing primary menu items
+        $primary_menu_obj = wp_get_nav_menu_object( 'Primary Navigation Menu' );
+        if ( $primary_menu_obj ) {
+            $existing_items = wp_get_nav_menu_items( $primary_menu_obj->term_id );
+            if ( is_array( $existing_items ) ) {
+                foreach ( $existing_items as $item ) {
+                    wp_delete_post( $item->ID, true );
+                }
+            }
+        }
+        // Unset primary location to force reassignment and repopulation
+        unset( $locations['primary-menu'] );
+        set_theme_mod( 'nav_menu_locations', $locations );
     }
 
     // --- 1. PRIMARY NAVIGATION MENU ---
@@ -353,7 +370,8 @@ function weardale_platform_render_site_setup_page() {
 
     // 1. Navigation Bootstrapper
     if ( isset( $_POST['wt_bootstrap_nonce'] ) && wp_verify_nonce( $_POST['wt_bootstrap_nonce'], 'wt_bootstrap_action' ) ) {
-        $results = weardale_platform_bootstrap_navigation();
+        $force_rebuild = isset( $_POST['wt_force_rebuild'] ) && $_POST['wt_force_rebuild'] === '1';
+        $results = weardale_platform_bootstrap_navigation( $force_rebuild );
     }
 
     // 2. Settings Saver
@@ -738,6 +756,15 @@ function weardale_platform_render_site_setup_page() {
                         
                         <form method="post" style="margin-top: 15px;">
                             <?php wp_nonce_field( 'wt_bootstrap_action', 'wt_bootstrap_nonce' ); ?>
+                            <div style="margin-bottom: 15px; background-color: #f8fafc; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 4px;">
+                                <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; font-size: 0.9rem; color: #334155;">
+                                    <input type="checkbox" name="wt_force_rebuild" value="1" style="margin-top: 2px;">
+                                    <span>
+                                        <strong><?php esc_html_e( 'Rebuild Primary Navigation', 'weardale-platform' ); ?></strong><br>
+                                        <?php esc_html_e( 'Force-clears current Primary Navigation Menu items and reconstructs the new simplified, hierarchical parent-child dropdown layout (Our Programmes, Get Involved, and What\'s On CTA).', 'weardale-platform' ); ?>
+                                    </span>
+                                </label>
+                            </div>
                             <input type="submit" class="button button-secondary button-large" style="width: 100%; text-align: center;" value="<?php esc_attr_e( 'Bootstrap Menus Now', 'weardale-platform' ); ?>">
                         </form>
                     </div>
