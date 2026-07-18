@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 150" width="100%" height="100%">
+    <defs>
+        <!-- Soft organic watercolor shadow for realistic branding feel -->
+        <filter id="organic-glow" x="-10%" y="-10%" width="120%" height="120%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+        <!-- Subtle gradient to mimic natural watercolor transparency layers -->
+        <linearGradient id="watercolor-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#557C68" stop-opacity="0.95" />
+            <stop offset="15%" stop-color="#5F8571" stop-opacity="0.9" />
+            <stop offset="50%" stop-color="#4D7460" stop-opacity="0.95" />
+            <stop offset="85%" stop-color="#5B816D" stop-opacity="0.9" />
+            <stop offset="100%" stop-color="#446A56" stop-opacity="0.95" />
+        </linearGradient>
+    </defs>
+
+    <!-- Beautiful, hand-painted horizontal organic paint stroke (landscape watercolor shape) -->
+    <path d="M 45,75 
+             C 45,45 65,30 95,25 
+             C 130,20 160,35 190,42 
+             C 220,48 260,46 300,43 
+             C 340,40 380,38 410,41 
+             C 440,44 455,55 455,75 
+             C 455,95 440,106 410,109 
+             C 380,112 340,110 300,107 
+             C 260,104 220,102 190,108 
+             C 160,115 130,130 95,125 
+             C 65,120 45,105 45,75 Z" 
+          fill="url(#watercolor-grad)" />
+          
+    <!-- Transparent watercolor accent overlay for added organic depth -->
+    <path d="M 60,75 
+             C 60,52 75,40 100,37 
+             C 130,33 155,45 185,50 
+             C 215,55 255,53 295,50 
+             C 335,47 375,45 400,47 
+             C 425,49 435,58 435,75 
+             C 435,92 425,101 400,103 
+             C 375,105 335,103 295,100 
+             C 255,97 215,95 185,100 
+             C 155,105 130,117 100,113 
+             C 75,110 60,98 60,75 Z" 
+          fill="#446A56" opacity="0.15" />
+
+    <!-- Clean, professional, letter-spaced display typography -->
+    <text x="250" y="82" 
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" 
+          font-size="25" 
+          font-weight="600" 
+          letter-spacing="0.28em" 
+          fill="#FFFFFF" 
+          text-anchor="middle" 
+          style="text-transform: uppercase;">Weardale Together</text>
+</svg>

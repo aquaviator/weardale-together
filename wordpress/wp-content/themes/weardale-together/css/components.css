@@ -2202,3 +2202,32 @@ figcaption {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
 }
+
+/* Premium Brand Ornamental Divider utilizing the Brand Mark SVG */
+.brand-ornamental-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4rem auto;
+    width: 100%;
+    max-width: 400px;
+}
+
+.brand-ornamental-divider::before,
+.brand-ornamental-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: rgba(196, 184, 154, 0.4); /* Tan separator line */
+}
+
+.brand-ornamental-divider-icon {
+    width: 32px;
+    height: 32px;
+    margin: 0 1.5rem;
+    background-image: url('../assets/branding/brand-mark.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.8;
+}

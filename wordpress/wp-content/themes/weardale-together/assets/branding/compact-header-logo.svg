@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" width="100%" height="100%">
+    <defs>
+        <!-- Soft watercolor gradient specifically tuned for smaller headers -->
+        <linearGradient id="header-watercolor-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#557C68" stop-opacity="0.95" />
+            <stop offset="50%" stop-color="#4D7460" stop-opacity="0.98" />
+            <stop offset="100%" stop-color="#5B816D" stop-opacity="0.95" />
+        </linearGradient>
+    </defs>
+
+    <!-- Compact horizontal organic watercolor brush stroke -->
+    <path d="M 15,50 
+             C 15,30 30,20 55,18 
+             C 85,15 115,25 145,29 
+             C 175,33 215,32 255,30 
+             C 295,28 335,26 360,28 
+             C 385,30 405,38 405,50 
+             C 405,62 385,70 360,72 
+             C 335,74 295,72 255,70 
+             C 215,68 175,67 145,71 
+             C 115,75 85,85 55,82 
+             C 30,80 15,70 15,50 Z" 
+          fill="url(#header-watercolor-grad)" />
+
+    <!-- Highly readable, letter-spaced display typography inside the compact banner -->
+    <text x="210" y="56" 
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" 
+          font-size="19" 
+          font-weight="600" 
+          letter-spacing="0.25em" 
+          fill="#FFFFFF" 
+          text-anchor="middle" 
+          style="text-transform: uppercase;">Weardale Together</text>
+</svg>

@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="profile" href="https://gmpg.org/xfn/11">
     <script>document.documentElement.className += ' js';</script>
+    <?php if ( ! ( function_exists( 'has_site_icon' ) && has_site_icon() ) ) : ?>
+        <link rel="icon" href="<?php echo esc_url( get_template_directory_uri() . '/assets/branding/wt-monogram.svg' ); ?>" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="<?php echo esc_url( get_template_directory_uri() . '/assets/branding/wt-monogram.svg' ); ?>">
+    <?php endif; ?>
     <?php wp_head(); ?>
 </head>
 
@@ -25,11 +29,13 @@
             if ( has_custom_logo() ) {
                 the_custom_logo();
             } else {
-                $logo_url = get_template_directory_uri() . '/assets/branding/wt-monogram-standard-forestgreen.svg';
+                $logo_landscape = get_template_directory_uri() . '/assets/branding/compact-header-logo.svg';
+                $logo_monogram = get_template_directory_uri() . '/assets/branding/wt-monogram.svg';
                 ?>
                 <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-branding-link">
-                    <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php bloginfo( 'name' ); ?> Monogram" class="custom-logo-fallback-svg">
-                    <div class="site-title-container">
+                    <img src="<?php echo esc_url( $logo_landscape ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="header-logo-landscape">
+                    <img src="<?php echo esc_url( $logo_monogram ); ?>" alt="<?php bloginfo( 'name' ); ?> Monogram" class="header-logo-monogram">
+                    <div class="site-title-container mobile-only-title">
                         <p class="site-title"><?php bloginfo( 'name' ); ?></p>
                         <p class="site-description"><?php esc_html_e( 'Community Interest Company', 'weardale-together' ); ?></p>
                     </div>

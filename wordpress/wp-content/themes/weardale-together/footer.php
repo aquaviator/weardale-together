@@ -52,8 +52,11 @@ $privacy_url = function_exists( 'weardale_platform_get_legal_page_url' )
                     if ( has_custom_logo() ) {
                         the_custom_logo();
                     } else {
+                        $footer_logo_url = get_template_directory_uri() . '/assets/branding/primary-website-logo-cream.svg';
                         ?>
-                        <h3 class="footer-org-name"><?php echo esc_html( $org_display_name ); ?></h3>
+                        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="footer-logo-link">
+                            <img src="<?php echo esc_url( $footer_logo_url ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="footer-logo-svg">
+                        </a>
                         <?php
                     }
                     ?>
