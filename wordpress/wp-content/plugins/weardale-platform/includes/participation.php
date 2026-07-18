@@ -1168,21 +1168,21 @@ function weardale_platform_auto_inject_forms( $content ) {
 
     // Contact Us page: slug might be 'contact-us' or 'contact'
     if ( in_array( $slug, array( 'contact-us', 'contact' ), true ) ) {
-        if ( ! has_shortcode( $content, 'weardale_contact_page_layout' ) && ! has_shortcode( $content, 'weardale_contact_form' ) ) {
+        if ( ! has_shortcode( $content, 'weardale_contact_page_layout' ) && ! has_shortcode( $content, 'weardale_contact_form' ) && strpos( $content, 'weardale-contact-grid' ) === false ) {
             $content .= "\n\n" . do_shortcode( '[weardale_contact_page_layout]' );
         }
     }
 
     // Volunteer page: slug might be 'volunteer-with-us', 'volunteer'
     if ( in_array( $slug, array( 'volunteer-with-us', 'volunteer' ), true ) ) {
-        if ( ! has_shortcode( $content, 'weardale_volunteer_page' ) ) {
+        if ( ! has_shortcode( $content, 'weardale_volunteer_page' ) && strpos( $content, 'weardale-volunteer-page' ) === false ) {
             $content .= "\n\n" . do_shortcode( '[weardale_volunteer_page]' );
         }
     }
 
     // Newsletter page: slug might be 'newsletter', 'newsletter-signup'
     if ( in_array( $slug, array( 'newsletter', 'newsletter-signup' ), true ) ) {
-        if ( ! has_shortcode( $content, 'weardale_newsletter_page' ) ) {
+        if ( ! has_shortcode( $content, 'weardale_newsletter_page' ) && strpos( $content, 'weardale-newsletter-page' ) === false ) {
             $content .= "\n\n" . do_shortcode( '[weardale_newsletter_page]' );
         }
     }
