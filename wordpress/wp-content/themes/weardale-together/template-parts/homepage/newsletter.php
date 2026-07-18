@@ -8,16 +8,16 @@
  */
 ?>
 
-<section class="section-padding" style="background-color: var(--color-cream); border-bottom: 1px solid var(--color-tan);">
-    <div class="container-narrow" style="text-align: center;">
+<section class="section-padding newsletter-section">
+    <div class="container-narrow newsletter-container">
         
-        <span style="font-size: 2.5rem; line-height: 1; display: block; margin-bottom: 1rem;">✉️</span>
+        <span class="newsletter-icon">✉️</span>
         
-        <h2 class="font-display" style="font-size: 2.25rem; color: var(--color-forest); margin-bottom: 1rem;">
+        <h2 class="font-display newsletter-title">
             <?php esc_html_e( 'Stay Connected in the Hills', 'weardale-together' ); ?>
         </h2>
         
-        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 2rem;">
+        <p class="newsletter-text">
             <?php esc_html_e( 'Subscribe to our community newsletter and receive our monthly menus, class announcements, seasonal Wassail dates, and volunteer roundups delivered right to your inbox.', 'weardale-together' ); ?>
         </p>
 

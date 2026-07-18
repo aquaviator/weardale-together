@@ -13,13 +13,13 @@ $upcoming_occurrences = function_exists( 'weardale_platform_query_occurrences' )
     : array();
 ?>
 
-<section class="section-padding" style="background-color: var(--color-white); border-bottom: 1px solid var(--color-tan);">
+<section class="section-padding whats-happening-section">
     <div class="container">
         
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3.5rem; flex-wrap: wrap; gap: 1.5rem;">
+        <div class="whats-happening-header">
             <div>
-                <span class="badge badge-shoots" style="margin-bottom: 0.5rem;"><?php esc_html_e( 'Our Activities', 'weardale-together' ); ?></span>
-                <h2 class="font-display" style="font-size: 2.5rem; margin-bottom: 0;"><?php esc_html_e( 'What\'s Happening This Week', 'weardale-together' ); ?></h2>
+                <span class="badge badge-shoots mb-2"><?php esc_html_e( 'Our Activities', 'weardale-together' ); ?></span>
+                <h2 class="font-display"><?php esc_html_e( 'What\'s Happening This Week', 'weardale-together' ); ?></h2>
             </div>
             <div>
                 <a href="<?php echo esc_url( get_post_type_archive_link( 'weardale_event' ) ); ?>" class="btn btn-secondary">
@@ -44,17 +44,17 @@ $upcoming_occurrences = function_exists( 'weardale_platform_query_occurrences' )
         <?php endif; ?>
 
         <!-- Clear signposting to Weardale Places and What's On -->
-        <div style="margin-top: 4rem; padding: 2rem; background-color: rgba(107, 143, 94, 0.08); border-radius: var(--border-radius-md); border: 1px solid rgba(107, 143, 94, 0.15); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
-            <div style="max-width: 600px;">
-                <h4 style="margin: 0 0 0.5rem 0; font-family: var(--font-body); font-weight: 700; color: var(--color-forest); font-size: 1.15rem;">
+        <div class="whats-happening-signpost">
+            <div class="whats-happening-signpost-text">
+                <h4 class="whats-happening-signpost-title">
                     <?php esc_html_e( 'Looking for wider events across Weardale?', 'weardale-together' ); ?>
                 </h4>
-                <p style="margin: 0; font-size: 0.95rem; color: var(--text-secondary); line-height: 1.4;">
+                <p class="whats-happening-signpost-desc">
                     <?php esc_html_e( 'For a full dale-wide directory including community maps and public calendar submissions, visit Weardale Places & What\'s On.', 'weardale-together' ); ?>
                 </p>
             </div>
             <div>
-                <a href="https://weardaleplaces.org.uk" target="_blank" class="btn btn-primary" style="padding: 0.6rem 1.25rem; font-size: 0.95rem;">
+                <a href="https://weardaleplaces.org.uk" target="_blank" class="btn btn-primary whats-happening-signpost-btn">
                     <?php esc_html_e( 'Visit Weardale Places &rarr;', 'weardale-together' ); ?>
                 </a>
             </div>

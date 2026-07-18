@@ -38,14 +38,14 @@ if ( $featured_id ) {
 $latest_query = new WP_Query( $latest_args );
 ?>
 
-<section class="section-padding" style="background-color: var(--color-cream); border-bottom: 1px solid var(--color-tan);">
+<section class="section-padding journal-section">
     <div class="container">
         
         <!-- Section Header -->
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3.5rem; flex-wrap: wrap; gap: 1.5rem;">
+        <div class="journal-header">
             <div>
-                <span class="badge badge-creative" style="margin-bottom: 0.5rem;"><?php esc_html_e( 'Our Journal', 'weardale-together' ); ?></span>
-                <h2 class="font-display" style="font-size: 2.5rem; margin-bottom: 0; color: var(--color-forest); font-weight: normal;"><?php esc_html_e( 'Stories From Around the Dale', 'weardale-together' ); ?></h2>
+                <span class="badge badge-creative mb-2"><?php esc_html_e( 'Our Journal', 'weardale-together' ); ?></span>
+                <h2 class="font-display"><?php esc_html_e( 'Stories From Around the Dale', 'weardale-together' ); ?></h2>
             </div>
             <div>
                 <a href="<?php echo esc_url( home_url( '/news-blog/' ) ); ?>" class="btn btn-secondary">
@@ -60,23 +60,23 @@ $latest_query = new WP_Query( $latest_args );
             $post = get_post( $featured_id );
             setup_postdata( $post );
             ?>
-            <article class="featured-spotlight-card" style="background-color: var(--color-white); border: 1px solid var(--color-tan); border-radius: var(--border-radius-md); padding: 2.5rem; margin-bottom: 3.5rem; box-shadow: 0 4px 15px rgba(59,92,58,0.03); display: grid; grid-template-columns: 1.1fr 1fr; gap: 3rem; align-items: center;">
+            <article class="featured-spotlight-card">
                 
                 <!-- Spotlight Left: Image -->
                 <?php if ( has_post_thumbnail() ) : ?>
-                    <div class="featured-spotlight-image" style="border-radius: var(--border-radius-sm); overflow: hidden; border: 1px solid var(--color-tan); aspect-ratio: 16/10;">
-                        <?php the_post_thumbnail( 'large', array( 'style' => 'width:100%; height:100%; object-fit:cover; display:block;' ) ); ?>
+                    <div class="featured-spotlight-image">
+                        <?php the_post_thumbnail( 'large' ); ?>
                     </div>
                 <?php else : ?>
-                    <div style="aspect-ratio: 16/10; background-color: var(--color-cream); border: 1px dashed var(--color-tan); border-radius: var(--border-radius-sm); display: flex; align-items: center; justify-content: center; color: var(--text-light);">
-                        <span style="font-family: var(--font-headings); font-size: 1.1rem;"><?php esc_html_e( 'Spotlight Story', 'weardale-together' ); ?></span>
+                    <div class="featured-spotlight-fallback">
+                        <span><?php esc_html_e( 'Spotlight Story', 'weardale-together' ); ?></span>
                     </div>
                 <?php endif; ?>
 
                 <!-- Spotlight Right: Text -->
-                <div style="display: flex; flex-direction: column; justify-content: center;">
-                    <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem;">
-                        <span class="badge" style="background-color: #BA7D0C; color: var(--color-cream); font-size: 0.75rem; padding: 0.25rem 0.6rem; font-weight: bold; border-radius: var(--border-radius-sm); text-transform: uppercase; letter-spacing: 0.05em;">
+                <div class="featured-spotlight-text">
+                    <div class="featured-spotlight-badge-area">
+                        <span class="badge featured-spotlight-featured-badge">
                             <?php esc_html_e( 'Featured Story', 'weardale-together' ); ?>
                         </span>
                         <?php
@@ -89,26 +89,26 @@ $latest_query = new WP_Query( $latest_args );
                                     break;
                                 }
                             }
-                            echo '<span class="badge badge-creative" style="font-size: 0.75rem; background-color: var(--color-cream); color: var(--color-forest); border: 1px solid var(--color-tan); padding: 0.25rem 0.6rem;">' . esc_html( $primary_cat->name ) . '</span>';
+                            echo '<span class="badge badge-creative featured-spotlight-category-badge">' . esc_html( $primary_cat->name ) . '</span>';
                         }
                         ?>
                     </div>
 
-                    <h3 class="font-display" style="font-size: 1.85rem; line-height: 1.2; margin-top: 0; margin-bottom: 1rem; color: var(--color-forest); font-weight: normal;">
-                        <a href="<?php the_permalink(); ?>" style="text-decoration: none; color: inherit;">
+                    <h3 class="font-display featured-spotlight-title">
+                        <a href="<?php the_permalink(); ?>">
                             <?php the_title(); ?>
                         </a>
                     </h3>
 
-                    <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
+                    <p class="featured-spotlight-excerpt">
                         <?php echo esc_html( get_the_excerpt() ); ?>
                     </p>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: auto;">
-                        <a href="<?php the_permalink(); ?>" class="btn btn-primary" style="padding: 0.6rem 1.5rem; font-size: 0.95rem;">
+                    <div class="featured-spotlight-footer">
+                        <a href="<?php the_permalink(); ?>" class="btn btn-primary featured-spotlight-btn">
                             <?php esc_html_e( 'Read Spotlight Story', 'weardale-together' ); ?>
                         </a>
-                        <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-light);">
+                        <span class="featured-spotlight-date">
                             <?php echo get_the_date(); ?>
                         </span>
                     </div>
@@ -125,23 +125,23 @@ $latest_query = new WP_Query( $latest_args );
                 while ( $latest_query->have_posts() ) :
                     $latest_query->the_post();
                     ?>
-                    <article class="card" style="display: flex; flex-direction: column; background-color: var(--color-white); border: 1px solid var(--color-tan); border-radius: var(--border-radius-md); overflow: hidden; box-shadow: 0 4px 12px rgba(59,92,58,0.02); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                    <article class="card journal-card">
                         
                         <!-- Thumbnail -->
                         <?php if ( has_post_thumbnail() ) : ?>
-                            <div class="post-thumbnail" style="border-bottom: 1px solid var(--color-tan); overflow: hidden; aspect-ratio: 16/10;">
-                                <?php the_post_thumbnail( 'medium_large', array( 'style' => 'width:100%; height:100%; object-fit:cover; display:block;' ) ); ?>
+                            <div class="journal-card-thumbnail">
+                                <?php the_post_thumbnail( 'medium_large' ); ?>
                             </div>
                         <?php else : ?>
-                            <div style="aspect-ratio: 16/10; background-color: var(--color-cream); border-bottom: 1px solid var(--color-tan); display: flex; align-items: center; justify-content: center; color: var(--text-light);">
-                                <span style="font-family: var(--font-mono); font-size: 0.85rem;"><?php esc_html_e( 'Weardale Together', 'weardale-together' ); ?></span>
+                            <div class="journal-card-thumbnail-fallback">
+                                <span><?php esc_html_e( 'Weardale Together', 'weardale-together' ); ?></span>
                             </div>
                         <?php endif; ?>
 
                         <!-- Content Body -->
-                        <div style="padding: 1.75rem; flex-grow: 1; display: flex; flex-direction: column;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-                                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-light);">
+                        <div class="journal-card-content">
+                            <div class="journal-card-meta">
+                                <span class="journal-card-date">
                                     <?php echo get_the_date(); ?>
                                 </span>
                                 <?php
@@ -154,22 +154,22 @@ $latest_query = new WP_Query( $latest_args );
                                             break;
                                         }
                                     }
-                                    echo '<span class="badge badge-creative" style="font-size: 0.75rem; background-color: var(--color-cream); color: var(--color-forest); border: 1px solid var(--color-tan); padding: 0.2rem 0.5rem;">' . esc_html( $primary_cat->name ) . '</span>';
+                                    echo '<span class="badge badge-creative journal-card-category-badge">' . esc_html( $primary_cat->name ) . '</span>';
                                 }
                                 ?>
                             </div>
 
-                            <h3 class="card-title font-display" style="font-size: 1.3rem; line-height: 1.25; margin-top: 0; margin-bottom: 1rem; font-weight: normal; min-height: 3.2rem;">
-                                <a href="<?php the_permalink(); ?>" style="text-decoration: none; color: var(--color-forest);">
+                            <h3 class="font-display journal-card-title">
+                                <a href="<?php the_permalink(); ?>">
                                     <?php the_title(); ?>
                                 </a>
                             </h3>
 
-                            <div style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">
+                            <div class="journal-card-excerpt">
                                 <?php the_excerpt(); ?>
                             </div>
 
-                            <a href="<?php the_permalink(); ?>" class="btn btn-secondary" style="align-self: flex-start; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            <a href="<?php the_permalink(); ?>" class="btn btn-secondary journal-card-btn">
                                 <?php esc_html_e( 'Read Story &rarr;', 'weardale-together' ); ?>
                             </a>
                         </div>
@@ -186,39 +186,51 @@ $latest_query = new WP_Query( $latest_args );
             <div class="grid grid-3">
                 
                 <!-- Card 1 -->
-                <article class="card">
-                    <div class="card-meta">July 15, 2026</div>
-                    <h3 class="card-title" style="font-size: 1.35rem; margin-bottom: 1rem; min-height: 3rem;">
-                        <?php esc_html_e( 'Stanhope Hub Blossoms With Summer Creative Program', 'weardale-together' ); ?>
-                    </h3>
-                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">
-                        <?php esc_html_e( 'Our latest craft workshops have seen over 40 residents gathering to share skills in printmaking, botanical illustration, and woodcarving...', 'weardale-together' ); ?>
-                    </p>
-                    <span style="font-size: 0.9rem; font-weight: bold; color: var(--color-forest);"><?php esc_html_e( 'Coming soon', 'weardale-together' ); ?></span>
+                <article class="card journal-card">
+                    <div class="journal-card-content">
+                        <div class="journal-card-meta">
+                            <span class="journal-card-date">July 15, 2026</span>
+                        </div>
+                        <h3 class="font-display journal-card-title">
+                            <?php esc_html_e( 'Stanhope Hub Blossoms With Summer Creative Program', 'weardale-together' ); ?>
+                        </h3>
+                        <p class="journal-card-excerpt">
+                            <?php esc_html_e( 'Our latest craft workshops have seen over 40 residents gathering to share skills in printmaking, botanical illustration, and woodcarving...', 'weardale-together' ); ?>
+                        </p>
+                        <span class="journal-card-date"><strong><?php esc_html_e( 'Coming soon', 'weardale-together' ); ?></strong></span>
+                    </div>
                 </article>
 
                 <!-- Card 2 -->
-                <article class="card">
-                    <div class="card-meta">June 28, 2026</div>
-                    <h3 class="card-title" style="font-size: 1.35rem; margin-bottom: 1rem; min-height: 3rem;">
-                        <?php esc_html_e( 'Behind the Recipes: Food Ethos of Root & Branch', 'weardale-together' ); ?>
-                    </h3>
-                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">
-                        <?php esc_html_e( 'Our chef, Cheryl, shares the secrets of our seasonal local soup, sourdough breads, and why making food with true care can transform isolated days...', 'weardale-together' ); ?>
-                    </p>
-                    <span style="font-size: 0.9rem; font-weight: bold; color: var(--color-forest);"><?php esc_html_e( 'Coming soon', 'weardale-together' ); ?></span>
+                <article class="card journal-card">
+                    <div class="journal-card-content">
+                        <div class="journal-card-meta">
+                            <span class="journal-card-date">June 28, 2026</span>
+                        </div>
+                        <h3 class="font-display journal-card-title">
+                            <?php esc_html_e( 'Behind the Recipes: Food Ethos of Root & Branch', 'weardale-together' ); ?>
+                        </h3>
+                        <p class="journal-card-excerpt">
+                            <?php esc_html_e( 'Our chef, Cheryl, shares the secrets of our seasonal local soup, sourdough breads, and why making food with true care can transform isolated days...', 'weardale-together' ); ?>
+                        </p>
+                        <span class="journal-card-date"><strong><?php esc_html_e( 'Coming soon', 'weardale-together' ); ?></strong></span>
+                    </div>
                 </article>
 
                 <!-- Card 3 -->
-                <article class="card">
-                    <div class="card-meta">May 12, 2026</div>
-                    <h3 class="card-title" style="font-size: 1.35rem; margin-bottom: 1rem; min-height: 3rem;">
-                        <?php esc_html_e( 'Forest School Adventures: Little Spouts Explored', 'weardale-together' ); ?>
-                    </h3>
-                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">
-                        <?php esc_html_e( 'Armed with boots and muddy hands, our Youth Programme completed their first outdoor camp in Stanhope woods, building team spirit and tree shelters...', 'weardale-together' ); ?>
-                    </p>
-                    <span style="font-size: 0.9rem; font-weight: bold; color: var(--color-forest);"><?php esc_html_e( 'Coming soon', 'weardale-together' ); ?></span>
+                <article class="card journal-card">
+                    <div class="journal-card-content">
+                        <div class="journal-card-meta">
+                            <span class="journal-card-date">May 12, 2026</span>
+                        </div>
+                        <h3 class="font-display journal-card-title">
+                            <?php esc_html_e( 'Forest School Adventures: Little Spouts Explored', 'weardale-together' ); ?>
+                        </h3>
+                        <p class="journal-card-excerpt">
+                            <?php esc_html_e( 'Armed with boots and muddy hands, our Youth Programme completed their first outdoor camp in Stanhope woods, building team spirit and tree shelters...', 'weardale-together' ); ?>
+                        </p>
+                        <span class="journal-card-date"><strong><?php esc_html_e( 'Coming soon', 'weardale-together' ); ?></strong></span>
+                    </div>
                 </article>
 
             </div>

@@ -268,6 +268,81 @@ select:focus {
     color: var(--color-cream);
 }
 
+/* Footer layout and column styling */
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--wt-space-6);
+}
+
+@media (min-width: 1024px) {
+    .footer-grid {
+        grid-template-columns: 1.25fr 1fr 0.75fr 1.25fr;
+        gap: var(--wt-space-7);
+    }
+}
+
+.footer-org-name {
+    font-family: var(--font-headings);
+    font-size: 1.65rem;
+    font-weight: normal;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-cream);
+}
+
+.footer-tagline {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-cream);
+    opacity: 0.9;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.footer-funding {
+    font-size: 0.9rem;
+    color: var(--color-tan);
+    margin-top: 1rem;
+    line-height: 1.4;
+}
+
+.footer-cic-notif {
+    font-size: 0.9rem;
+    color: var(--color-tan);
+    margin-top: 1rem;
+}
+
+.footer-column-heading {
+    font-family: var(--font-body);
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.95rem;
+    color: var(--color-cream);
+}
+
+/* Footer menus lists inside columns */
+.site-footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    line-height: 2;
+}
+
+.site-footer ul li a {
+    text-decoration: none;
+    transition: var(--transition-smooth);
+}
+
+.footer-newsletter-text {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: var(--color-cream);
+    margin-bottom: 1rem;
+}
+
 .footer-bottom {
     margin-top: 3rem;
     padding-top: 1.5rem;
@@ -285,4 +360,38 @@ select:focus {
         gap: 1rem;
         text-align: center;
     }
+}
+
+.footer-bottom-nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .footer-bottom-nav {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
+
+.footer-privacy-link {
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.footer-social-links {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.footer-social-links a {
+    transition: var(--transition-bounce);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-social-links a:hover {
+    transform: scale(1.1);
 }
