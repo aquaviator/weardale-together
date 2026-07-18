@@ -144,84 +144,89 @@ select:focus {
     line-height: 1;
 }
 
-.custom-logo-fallback-svg,
-.custom-logo-link img,
-.custom-logo {
-    width: auto !important;
-    height: 44px !important;
-    display: inline-block;
-    transition: var(--transition-smooth);
-    filter: drop-shadow(0 1px 2px rgba(59, 92, 58, 0.05));
+/* Responsive Brand Logo Sizing & Breakpoints */
+
+/* Desktop viewports (>=1200px) */
+@media (min-width: 1200px) {
+    .header-logo-landscape,
+    .custom-logo-fallback-svg,
+    .custom-logo-link img,
+    .custom-logo {
+        display: inline-block !important;
+        width: 260px !important; /* Satisfies approximately 240-280px wide */
+        height: auto !important;
+        max-width: 100% !important;
+        object-fit: contain;
+        transition: var(--transition-smooth);
+        filter: drop-shadow(0 1px 2px rgba(59, 92, 58, 0.05));
+    }
+    
+    .header-logo-mobile-wrapper {
+        display: none !important;
+    }
 }
 
-@media (min-width: 1024px) {
+/* Tablet viewports (768px to 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .header-logo-landscape,
+    .custom-logo-fallback-svg,
+    .custom-logo-link img,
+    .custom-logo {
+        display: inline-block !important;
+        width: 210px !important; /* Satisfies approximately 200-220px wide */
+        height: auto !important;
+        max-width: 100% !important;
+        object-fit: contain;
+        transition: var(--transition-smooth);
+        filter: drop-shadow(0 1px 2px rgba(59, 92, 58, 0.05));
+    }
+
+    .header-logo-mobile-wrapper {
+        display: none !important;
+    }
+}
+
+/* Mobile viewports (<768px) */
+@media (max-width: 767px) {
+    .header-logo-landscape {
+        display: none !important;
+    }
+
+    .header-logo-mobile-wrapper {
+        display: flex !important;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+    }
+
+    .header-logo-monogram {
+        display: inline-block !important;
+        height: 44px !important;
+        width: 44px !important;
+        object-fit: contain;
+        transition: var(--transition-smooth);
+        filter: drop-shadow(0 1px 2px rgba(59, 92, 58, 0.05));
+    }
+
     .custom-logo-fallback-svg,
     .custom-logo-link img,
     .custom-logo {
         height: 44px !important;
+        width: auto !important;
+        object-fit: contain;
     }
 }
 
-/* Responsive Brand Logo Implementation */
-.header-logo-landscape {
-    display: inline-block;
-    height: 40px !important;
-    width: auto !important;
-    max-width: 180px !important;
-    transition: var(--transition-smooth);
-    filter: drop-shadow(0 1px 2px rgba(59, 92, 58, 0.05));
-}
-
-@media (min-width: 1024px) {
-    .header-logo-landscape {
-        height: 44px !important;
-        max-width: 220px !important;
-    }
-}
-
-.header-logo-monogram {
-    display: none;
-    height: 36px !important;
-    width: 36px !important;
-    transition: var(--transition-smooth);
-    filter: drop-shadow(0 1px 2px rgba(59, 92, 58, 0.05));
-}
-
+/* Shared Hover Micro-interactions */
 .header-logo-landscape:hover,
 .header-logo-monogram:hover,
+.header-logo-mobile-wrapper:hover .header-logo-monogram,
 .custom-logo-link img:hover,
 .custom-logo-fallback-svg:hover,
-.site-branding-link:hover .custom-logo-fallback-svg {
+.site-branding-link:hover .header-logo-landscape,
+.site-branding-link:hover .header-logo-monogram {
     transform: scale(1.02);
-    opacity: 0.95;
-}
-
-/* Toggle visibility based on breakpoints */
-@media (max-width: 500px) {
-    .header-logo-landscape {
-        display: none !important;
-    }
-    .header-logo-monogram {
-        display: inline-block !important;
-    }
-    .mobile-only-title {
-        display: flex !important;
-    }
-    .site-branding-link {
-        gap: 0.5rem !important;
-    }
-}
-
-@media (min-width: 501px) {
-    .header-logo-landscape {
-        display: inline-block !important;
-    }
-    .header-logo-monogram {
-        display: none !important;
-    }
-    .mobile-only-title {
-        display: none !important;
-    }
+    opacity: 0.98;
 }
 
 .footer-logo-container {

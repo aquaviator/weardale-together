@@ -29,15 +29,20 @@
             if ( has_custom_logo() ) {
                 the_custom_logo();
             } else {
-                $logo_landscape = get_template_directory_uri() . '/assets/branding/compact-header-logo.svg';
+                $logo_landscape = get_template_directory_uri() . '/assets/branding/primary-website-logo.svg';
                 $logo_monogram = get_template_directory_uri() . '/assets/branding/wt-monogram.svg';
                 ?>
                 <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-branding-link">
+                    <!-- Landscape Logo for Desktop & Tablet -->
                     <img src="<?php echo esc_url( $logo_landscape ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="header-logo-landscape">
-                    <img src="<?php echo esc_url( $logo_monogram ); ?>" alt="<?php bloginfo( 'name' ); ?> Monogram" class="header-logo-monogram">
-                    <div class="site-title-container mobile-only-title">
-                        <p class="site-title"><?php bloginfo( 'name' ); ?></p>
-                        <p class="site-description"><?php esc_html_e( 'Community Interest Company', 'weardale-together' ); ?></p>
+                    
+                    <!-- Monogram + Text Wrapper for Mobile (<768px) -->
+                    <div class="header-logo-mobile-wrapper">
+                        <img src="<?php echo esc_url( $logo_monogram ); ?>" alt="<?php bloginfo( 'name' ); ?> Monogram" class="header-logo-monogram">
+                        <div class="site-title-container">
+                            <span class="site-title"><?php bloginfo( 'name' ); ?></span>
+                            <span class="site-description"><?php esc_html_e( 'Community Interest Company', 'weardale-together' ); ?></span>
+                        </div>
                     </div>
                 </a>
                 <?php
