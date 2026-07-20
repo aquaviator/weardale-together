@@ -2254,8 +2254,10 @@ figcaption {
 .directory-back-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: var(--wt-space-2);
-    padding: 0.4rem 1rem;
+    padding: 0.5rem 1.25rem;
+    min-height: 44px;
     font-size: var(--wt-font-size-sm);
     text-decoration: none;
     font-weight: var(--wt-font-weight-bold);
@@ -2466,6 +2468,8 @@ figcaption {
     font-weight: var(--wt-font-weight-semibold);
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    min-height: 44px;
     gap: var(--wt-space-2);
     transition: var(--wt-transition-smooth);
 }
@@ -2504,7 +2508,7 @@ figcaption {
 @media (min-width: 992px) {
     .directory-sidebar {
         position: sticky;
-        top: var(--wt-space-6);
+        top: calc(var(--wt-layout-header-height, 80px) + var(--wt-space-5));
         padding: var(--wt-space-6);
     }
 }
@@ -2553,6 +2557,8 @@ figcaption {
     line-height: 1.4;
     color: var(--wt-color-near-black);
     white-space: pre-line;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .directory-map-link {
@@ -2577,6 +2583,8 @@ figcaption {
     text-decoration: none;
     font-weight: var(--wt-font-weight-semibold);
     transition: var(--wt-transition-smooth);
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .directory-contact-link:hover {
@@ -2605,11 +2613,13 @@ figcaption {
 }
 
 .directory-action-btn {
-    display: block;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: var(--wt-font-weight-bold);
     text-decoration: none;
-    padding: 0.6rem 1rem;
+    padding: 0.6rem 1.25rem;
+    min-height: 44px;
     width: 100%;
     transition: var(--wt-transition-smooth);
 }
@@ -2621,11 +2631,11 @@ figcaption {
 }
 
 /* Responsive Mobile-First Re-ordering utilizing display: contents on columns */
-@media (max-width: 767px) {
+@media (max-width: 991px) {
     .directory-layout {
         display: flex;
         flex-direction: column;
-        gap: var(--wt-space-5);
+        gap: var(--wt-space-6);
     }
     
     .directory-main {
@@ -2635,14 +2645,27 @@ figcaption {
     .directory-sidebar {
         display: contents;
     }
-    
-    /* 1. Hero / Featured Image */
-    .directory-image-container {
-        order: 1;
+
+    .directory-contact-details {
+        display: contents;
+    }
+
+    /* Hide redundant elements or section headings on tablet/mobile */
+    .directory-sidebar-title {
+        display: none;
+    }
+
+    .directory-divider {
+        display: none;
     }
     
-    /* 2. Main Title & Badges */
+    /* 1. Main Title & Badges */
     .directory-header-block {
+        order: 1;
+    }
+
+    /* 2. Hero / Featured Image */
+    .directory-image-container {
         order: 2;
     }
     
@@ -2662,16 +2685,17 @@ figcaption {
         width: 100%;
     }
     
-    /* 5. Social Connect Area */
-    .directory-social-container {
+    /* 5. Contact Action Buttons (Visit Website, Enquire) */
+    .directory-actions-card {
         order: 5;
         width: 100%;
     }
     
-    /* 6. Contact Action Buttons (Visit Website, Enquire) */
-    .directory-actions-card {
+    /* 6. Social Connect Area */
+    .directory-social-container {
         order: 6;
         width: 100%;
+        margin-top: 0;
     }
     
     /* 7. Secondary Details (Opening hours, accessibility, pricing, related programs) */
@@ -2688,7 +2712,8 @@ figcaption {
     /* 8. Profile Metadata / Last reviewed date */
     .directory-meta-block {
         order: 8;
-        padding-top: var(--wt-space-4);
+        padding-top: var(--wt-space-2);
+        margin-top: 0;
     }
 }
 
